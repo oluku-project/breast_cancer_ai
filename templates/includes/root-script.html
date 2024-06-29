@@ -1,0 +1,35 @@
+{% load static %}
+<!-- Vendor JS -->
+    <script src="{% static 'js/vendors.min.js' %}"></script>
+    <script src="{% static 'js/pages/chat-popup.js' %}"></script>
+    <script src="{% static 'assets/icons/feather-icons/feather.min.js' %}"></script>
+    <script src="{% static 'assets/vendor_components/apexcharts-bundle/dist/apexcharts.js' %}"></script>
+    <script src="{% static 'assets/vendor_components/jquery-toast-plugin-master/src/jquery.toast.js' %}"></script>
+    
+	
+    <script src="{% static 'js/pages/toastr.js' %}"></script>
+    <script src="{% static 'js/demo.js' %}"></script>
+    <script>
+     // Custom navigation
+      function navigateToUrl(element) {
+          var url = element.getAttribute('data-url') || element.textContent || element.href;
+          window.location.href = url;
+      }
+      
+      $(document).ready(function() {
+        {% if messages %}
+          {% for message in messages %}
+              {% if message.tags == 'success' %}
+                  showToast("Success", "{{ message | safe}}", "success");
+              {% elif message.tags == 'error' %}
+              showToast("Error", "{{ message | safe}}", "error");
+              {% elif message.tags == 'warning' %}
+              showToast("Warning", "{{ message | safe}}", "warning");
+              {% elif message.tags == 'info' %}
+              showToast("Info", "{{ message | safe}}", "info");
+              {% endif %}
+          {% endfor %}
+        {% endif %}
+      });
+
+    </script>

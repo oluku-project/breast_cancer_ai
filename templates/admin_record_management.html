@@ -1,0 +1,230 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block headers %}
+<style>
+    body {
+        font-family: 'Arial', sans-serif;
+        background-color: #f4f6f9;
+    }
+    .admin-header {
+        background-color: #343a40;
+        color: #ffffff;
+        padding: 15px 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .admin-header .logo {
+        font-size: 1.5rem;
+        font-weight: bold;
+    }
+    .admin-header .profile-icon {
+        border-radius: 50%;
+        width: 50px;
+    }
+    .admin-sidebar {
+        height: 100vh;
+        background-color: #343a40;
+        padding: 20px;
+        color: #ffffff;
+        position: fixed;
+        top: 60px;
+        width: 200px;
+    }
+    .admin-sidebar a {
+        color: #ffffff;
+        text-decoration: none;
+        display: block;
+        padding: 10px 0;
+        transition: background-color 0.3s;
+    }
+    .admin-sidebar a:hover {
+        background-color: #495057;
+    }
+    .admin-sidebar .active {
+        background-color: #007bff;
+    }
+    .admin-content {
+        margin-left: 220px;
+        padding: 20px;
+    }
+    .table-container {
+        background-color: #ffffff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        margin-bottom: 20px;
+    }
+    .table-container table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 20px;
+    }
+    .table-container th, .table-container td {
+        padding: 10px;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+    }
+    .table-container th {
+        background-color: #f8f9fa;
+    }
+    .search-filter-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+    .search-filter-container input, .search-filter-container select, .search-filter-container button {
+        margin-right: 10px;
+    }
+    .footer {
+        background-color: #343a40;
+        color: #ffffff;
+        text-align: center;
+        padding: 10px;
+        position: fixed;
+        width: 100%;
+        bottom: 0;
+    }
+</style>
+{% endblock headers %}
+
+{% block content %}
+<div class="admin-header">
+    <div class="logo">
+        Admin Dashboard
+    </div>
+    <div>
+        <img src="{% static 'profile_icon.png' %}" alt="Admin Profile Icon" class="profile-icon">
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-2 admin-sidebar">
+        <a href="#">Dashboard</a>
+        {% comment %} {% url 'admin_dashboard' %} {% endcomment %}
+        <a href="#">User Management</a>
+        {% comment %} {% url 'admin_user_management' %} {% endcomment %}
+        <a href="#">Questionnaire Management</a>
+        {% comment %} {% url 'admin_questionnaire_management' %} {% endcomment %}
+        <a href="#">Data Visualization</a>
+        {% comment %} {% url 'admin_data_visualization' %} {% endcomment %}
+        <a href="#">Record Management</a>
+        {% comment %} {% url 'admin_record_management' %} {% endcomment %}
+        <a href="#">Reports</a>
+        {% comment %} {% url 'admin_reports' %} {% endcomment %}
+        <a href="#">System Settings</a>
+        {% comment %} {% url 'admin_system_settings' %} {% endcomment %}
+        <a href="{% url 'logout' %}">Logout</a>
+    </div>
+    <div class="col-md-10 admin-content">
+        <h1>Record Management</h1>
+
+        <div class="search-filter-container">
+            <div class="search-bar">
+                <input type="text" id="searchInput" placeholder="Search records...">
+                <button class="btn btn-primary" onclick="searchRecords()">Search</button>
+            </div>
+            <div class="filter-options">
+                <label for="statusFilter">Status:</label>
+                <select id="statusFilter" name="statusFilter">
+                    <option value="all">All</option>
+                    <option value="completed">Completed</option>
+                    <option value="pending">Pending</option>
+                </select>
+                <label for="dateFilter">Date:</label>
+                <input type="date" id="dateFilter" name="dateFilter">
+                <button class="btn btn-primary" onclick="applyFilters()">Apply Filters</button>
+            </div>
+        </div>
+
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Record ID</th>
+                        <th>User</th>
+                        <th>Questionnaire</th>
+                        <th>Date</th>
+                        <th>Score</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody id="recordTableBody">
+                    <!-- Sample Data -->
+                    <tr>
+                        <td>1</td>
+                        <td>John Doe</td>
+                        <td>Breast Cancer Risk Assessment</td>
+                        <td>2024-06-01</td>
+                        <td>85</td>
+                        <td>Completed</td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>Jane Smith</td>
+                        <td>Breast Cancer Risk Assessment</td>
+                        <td>2024-06-05</td>
+                        <td>78</td>
+                        <td>Completed</td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td>Mary Johnson</td>
+                        <td>Breast Cancer Risk Assessment</td>
+                        <td>2024-06-10</td>
+                        <td>92</td>
+                        <td>Pending</td>
+                    </tr>
+                    <!-- Additional records will be dynamically inserted here -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<div class="footer">
+    &copy; 2024 Your Company Name. All rights reserved.
+</div>
+{% endblock content %}
+
+{% block scripts %}
+<script>
+    function searchRecords() {
+        const searchInput = document.getElementById('searchInput').value.toLowerCase();
+        const tableBody = document.getElementById('recordTableBody');
+        const rows = tableBody.getElementsByTagName('tr');
+
+        for (let i = 0; i < rows.length; i++) {
+            const cells = rows[i].getElementsByTagName('td');
+            let match = false;
+
+            for (let j = 0; j < cells.length; j++) {
+                if (cells[j].innerText.toLowerCase().includes(searchInput)) {
+                    match = true;
+                    break;
+                }
+            }
+
+            rows[i].style.display = match ? '' : 'none';
+        }
+    }
+
+    function applyFilters() {
+        const statusFilter = document.getElementById('statusFilter').value;
+        const dateFilter = document.getElementById('dateFilter').value;
+        const tableBody = document.getElementById('recordTableBody');
+        const rows = tableBody.getElementsByTagName('tr');
+
+        for (let i = 0; i < rows.length; i++) {
+            const cells = rows[i].getElementsByTagName('td');
+            const status = cells[5].innerText.toLowerCase();
+            const date = cells[3].innerText;
+
+            let matchStatus = (statusFilter === 'all' || status === statusFilter.toLowerCase());
+            let matchDate = (!dateFilter || date === dateFilter);
+
+            rows[i].style.display = (matchStatus && matchDate) ? '' : 'none';
+        }
+    }
+</script>
+{% endblock scripts %}

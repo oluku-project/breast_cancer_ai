@@ -1,0 +1,160 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block headers %}
+<style>
+    body {
+        font-family: 'Arial', sans-serif;
+        background-color: #f8f9fa;
+    }
+    .admin-header {
+        background-color: #343a40;
+        color: #ffffff;
+        padding: 15px 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .admin-header .logo {
+        font-size: 1.5rem;
+        font-weight: bold;
+    }
+    .admin-header .profile-icon {
+        border-radius: 50%;
+        width: 50px;
+    }
+    .admin-sidebar {
+        height: 100vh;
+        background-color: #343a40;
+        padding: 20px;
+        color: #ffffff;
+        position: fixed;
+    }
+    .admin-sidebar a {
+        color: #ffffff;
+        text-decoration: none;
+        display: block;
+        padding: 10px 0;
+    }
+    .admin-sidebar a:hover {
+        background-color: #495057;
+    }
+    .admin-content {
+        margin-left: 220px;
+        padding: 20px;
+    }
+    .table thead th {
+        background-color: #007bff;
+        color: #ffffff;
+    }
+    .table tbody tr:hover {
+        background-color: #f1f1f1;
+    }
+    .table-actions button {
+        margin-right: 5px;
+    }
+    .bulk-actions {
+        display: flex;
+        justify-content: flex-end;
+        margin-bottom: 10px;
+    }
+    .footer {
+        background-color: #343a40;
+        color: #ffffff;
+        text-align: center;
+        padding: 10px;
+        position: fixed;
+        width: 100%;
+        bottom: 0;
+    }
+</style>
+{% endblock headers %}
+
+{% block content %}
+<div class="admin-header">
+    <div class="logo">
+        Admin Dashboard
+    </div>
+    <div>
+        <img src="{% static 'profile_icon.png' %}" alt="Admin Profile Icon" class="profile-icon">
+    </div>
+</div>
+<div class="row">
+    <<div class="col-md-2 admin-sidebar">
+        <a href="#">Dashboard</a>
+        {% comment %} {% url 'admin_dashboard' %} {% endcomment %}
+        <a href="#">User Management</a>
+        {% comment %} {% url 'admin_user_management' %} {% endcomment %}
+        <a href="#">Questionnaire Management</a>
+        {% comment %} {% url 'admin_questionnaire_management' %} {% endcomment %}
+        <a href="#">Data Visualization</a>
+        {% comment %} {% url 'admin_data_visualization' %} {% endcomment %}
+        <a href="#">Record Management</a>
+        {% comment %} {% url 'admin_record_management' %} {% endcomment %}
+        <a href="#">Reports</a>
+        {% comment %} {% url 'admin_reports' %} {% endcomment %}
+        <a href="#">System Settings</a>
+        {% comment %} {% url 'admin_system_settings' %} {% endcomment %}
+        <a href="{% url 'logout' %}">Logout</a>
+    </div>
+    <div class="col-md-10 admin-content">
+        <h1>User Management</h1>
+        
+        <div class="bulk-actions">
+            <button class="btn btn-secondary">Activate Selected</button>
+            <button class="btn btn-secondary">Deactivate Selected</button>
+            <button class="btn btn-danger">Delete Selected</button>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th><input type="checkbox" id="selectAll"></th>
+                        <th>User ID</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Date of Birth</th>
+                        <th>Gender</th>
+                        <th>Signup Date</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><input type="checkbox" class="user-checkbox"></td>
+                        <td>1</td>
+                        <td>John Doe</td>
+                        <td>john.doe@example.com</td>
+                        <td>1990-01-01</td>
+                        <td>Male</td>
+                        <td>2024-06-01</td>
+                        <td><span class="badge badge-success">Active</span></td>
+                        <td class="table-actions">
+                            <button class="btn btn-info btn-sm">View</button>
+                            <button class="btn btn-warning btn-sm">Edit</button>
+                            <button class="btn btn-secondary btn-sm">Deactivate</button>
+                            <button class="btn btn-danger btn-sm">Delete</button>
+                        </td>
+                    </tr>
+                    <!-- Repeat for other users -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<div class="footer">
+    &copy; 2024 Your Company Name. All rights reserved.
+</div>
+{% endblock content %}
+
+{% block scripts %}
+<script>
+    // Select all checkboxes
+    document.getElementById('selectAll').addEventListener('click', function() {
+        let checkboxes = document.querySelectorAll('.user-checkbox');
+        checkboxes.forEach(checkbox => checkbox.checked = this.checked);
+    });
+</script>
+{% endblock scripts %}

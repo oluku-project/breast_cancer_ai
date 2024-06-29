@@ -1,0 +1,155 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block headers %}
+<style>
+     <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+        }
+
+        .header {
+            background-color: #343a40;
+            color: white;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header .logo {
+            font-size: 1.5rem;
+        }
+
+        .header .nav-links a {
+            color: white;
+            margin-left: 1rem;
+            text-decoration: none;
+        }
+
+        .sidebar {
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 250px;
+            background-color: #343a40;
+            padding-top: 1rem;
+        }
+
+        .sidebar a {
+            color: #fff;
+            padding: 10px;
+            text-decoration: none;
+            display: block;
+            font-size: 1rem;
+        }
+
+        .sidebar a:hover {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .main-content {
+            margin-left: 250px;
+            padding: 2rem;
+        }
+
+        .welcome-message {
+            background: #007bff;
+            color: #fff;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .health-overview,
+        .quick-actions {
+            background: #fff;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+
+        .quick-actions .btn {
+            margin-top: 1rem;
+        }
+
+        .footer {
+            background: #f8f9fa;
+            padding: 1rem 0;
+            position: fixed;
+            width: 100%;
+            bottom: 0;
+            left: 0;
+        }
+
+        .footer a {
+            color: #007bff;
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+</style>
+{% endblock headers %}
+
+{% block content %}
+         <div class="header">
+        <div class="logo">Breast Cancer Risk Assessment Tool</div>
+        <div class="nav-links">
+            <a href="#">Home</a>
+            <a href="#">About</a>
+            <a href="#">Contact</a>
+            <a href="#"><i class="fas fa-user-circle"></i> [User Name]</a>
+        </div>
+    </div>
+
+    <div class="sidebar">
+        <a href="#">Dashboard</a>
+        <a href="#">Questionnaire</a>
+        <a href="#">Results</a>
+        <a href="#">Charts</a>
+        <a href="#">Records</a>
+        <a href="#">Settings</a>
+        <a href="#">Logout</a>
+    </div>
+
+    <div class="main-content">
+        <div class="welcome-message">
+            <h1>Welcome, [User Name]!</h1>
+            <p>Your personalized health dashboard</p>
+        </div>
+
+        <div class="health-overview">
+            <h2>Health Overview</h2>
+            <p>Summary of your health information, latest assessment results, and recommendations.</p>
+            <ul>
+                <li>Last Assessment Date: 2024-06-19</li>
+                <li>Risk Level: Moderate</li>
+                <li>Recommendations: Regular check-ups and a healthy lifestyle</li>
+            </ul>
+        </div>
+
+        <div class="quick-actions">
+            <h2>Quick Actions</h2>
+            <a href="#" class="btn btn-primary w-100">Take New Questionnaire</a>
+            <a href="#" class="btn btn-secondary w-100 mt-3">View Detailed Results</a>
+            <a href="#" class="btn btn-secondary w-100 mt-3">Update Personal Information</a>
+        </div>
+    </div>
+
+    <div class="footer">
+        <div class="container text-center">
+            <p>&copy; 2024 Breast Cancer Risk Assessment Tool. All rights reserved.</p>
+            <p>
+                <a href="#">Privacy Policy</a> | <a href="#">Terms of Service</a>
+            </p>
+        </div>
+    </div>
+{% endblock content %}

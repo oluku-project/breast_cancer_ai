@@ -1,0 +1,460 @@
+{% extends 'base.html' %}
+
+
+{% block header %}
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
+            color: #333;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .record-overview-section, .questionnaire-responses-section {
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .section-header h2 {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #007bff;
+        }
+
+        .summary-details {
+            margin-top: 10px;
+        }
+
+        .summary-details p {
+            font-size: 16px;
+            margin: 5px 0;
+        }
+
+        .personal-info, .health-history, .current-symptoms, .lifestyle-environmental, .additional-info {
+            margin-top: 20px;
+        }
+
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .info-item:last-child {
+            border-bottom: none;
+        }
+
+        .info-item label {
+            font-weight: bold;
+            color: #555;
+        }
+
+        .info-item span {
+            color: #333;
+        }
+
+        h3 {
+            font-size: 20px;
+            color: #007bff;
+            margin-bottom: 10px;
+        }
+        .assessment-results-section {
+            background: #fff;
+            border-radius: 8px;
+            padding: 30px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .section-header h2 {
+            font-size: 28px;
+            color: #007bff;
+            margin-bottom: 10px;
+        }
+
+        .risk-level-indicator {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .risk-level-indicator span {
+            display: inline-block;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-size: 24px;
+            font-weight: bold;
+            color: #fff;
+            margin: 0 10px;
+        }
+
+        .low-risk {
+            background-color: #28a745;
+        }
+
+        .medium-risk {
+            background-color: #ffc107;
+        }
+
+        .high-risk {
+            background-color: #dc3545;
+        }
+
+        .risk-score {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .risk-score p {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .explanation {
+            background: #f1f1f1;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .explanation p {
+            margin: 0;
+            font-size: 16px;
+            line-height: 1.5;
+        }
+
+        .graphs-charts {
+            margin-top: 20px;
+        }
+
+        .chart {
+            margin-bottom: 20px;
+        }
+    </style>
+
+    <style>
+        .user-identification-section {
+            padding: 2rem 0;
+            background: #f9f9f9;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            margin-top: 2rem;
+        }
+
+        .user-identification-section .section-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .user-identification-section h2 {
+            font-size: 2rem;
+            color: #333;
+        }
+
+        .user-info {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+
+        .user-info .info-item {
+            flex: 1 1 calc(50% - 1rem);
+            margin: 0.5rem;
+            padding: 1rem;
+            background: #fff;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .user-info label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            color: #555;
+        }
+
+        .user-info span {
+            color: #333;
+        }
+    </style>
+
+{% endblock header %}
+    
+{% block content %}
+
+    <section class="user-identification-section">
+        <div class="container">
+            <div class="section-header">
+                <h2>User Identification</h2>
+            </div>
+            <div class="user-info">
+                <div class="info-item">
+                    <label>Full Name:</label>
+                    <span>Jane Doe</span>
+                </div>
+                <div class="info-item">
+                    <label>Date of Birth:</label>
+                    <span>January 15, 1980</span>
+                </div>
+                <div class="info-item">
+                    <label>Gender:</label>
+                    <span>Female</span>
+                </div>
+                <div class="info-item">
+                    <label>Ethnicity:</label>
+                    <span>Caucasian</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Record Overview Section -->
+     <section class="record-overview-section">
+        <div class="container">
+            <div class="section-header">
+                <h2>Your Record Details</h2>
+            </div>
+            <div class="record-summary">
+                <p>Summary of your assessment including the date of last update:</p>
+                <p><strong>Last Update:</strong> June 15, 2024</p>
+            </div>
+        </div>
+    </section>
+
+
+    <!--  Questionnaire Responses Section -->
+      <section class="questionnaire-responses-section">
+        <div class="container">
+            <div class="section-header">
+                <h2>Questionnaire Responses</h2>
+            </div>
+            <div class="personal-info">
+                <h3>Personal Information</h3>
+                <div class="info-item">
+                    <label>Full Name:</label>
+                    <span>Jane Doe</span>
+                </div>
+                <div class="info-item">
+                    <label>Date of Birth:</label>
+                    <span>January 15, 1980</span>
+                </div>
+                <div class="info-item">
+                    <label>Gender:</label>
+                    <span>Female</span>
+                </div>
+                <div class="info-item">
+                    <label>Ethnicity:</label>
+                    <span>Caucasian</span>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Record Overview Section -->
+    <section class="record-overview-section">
+        <div class="container">
+            <div class="section-header">
+                <h2>Your Record Details</h2>
+            </div>
+            <div class="record-summary">
+                <p>Here is a summary of your assessment, including the date of the last update:</p>
+                <div class="summary-details">
+                    <p><strong>Last Update:</strong> June 15, 2024</p>
+                    <p><strong>Risk Level:</strong> Medium</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Questionnaire Responses Section -->
+     <section class="questionnaire-responses-section">
+        <div class="container">
+            <div class="section-header">
+                <h2>Questionnaire Responses</h2>
+            </div>
+            <div class="personal-info">
+                <h3>Personal Information</h3>
+                <div class="info-item">
+                    <label>Full Name:</label>
+                    <span>Jane Doe</span>
+                </div>
+                <div class="info-item">
+                    <label>Date of Birth:</label>
+                    <span>January 15, 1980</span>
+                </div>
+                <div class="info-item">
+                    <label>Gender:</label>
+                    <span>Female</span>
+                </div>
+                <div class="info-item">
+                    <label>Ethnicity:</label>
+                    <span>Caucasian</span>
+                </div>
+            </div>
+
+            <div class="health-history">
+                <h3>Health History</h3>
+                <div class="info-item">
+                    <label>Personal History of Breast Cancer:</label>
+                    <span>No</span>
+                </div>
+                <div class="info-item">
+                    <label>Family History of Breast Cancer:</label>
+                    <span>Mother diagnosed at age 45</span>
+                </div>
+                <div class="info-item">
+                    <label>Personal History of Other Cancers:</label>
+                    <span>No</span>
+                </div>
+                <div class="info-item">
+                    <label>Smoking:</label>
+                    <span>Never smoked</span>
+                </div>
+                <div class="info-item">
+                    <label>Alcohol Consumption:</label>
+                    <span>Occasional drinker</span>
+                </div>
+                <div class="info-item">
+                    <label>Physical Activity:</label>
+                    <span>Exercises 3 times a week</span>
+                </div>
+                <div class="info-item">
+                    <label>Age at First Menstruation:</label>
+                    <span>12 years</span>
+                </div>
+                <div class="info-item">
+                    <label>Age at First Childbirth:</label>
+                    <span>28 years</span>
+                </div>
+                <div class="info-item">
+                    <label>Number of Children:</label>
+                    <span>2</span>
+                </div>
+                <div class="info-item">
+                    <label>Use of Hormone Replacement Therapy:</label>
+                    <span>Yes, for 2 years</span>
+                </div>
+            </div>
+
+            <div class="current-symptoms">
+                <h3>Current Symptoms</h3>
+                <div class="info-item">
+                    <label>Lump in the breast or underarm:</label>
+                    <span>No</span>
+                </div>
+                <div class="info-item">
+                    <label>Changes in breast size or shape:</label>
+                    <span>Yes</span>
+                </div>
+                <div class="info-item">
+                    <label>Nipple discharge or inversion:</label>
+                    <span>No</span>
+                </div>
+                <div class="info-item">
+                    <label>Skin changes on the breast:</label>
+                    <span>No</span>
+                </div>
+                <div class="info-item">
+                    <label>Breast pain:</label>
+                    <span>Occasional</span>
+                </div>
+            </div>
+
+            <div class="lifestyle-environmental">
+                <h3>Lifestyle and Environmental Factors</h3>
+                <div class="info-item">
+                    <label>Dietary habits:</label>
+                    <span>Balanced diet</span>
+                </div>
+                <div class="info-item">
+                    <label>Exposure to radiation or carcinogenic chemicals:</label>
+                    <span>None known</span>
+                </div>
+            </div>
+
+            <div class="additional-info">
+                <h3>Additional Information</h3>
+                <div class="info-item">
+                    <label>Other risk factors:</label>
+                    <span>None</span>
+                </div>
+                <div class="info-item">
+                    <label>Comments or additional information:</label>
+                    <span>Regular check-ups</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <section class="assessment-results-section">
+        <div class="container">
+            <div class="section-header">
+                <h2>Assessment Results</h2>
+            </div>
+            
+            <!-- Risk Level Indicator -->
+            <div class="risk-level-indicator">
+                <span class="medium-risk">Medium Risk</span>
+            </div>
+
+            <!-- Risk Score -->
+            <div class="risk-score">
+                <p>Risk Score: 65%</p>
+            </div>
+
+            <!-- Explanation -->
+            <div class="explanation">
+                <p>Your risk level is categorized as Medium. This means that based on the data provided, you have a moderate risk of developing breast cancer. It is recommended to have regular screenings and follow a healthy lifestyle to manage and possibly reduce your risk.</p>
+            </div>
+
+            <!-- Graphs and Charts -->
+            <div class="graphs-charts">
+                <div class="chart">
+                    <h5>Age vs Risk Score</h5>
+                    <img src="age_vs_risk_score.png" alt="Age vs Risk Score" style="width:100%; border-radius: 8px;">
+                </div>
+                <div class="chart">
+                    <h5>Family History Impact</h5>
+                    <img src="family_history_impact.png" alt="Family History Impact" style="width:100%; border-radius: 8px;">
+                </div>
+                <div class="chart">
+                    <h5>Lifestyle Factors Influence</h5>
+                    <img src="lifestyle_factors_influence.png" alt="Lifestyle Factors Influence" style="width:100%; border-radius: 8px;">
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock content %}
+    
+
+
+{% block scripts %}
+    <script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // Example check - in real scenario, replace with actual authentication check
+        const userAuthenticated = true;  // This should be set based on actual user authentication logic
+
+        if (!userAuthenticated) {
+            window.location.href = "/login";  // Redirect to login if not authenticated
+        }
+    });
+</script>
+
+{% endblock scripts %}
+    

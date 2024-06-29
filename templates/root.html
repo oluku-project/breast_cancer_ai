@@ -1,0 +1,40 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+      {% include 'includes/root-header.html' %}
+        {% block headers %}
+          
+        {% endblock headers %}
+    </head>
+  {% with url_name=request.resolver_match.url_name urls='signup,login,forgotPassword' %}
+    <body class=
+      "hold-transition theme-primary
+      {% if url_name in urls %}
+        bg-img
+      {% else %}
+        light-skin sidebar-mini fixed sidebar-collapse
+      {% endif %}
+      " {% if url_name in urls %}
+          style="background-image: url('{% static 'images/auth-bg/bg-16.jpg' %}')"
+        {% endif %}
+    >
+
+      {% block body %}
+      
+      {% endblock body %}
+
+      {% include 'includes/root-script.html' %}
+
+      {% block script %}
+      
+      {% endblock script %}
+
+      {% block scripts %}
+      
+      {% endblock scripts %}
+
+    </body>
+  {% endwith %}
+    
+</html>

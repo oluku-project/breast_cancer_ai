@@ -1,0 +1,60 @@
+{% extends 'root.html' %} 
+{% load static %} 
+{% block body %}
+
+  <div class="wrapper">
+    <div id="loader"></div>
+
+    <!-- header -->
+    {% include 'includes/nav-bar.html' %}
+
+    <!-- sidebar-->
+    {% include 'includes/sidebar.html' %}
+
+    <!-- Content Wrapper. Contains page content -->
+
+    <div class="content-wrapper">
+      <div class="container-full">
+        <!-- Main content -->
+        {% block content %}
+          
+        {% endblock content %}
+          
+        <!-- /.content -->
+      </div>
+    </div>
+    <!-- /.content-wrapper -->
+
+    <!-- footer-->
+    {% include 'includes/footer.html' %}
+
+    <!-- Side panel -->
+
+    <!-- quick_user_toggle -->
+    {% include 'quick_user_toggle.html' %}
+    <!-- /quick_user_toggle -->
+
+    <!-- Control Sidebar -->
+    {% include 'Control Sidebar.html' %}
+    <!-- /.control-sidebar -->
+
+    <!-- Add the sidebar's background. This div must be placed immediately after the control sidebar -->
+    <div class="control-sidebar-bg.html"></div>
+  </div>
+  <!-- ./wrapper -->
+
+  <!-- chat-box -->
+  <div class="chat-box.html"></div>
+
+  <!-- Page Content overlay -->
+
+  
+  {% endblock body %}
+
+  
+  {% block script %}
+    <script src="{% static 'js/template.js' %}"></script>
+    <script src="{% static 'assets/vendor_components/apexcharts-bundle/dist/apexcharts.js' %}"></script>
+    <script src="{% static 'js/pages/dashboard.js' %}"></script>
+  {% endblock script %}
+  

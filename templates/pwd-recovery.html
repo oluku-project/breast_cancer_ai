@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block headers %}
+<style>
+    .hero-section {
+        background-image: url("https://images.unsplash.com/photo-1517649763962-0c623066013b");
+        background-size: cover;
+        background-position: center;
+        color: #fff;
+        text-align: center;
+        padding: 5rem 0;
+        position: relative;
+    }
+
+    .hero-section::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+    }
+
+    .hero-section .container {
+        position: relative;
+        z-index: 2;
+    }
+
+    .hero-section h1 {
+        font-size: 3.5rem;
+        font-weight: bold;
+    }
+
+    .hero-section p {
+        font-size: 1.5rem;
+    }
+
+    .recovery-form {
+        background: #fff;
+        padding: 2rem;
+        border-radius: 0.5rem;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        margin-top: -3rem;
+    }
+
+    .form-control:focus {
+        border-color: #007bff;
+        box-shadow: none;
+    }
+
+    .btn-primary {
+        background-color: #007bff;
+        border-color: #007bff;
+    }
+
+    .btn-primary:hover {
+        background-color: #0056b3;
+        border-color: #0056b3;
+    }
+
+    .footer {
+        background: #f8f9fa;
+        padding: 1rem 0;
+    }
+
+    .footer a {
+        color: #007bff;
+        text-decoration: none;
+    }
+
+    .footer a:hover {
+        text-decoration: underline;
+    }
+</style>
+{% endblock headers %}
+
+{% block content %}
+<section class="hero-section">
+    <div class="container">
+        <h1>Recover Your Password</h1>
+        <p>Enter your email to reset your password and regain access to your account.</p>
+    </div>
+</section>
+
+<section class="container">
+    <div class="recovery-form mt-5">
+        <h2 class="text-center mb-4">Password Recovery</h2>
+        <p class="text-center">We'll send you an email with instructions to reset your password.</p>
+        <form>
+            <div class="mb-3">
+                <label for="email" class="form-label">Email</label>
+                <input type="email" class="form-control" id="email" placeholder="Enter your email" required>
+            </div>
+            <button type="submit" class="btn btn-primary w-100">Send Recovery Email</button>
+        </form>
+    </div>
+</section>
+
+<section class="footer mt-5">
+    <div class="container text-center">
+        <p>&copy; 2024 Breast Cancer Risk Assessment Tool. All rights reserved.</p>
+        <p><a href="#">Privacy Policy</a> | <a href="#">Terms of Service</a></p>
+    </div>
+</section>
+{% endblock content %}
