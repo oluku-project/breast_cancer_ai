@@ -1,0 +1,173 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block headers %}
+<style>
+    .hero-section {
+        background-image: url("{% static 'images/terms-img-1.jpg' %}");
+        background-size: cover;
+        background-position: center;
+        color: #fff;
+        text-align: center;
+        padding: 5rem 0;
+        position: relative;
+    }
+
+    .hero-section::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+    }
+
+    .hero-section .container {
+        position: relative;
+        z-index: 2;
+    }
+
+    .hero-section h1 {
+        font-size: 3.5rem;
+        font-weight: bold;
+    }
+
+    .hero-section p {
+        font-size: 1.5rem;
+    }
+
+    .content-section {
+        padding: 2rem 0;
+    }
+
+    .content-section h2 {
+        margin-top: 2rem;
+        font-size: 2rem;
+        text-align: center;
+    }
+
+    .content-section p {
+        font-size: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .icon {
+        color: #007bff;
+        margin-right: 0.5rem;
+    }
+
+    .highlight {
+        background: #f8f9fa;
+        padding: 1rem;
+        border-radius: 0.25rem;
+    }
+</style>
+{% endblock headers %}
+
+{% block content %}
+<section class="hero-section">
+    <div class="container">
+        <h1>Terms of Service</h1>
+        <p>Understand the terms and conditions of using our breast cancer risk assessment tool.</p>
+    </div>
+</section>
+
+<section class="content-section">
+    <div class="container">
+        <h2>Introduction</h2>
+        <p class="highlight">
+            <i class="fa fa-info-circle icon"></i> The purpose of these Terms of Service is to outline the legal agreement between you, the user, and our website. By using our services, you agree to be bound by these terms.
+        </p>
+
+        <h2>Acceptance of Terms</h2>
+        <p>
+            <i class="fa fa-check-circle icon"></i> <strong>User Agreement:</strong> By accessing and using our website, you accept and agree to be bound by the terms and provision of this agreement.
+        </p>
+        <p>
+            <i class="fa fa-edit icon"></i> <strong>Modification of Terms:</strong> We reserve the right to modify these terms at any time. We will notify users of any changes by posting the new terms on this page.
+        </p>
+
+        <h2>Description of Services</h2>
+        <p>
+            <i class="fa fa-briefcase icon"></i> <strong>Overview of Services:</strong> Our site provides a breast cancer risk assessment tool, data visualizations, and other resources to help users understand and manage their health risks.
+        </p>
+        <p>
+            <i class="fa fa-exclamation-circle icon"></i> <strong>Service Availability:</strong> All services are provided on an "as is" and "as available" basis. We reserve the right to change, suspend, or discontinue any aspect of the service at any time without notice.
+        </p>
+
+        <h2>User Responsibilities</h2>
+        <p>
+            <i class="fa fa-user icon"></i> <strong>Account Registration:</strong> Users may be required to create an account to access certain features. You must provide accurate, complete, and updated registration information.
+        </p>
+        <p>
+            <i class="fa fa-ban icon"></i> <strong>Prohibited Conduct:</strong> Users must not engage in unauthorized access, misuse of data, illegal activities, or any conduct that disrupts the site's functionality.
+        </p>
+        <p>
+            <i class="fa fa-pencil-alt icon"></i> <strong>User Content:</strong> If users contribute content, they retain ownership but grant us a license to use it. Users are responsible for the legality and appropriateness of their content.
+        </p>
+
+        <h2>Privacy and Data Protection</h2>
+        <p>
+            <i class="fa fa-lock icon"></i> Our Privacy Policy explains how we collect, use, and protect your personal data. Please review our <a href="#">Privacy Policy</a> for more details.
+        </p>
+
+        <h2>Intellectual Property</h2>
+        <p>
+            <i class="fa fa-copyright icon"></i> <strong>Ownership of Content:</strong> All content on the site, including text, graphics, and software, is owned by us or our licensors.
+        </p>
+        <p>
+            <i class="fa fa-file-alt icon"></i> <strong>License to Use:</strong> Users are granted a limited, non-exclusive license to access and use the site for personal, non-commercial purposes.
+        </p>
+        <p>
+            <i class="fa fa-ban icon"></i> <strong>Prohibited Uses:</strong> Users must not copy, distribute, or modify the site's content without our permission.
+        </p>
+
+        <h2>Disclaimers and Limitation of Liability</h2>
+        <p>
+            <i class="fa fa-exclamation-triangle icon"></i> <strong>No Warranties:</strong> The site is provided "as is" without any warranties, express or implied.
+        </p>
+        <p>
+            <i class="fa fa-gavel icon"></i> <strong>Limitation of Liability:</strong> We are not liable for any damages arising from the use of the site, including direct, indirect, incidental, and consequential damages.
+        </p>
+
+        <h2>Indemnification</h2>
+        <p>
+            <i class="fa fa-shield-alt icon"></i> Users agree to indemnify and hold us harmless from any claims or damages arising from their use of the site.
+        </p>
+
+        <h2>Governing Law and Dispute Resolution</h2>
+        <p>
+            <i class="fa fa-balance-scale icon"></i> <strong>Governing Law:</strong> These terms are governed by the laws of Ghana.
+        </p>
+        <p>
+            <i class="fa fa-handshake icon"></i> <strong>Dispute Resolution:</strong> Any disputes arising from these terms will be resolved through arbitration in accordance with the rules of the Ghana Arbitration Centre.
+        </p>
+
+        <h2>Termination of Services</h2>
+        <p>
+            <i class="fa fa-times-circle icon"></i> <strong>Termination Rights:</strong> We reserve the right to terminate or suspend user accounts for violations of these terms.
+        </p>
+        <p>
+            <i class="fa fa-trash icon"></i> <strong>User Obligations Upon Termination:</strong> Users must cease use of the site and delete any downloaded content upon termination.
+        </p>
+
+        <h2>Miscellaneous Provisions</h2>
+        <p>
+            <i class="fa fa-puzzle-piece icon"></i> <strong>Severability:</strong> If any provision of these terms is found to be invalid, the remaining provisions will continue in effect.
+        </p>
+        <p>
+            <i class="fa fa-file-contract icon"></i> <strong>Entire Agreement:</strong> These terms constitute the entire agreement between you and us regarding the use of our services.
+        </p>
+        <p>
+            <i class="fa fa-ban icon"></i> <strong>Waiver:</strong> Any failure to enforce a provision of these terms does not constitute a waiver of that provision.
+        </p>
+
+        <h2>Contact Information</h2>
+        <p>
+            <i class="fa fa-envelope icon"></i> For support inquiries, please contact us at support@example.com.
+        </p>
+    </div>
+</section>
+{% endblock content %}

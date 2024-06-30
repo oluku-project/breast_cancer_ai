@@ -1,34 +1,43 @@
 from pathlib import Path
+import environ
 
+env = environ.Env(
+    # set casting, default value
+    DEBUG=(bool, True),
+)
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# reading .env file
+env.read_env(str(BASE_DIR / "envs/.env"))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-w+468cvur34wr0p^-9b^)o35m_b7*zjwr%_j(3vj9@8fi@vg&q"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+SECRET_KEY = env("SECRET_KEY")
+
+DEBUG = env("DEBUG")
 
 ALLOWED_HOSTS = []
 
 
 # Application definition
+DEFAULT_APPS=[
 
-INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    # Local apps
+]
+LOCAL_APPS = [
     "accounts",
     "patients",
 ]
+INSTALLED_APPS = DEFAULT_APPS + LOCAL_APPS
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -40,7 +49,6 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-LOGIN_URL = "auth/login"
 SESSION_EXPIRE_SECONDS = 3600
 SESSION_SAVE_EVERY_REQUEST = True
 SESSION_EXPIRE_AFTER_LAST_ACTIVITY = True
@@ -126,17 +134,21 @@ SITE_ID = 1
 
 
 # SMTP configuration
-# EMAIL_BACKEND = "django.core.mail.backend.console.EmailBackend"
-EMAIL_HOST = "smtp.gmail.com"
-EMAIL_PORT = 587
-# EMAIL_HOST_USER = "olukucoder@gmail.com"
-# EMAIL_HOST_PASSWORD = "pjno ninp lwjl ahgm"
-# EMAIL_HOST_USER = "olukotha@gmail.com"
-# EMAIL_HOST_PASSWORD = "ajdaubormdglzfik"
-EMAIL_HOST_USER = "olukotha@gmail.com"
-EMAIL_HOST_PASSWORD = "mgde uglx cdza iezz"
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+
 EMAIL_USE_TLS = True
 
+EMAIL_HOST = env("EMAIL_HOST")
+EMAIL_PORT = env("EMAIL_PORT")
+EMAIL_HOST_USER = env("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD")
+
+
+# LOGIN_REDIRECT_URL = "account:profile_complete"
+LOGOUT_REDIRECT_URL = "auth:login"
+
+# LOGIN_URL = "account:profile_complete"
+LOGOUT_URL = "auth:logout"
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
