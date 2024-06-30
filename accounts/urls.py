@@ -8,6 +8,7 @@ from .views import (
     passwordresetcompleteview,
     privacyview,
     termsview,
+    userdashboardview,
 )
 
 app_name = "auth"
@@ -28,4 +29,5 @@ urlpatterns = [
     ),
     path("privacy/", privacyview, name="privacy"),
     path("terms/", termsview, name="terms"),
+    path("user/dashboard", userdashboardview, name="user_dashboard"),
 ]

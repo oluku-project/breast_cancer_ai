@@ -82,7 +82,7 @@ activateaccountview = ActivateAccountView.as_view()
 class LoginView(FormView):
     template_name = "accounts/login.html"
     form_class = LoginForm
-    success_url = reverse_lazy("index")
+    success_url = reverse_lazy("auth:user_dashboard")
 
     def form_valid(self, form):
         username = form.cleaned_data.get("username")
@@ -194,3 +194,13 @@ class TermsView(TemplateView):
 
 
 termsview = TermsView.as_view()
+class UserDashboardView(TemplateView):
+    template_name = "accounts/user-dashboard.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["title_root"] = _("User Dashboard")
+        return context
+
+
+userdashboardview = UserDashboardView.as_view()
