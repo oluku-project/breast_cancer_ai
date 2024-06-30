@@ -184,3 +184,13 @@ class PrivacyView(TemplateView):
 
 
 privacyview = PrivacyView.as_view()
+class TermsView(TemplateView):
+    template_name = "accounts/terms.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["title_root"] = _("Terms")
+        return context
+
+
+termsview = TermsView.as_view()

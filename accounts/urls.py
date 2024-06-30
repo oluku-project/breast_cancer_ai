@@ -7,6 +7,7 @@ from .views import (
     passwordresetconfirmview,
     passwordresetcompleteview,
     privacyview,
+    termsview,
 )
 
 app_name = "auth"
@@ -26,4 +27,5 @@ urlpatterns = [
         name="password_reset_complete",
     ),
     path("privacy/", privacyview, name="privacy"),
+    path("terms/", termsview, name="terms"),
 ]
