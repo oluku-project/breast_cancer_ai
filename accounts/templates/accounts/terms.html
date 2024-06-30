@@ -1,0 +1,354 @@
+{% extends 'base.html' %} {% load static %} {% block headers %}
+<style>
+  .hero-section {
+    background-image: url("{% static 'images/terms-img-1.jpg' %}");
+    background-size: cover;
+    background-position: center;
+    color: #fff;
+    text-align: center;
+    padding: 5rem 0;
+    position: relative;
+  }
+
+  .hero-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+  }
+
+  .hero-section .container {
+    position: relative;
+    z-index: 2;
+  }
+
+  .hero-section h1 {
+    font-size: 3.5rem;
+    font-weight: bold;
+  }
+
+  .hero-section p {
+    font-size: 1.5rem;
+  }
+
+ 
+</style>
+{% endblock headers %} {% block content %}
+<div class="content">
+  <section class="hero-section">
+    <div class="container">
+      <h1>Terms of Service</h1>
+      <p>
+        Understand the terms and conditions of using our breast cancer risk
+        assessment tool.
+      </p>
+    </div>
+  </section>
+
+  <div class="row bg-transparent">
+    <div class="col-12">
+      <!-- Introduction -->
+      <div class="row">
+        <div class="my-15">
+          <h3 class="text-center display-5">Introduction</h3>
+        </div>
+        <div class="col-12">
+          <div class="box">
+            <!-- <i class="ti-info fa-2x text-primary mb-3"></i> -->
+            <div class="box-body">
+              <div class="d-flex align-items-center">
+                <div>
+                  <i class="ti-info-alt" style="font-size: 40px"></i>
+                </div>
+                <p class="mx-3 text-fade">
+                  The purpose of these Terms of Service is to outline the legal
+                  agreement between you, the user, and our website. By using our
+                  services, you agree to be bound by these terms.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Acceptance of Terms -->
+      <div class="row">
+        <h3>Acceptance of Terms</h3>
+        <div class="col-lg-6">
+          <a class="box box-body box-hover-shadow mb-3" href="#">
+            <div class="d-flex align-items-center">
+              <div>
+                <i class="fa fa-check-circle" style="font-size: 40px"></i>
+              </div>
+              <div class="mx-3">
+                <h6 class="mt-3">User Agreement</h6>
+                <p class="text-fade">
+                  By accessing and using our website, you accept and agree to be
+                  bound by the terms and provision of this agreement.
+                </p>
+              </div>
+            </div>
+          </a>
+        </div>
+        <div class="col-lg-6">
+          <a class="box box-body box-hover-shadow mb-3" href="#">
+            <div class="d-flex align-items-center">
+              <div>
+                <i class="fa fa-edit" style="font-size: 40px"></i>
+              </div>
+              <div class="mx-3">
+                <h6 class="mt-3">Modification of Terms</h6>
+                <p class="text-fade">
+                  We reserve the right to modify these terms at any time. We
+                  will notify users of any changes by posting the new terms on
+                  this page.
+                </p>
+              </div>
+            </div>
+          </a>
+        </div>
+      </div>
+      <!-- Description of Services -->
+      <div class="row">
+        <h3>Description of Services</h3>
+        <div class="col-lg-6">
+          <a class="box box-body box-hover-shadow mb-3" href="#">
+            <div class="d-flex align-items-center">
+              <div>
+                <i class="fa fa-briefcase" style="font-size: 40px"></i>
+              </div>
+              <div class="mx-3">
+                <h6 class="mt-3">Overview of Services</h6>
+                <p class="text-fade">
+                  Our site provides a breast cancer risk assessment tool, data
+                  visualizations, ML for prediction and other resources to help
+                  users understand and manage their health risks.
+                </p>
+              </div>
+            </div>
+          </a>
+        </div>
+        <div class="col-lg-6">
+          <a class="box box-body box-hover-shadow mb-3" href="#">
+            <div class="d-flex align-items-center">
+              <div>
+                <i class="fa fa-exclamation-circle" style="font-size: 40px"></i>
+              </div>
+              <div class="mx-3">
+                <h6 class="mt-3">Service Availability</h6>
+                <p class="text-fade">
+                  All services are provided on an "as is" and "as available"
+                  basis. We reserve the right to change, suspend, or discontinue
+                  any aspect of the service at any time without notice.
+                </p>
+              </div>
+            </div>
+          </a>
+        </div>
+      </div>
+      <!-- User Responsibilities -->
+      <div class="row">
+        <h3>User Responsibilities</h3>
+        <div class="col-lg-4">
+          <a class="box box-body box-hover-shadow mb-3" href="#">
+            <div class="d-flex align-items-center">
+              <div>
+                <i class="ti-user" style="font-size: 40px"></i>
+              </div>
+              <div class="mx-3">
+                <h6 class="mt-3">Account Registration</h6>
+                <p class="text-fade">
+                  Users may be required to create an account to access certain
+                  features. You must provide accurate, complete, and updated
+                  registration information.
+                </p>
+              </div>
+            </div>
+          </a>
+        </div>
+        <div class="col-lg-4">
+          <a class="box box-body box-hover-shadow mb-3" href="#">
+            <div class="d-flex align-items-center">
+              <div>
+                <i class="ti-na" style="font-size: 40px"></i>
+              </div>
+              <div class="mx-3">
+                <h6 class="mt-3">Prohibited Conduc</h6>
+                <p class="text-fade">
+                  Users must not engage in unauthorized access, misuse of data,
+                  illegal activities, or any conduct that disrupts the site's
+                  functionality.
+                </p>
+              </div>
+            </div>
+          </a>
+        </div>
+        <div class="col-lg-4">
+          <a class="box box-body box-hover-shadow mb-3" href="#">
+            <div class="d-flex align-items-center">
+              <div>
+                <i class="ti-pencil-alt" style="font-size: 40px"></i>
+              </div>
+              <div class="mx-3">
+                <h6 class="mt-3">User Content</h6>
+                <p class="text-fade">
+                  If users contribute content, they retain ownership but grant
+                  us a license to use it. Users are responsible for the legality
+                  and appropriateness of their content.
+                </p>
+              </div>
+            </div>
+          </a>
+        </div>
+      </div>
+      <!-- Privacy and Data Protection -->
+      <div class="row">
+        <div class="my-15">
+          <h3 class="text-center display-5">Privacy and Data Protection</h3>
+        </div>
+        <div class="col-12">
+          <div class="box">
+            <div class="box-body">
+              <div class="d-flex align-items-center">
+                <div>
+                  <i class="ti-lock" style="font-size: 40px"></i>
+                </div>
+                <p class="mx-3 text-fade">
+                  Our Privacy Policy explains how we collect, use, and protect
+                  your personal data. Please review our
+                  <a href="{% url 'auth:privacy' %}" target="_blank"
+                    >Privacy Policy</a
+                  >
+                  for more details.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <section>
+      <div class="box-body">
+        <div class="col-lg-9">
+          <!-- Intellectual Property -->
+          <h3>Intellectual Property</h3>
+          <p class="text-light">
+            <i class="fa fa-copyright"></i>
+            <strong>Ownership of Content:</strong> All content on the site,
+            including text, graphics, and software, is owned by us or our
+            licensors.
+          </p>
+          <p class="text-light">
+            <i class="ti-file"></i> <strong>License to Use:</strong> Users are
+            granted a limited, non-exclusive license to access and use the site
+            for personal, non-commercial purposes.
+          </p>
+          <p class="text-light">
+            <i class="ti-na"></i>
+            <strong>Prohibited Uses:</strong> Users must not copy, distribute,
+            or modify the site's content without our permission.
+          </p>
+          <br />
+          <!-- Disclaimers and Limitation of Liability -->
+          <h3>Disclaimers and Limitation of Liability</h3>
+          <div class="row">
+            <div class="col-lg-12 text-fade">
+              <p>
+                <i class="fa fa-exclamation-triangle"></i>
+                <strong>No Warranties</strong> :
+                <span class="text-first">
+                  The site is provided "as is" without any warranties, express
+                  or implied.
+                </span>
+              </p>
+              <p>
+                <i class="fa fa-gavel"></i>
+                <strong>Limitation of Liability</strong> :
+                <span class="text-left">
+                  We are not liable for any damages arising from the use of the
+                  site, including direct, indirect, incidental, and
+                  consequential damages.
+                </span>
+              </p>
+              <p>
+                <i class="ti-shield"></i>
+                <strong>Indemnification</strong> :
+                <span class="text-left">
+                  Users agree to indemnify and hold us harmless from any claims
+                  or damages arising from their use of the site.
+                </span>
+              </p>
+              <br />
+              <h3>Governing Law and Dispute Resolution</h3>
+              <p>
+                <i class="fa fa-balance-scale"></i>
+                <strong>Governing Law</strong> :
+                <span class="text-left">
+                  These terms are governed by the laws of Ghana.
+                </span>
+              </p>
+              <p>
+                <i class="fa fa-handshake-o"></i>
+                <strong>Dispute Resolution</strong> :
+                <span class="text-left">
+                  Any disputes arising from these terms will be resolved through
+                  arbitration in accordance with the rules of the Ghana
+                  Arbitration Centre.
+                </span>
+              </p>
+              <br>
+              <h3>Termination of Services</h3>
+              <p>
+                <i class="ti-timer"></i>
+                <strong>Termination Rights</strong> :
+                <span class="text-left">
+                  We reserve the right to terminate or suspend user accounts for violations of these terms.
+                </span>
+              </p>
+              <p>
+                <i class="ti-trash"></i>
+                <strong>User Obligations Upon Termination</strong> :
+                <span class="text-left">
+                  Users must cease use of the site and delete any downloaded content upon termination.
+                </span>
+              </p>
+              <p>
+                <i class="fa fa-puzzle-piece"></i>
+                <strong>Severability</strong> :
+                <span class="text-left">
+                   If any provision of these terms is found to be invalid, the remaining provisions will continue in effect.
+                </span>
+              </p>
+              <p>
+                <i class="ti-files"></i>
+                <strong>Entire Agreement</strong> :
+                <span class="text-left">
+                   These terms constitute the entire agreement between you and us regarding the use of our services.
+                </span>
+              </p>
+              <p>
+                <i class="ti-na"></i>
+                <strong>Waiver</strong> :
+                <span class="text-left">
+                   Any failure to enforce a provision of these terms does not constitute a waiver of that provision.
+                </span>
+              </p>
+            </div>
+          </div>
+          <br />
+          <h3>Contact Information</h3>
+          <p class="text-light">
+           <i class="fa fa-envelope"></i> 
+           For support inquiries, please contact us at info.breastcancerai@gmail.com.
+          </p>
+          <br />
+        </div>
+      </div>
+    </section>
+  </div>
+</div>
+
+{% endblock content %}
