@@ -40,12 +40,15 @@ class UserRegistrationView(MailUtils, CreateView):
         user.groups.add(group)
 
         # Send activation email
-        self.composeEmail(form, user)
-
-        messages.success(
-            self.request,
-            _("Please confirm your email address to complete the registration."),
+        # Send activation email
+        mail_temp = "accounts/account_verification_email.html"
+        mail_subject = "Activate Your Account"
+        self.compose_email(
+            self.request, user, mail_subject=mail_subject, mail_temp=mail_temp
         )
+
+        self.request.session["registration_success"] = True
+
         return redirect(self.success_url)
 
     def form_invalid(self, form):
