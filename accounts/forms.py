@@ -27,6 +27,8 @@ class LoginForm(AuthenticationForm):
 
 
 class CustomUserCreationForm(UserCreationForm):
+    agree = forms.BooleanField(required=True, initial=False)
+
     class Meta:
         model = Account
         fields = (
@@ -37,6 +39,7 @@ class CustomUserCreationForm(UserCreationForm):
             "gender",
             "date_of_birth",
             "country",
+            "agree",
         )
 
 
@@ -76,6 +79,7 @@ class RegistrationForm(forms.ModelForm):
             }
         )
     )
+    agree = forms.BooleanField(required=True, initial=False)
 
     class Meta:
         model = Account
@@ -86,6 +90,7 @@ class RegistrationForm(forms.ModelForm):
             "gender",
             "email",
             "password",
+            "agree",
         ]
         widgets = {
             "first_name": forms.TextInput(
@@ -116,7 +121,7 @@ class RegistrationForm(forms.ModelForm):
     def clean_email(self):
         email = self.cleaned_data.get("email")
         if Account.objects.filter(email=email).exists():
-            raise ValidationError("This email is already registered.")
+            raise forms.ValidationError("This email is already registered.")
         return email
 
     def clean(self):

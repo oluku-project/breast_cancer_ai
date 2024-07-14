@@ -19,6 +19,7 @@ class AccountAdmin(UserAdmin):
         "date_joined",
         "date_of_birth",
         "is_active",
+        "agree",
     )
     list_filter = (
         "email",
@@ -28,6 +29,7 @@ class AccountAdmin(UserAdmin):
         "gender",
         "is_staff",
         "is_active",
+        "agree",
     )
     fieldsets = (
         (
@@ -41,6 +43,7 @@ class AccountAdmin(UserAdmin):
                     "password",
                     "date_of_birth",
                     "country",
+                    "agree",
                 )
             },
         ),
@@ -71,6 +74,7 @@ class AccountAdmin(UserAdmin):
                     "password2",
                     "date_of_birth",
                     "country",
+                    "agree",
                     "is_staff",
                     "is_active",
                     "is_admin",
