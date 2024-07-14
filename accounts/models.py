@@ -88,7 +88,7 @@ class Account(AbstractBaseUser):
     is_staff = models.BooleanField(db_default=False)
     is_active = models.BooleanField(db_default=False)
     is_superadmin = models.BooleanField(db_default=False)
-    agree = models.BooleanField(db_default=False)
+    agree = models.BooleanField()
 
     usid = models.CharField(max_length=10, unique=True, editable=False)
     date_of_birth = models.DateField(verbose_name="Birthday", null=True)
