@@ -21,7 +21,6 @@ from django.contrib.auth.tokens import default_token_generator
 
 
 class UserRegistrationView(MailUtils, CreateView):
-    model = Account
     form_class = RegistrationForm
     template_name = "accounts/register.html"
     success_url = reverse_lazy("auth:login")
@@ -30,6 +29,8 @@ class UserRegistrationView(MailUtils, CreateView):
         user = form.save(commit=False)
         user.is_active = False
         password = form.cleaned_data.get("password")
+        email = form.cleaned_data.get("email")
+        user.username = str(email.split("@")[0])
         user.password = make_password(password)
         user.save()
 
@@ -39,7 +40,6 @@ class UserRegistrationView(MailUtils, CreateView):
 
         user.groups.add(group)
 
-        # Send activation email
         # Send activation email
         mail_temp = "accounts/account_verification_email.html"
         mail_subject = "Activate Your Account"
@@ -52,6 +52,7 @@ class UserRegistrationView(MailUtils, CreateView):
         return redirect(self.success_url)
 
     def form_invalid(self, form):
+
         for field, errors in form.errors.items():
             for error in errors:
                 messages.error(self.request, _(f"{field}: {error}"))
@@ -192,6 +193,8 @@ class PrivacyView(TemplateView):
 
 
 privacyview = PrivacyView.as_view()
+
+
 class TermsView(TemplateView):
     template_name = "accounts/terms.html"
 
@@ -202,6 +205,8 @@ class TermsView(TemplateView):
 
 
 termsview = TermsView.as_view()
+
+
 class UserDashboardView(TemplateView):
     template_name = "accounts/user-dashboard.html"
 
