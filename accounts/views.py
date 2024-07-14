@@ -109,6 +109,11 @@ class LoginView(FormView):
         messages.error(self.request, _("Invalid form submission."))
         return self.render_to_response(self.get_context_data(form=form))
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["title_root"] = "Log In"
+        return context
+
 
 loginview = LoginView.as_view()
 
@@ -127,13 +132,17 @@ class ForgotPasswordView(MailUtils, View):
     template_name = "accounts/forgotPassword.html"
 
     def get(self, request):
-        return render(request, self.template_name)
+        return render(request, self.template_name, {"title_root": "Forgot Password"})
 
     def post(self, request):
         email = request.POST.get("email")
         if Account.objects.filter(email=email).exists():
             user = Account.objects.get(email__exact=email)
-            self.compose_email(request, user)
+            mail_temp = "accounts/reset_password_email.html"
+            mail_subject = "Reset Your Password"
+            self.compose_email(
+                self.request, user, mail_subject=mail_subject, mail_temp=mail_temp
+            )
             messages.success(
                 request, _("Password reset email has been sent to your email address.")
             )
@@ -166,6 +175,11 @@ class PasswordResetConfirmView(AuthPasswordResetConfirmView):
             for error in errors:
                 messages.error(self.request, f"{field}: {error}")
         return super().form_invalid(form)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["title_root"] = _("Reset Password")
+        return context
 
 
 passwordresetconfirmview = PasswordResetConfirmView.as_view()
