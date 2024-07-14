@@ -7,7 +7,7 @@
           
         {% endblock headers %}
     </head>
-  {% with url_name=request.resolver_match.url_name urls='signup,login,forgotPassword' %}
+  {% with url_name=request.resolver_match.url_name urls='signup,login,forgotPassword,password_reset_confirm,password_reset_complete' %}
     <body class=
       "hold-transition theme-primary
       {% if url_name in urls %}
