@@ -57,6 +57,11 @@ class UserRegistrationView(MailUtils, CreateView):
                 messages.error(self.request, _(f"{field}: {error}"))
         return super().form_invalid(form)
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["title_root"] = _("Sign Up")
+        return context
+
 
 userregistrationview = UserRegistrationView.as_view()
 
