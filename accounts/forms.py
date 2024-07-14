@@ -63,33 +63,39 @@ class CustomUserChangeForm(UserChangeForm):
 
 
 class RegistrationForm(forms.ModelForm):
+
+    error_messages = {
+        "password_mismatch": _("The two password fields didn’t match."),
+    }
     password = forms.CharField(
         widget=forms.PasswordInput(
             attrs={
                 "placeholder": "Enter password",
                 "class": "form-control ps-15 bg-transparent",
             }
-        )
+        ),
+        strip=False,
+        help_text=password_validation.password_validators_help_text_html(),
     )
     confirm_password = forms.CharField(
+        strip=False,
         widget=forms.PasswordInput(
             attrs={
                 "placeholder": "Confirm password",
                 "class": "form-control ps-15 bg-transparent",
             }
-        )
+        ),
     )
-    agree = forms.BooleanField(required=True, initial=False)
 
     class Meta:
         model = Account
         fields = [
             "first_name",
             "last_name",
-            "country",
             "gender",
             "email",
             "password",
+            "country",
             "agree",
         ]
         widgets = {
@@ -118,19 +124,28 @@ class RegistrationForm(forms.ModelForm):
             ),
         }
 
+    def clean_agree(self):
+        agree = self.cleaned_data.get("agree")
+        if not agree:
+            raise ValidationError("You must agree to the terms and privacy.")
+        return agree
+
     def clean_email(self):
         email = self.cleaned_data.get("email")
         if Account.objects.filter(email=email).exists():
-            raise forms.ValidationError("This email is already registered.")
+            raise ValidationError("This email is already registered.")
         return email
 
-    def clean(self):
-        cleaned_data = super(RegistrationForm, self).clean()
-        password = cleaned_data.get("password")
-        confirm_password = cleaned_data.get("confirm_password")
-
-        if password != confirm_password:
-            raise forms.ValidationError("Passwords do not match")
+    def clean_confirm_password(self):
+        password = self.cleaned_data.get("password")
+        confirm_password = self.cleaned_data.get("confirm_password")
+        if password and confirm_password and password != confirm_password:
+            raise ValidationError(
+                self.error_messages["password_mismatch"],
+                code="password_mismatch",
+            )
+        password_validation.validate_password(confirm_password)
+        return confirm_password
 
 
 class ForgotPasswordForm(forms.Form):
@@ -148,7 +163,8 @@ class SetPasswordForm(AuthSetPasswordForm):
     """
     A form that lets a user set their password without entering the old
     password
-    """  
+    """
+
     new_password1 = forms.CharField(
         widget=forms.PasswordInput(
             attrs={
