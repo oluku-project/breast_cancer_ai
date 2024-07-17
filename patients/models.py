@@ -1,10 +1,9 @@
 from django.db import models
-from django.contrib.auth.models import User
 from django.db.models.functions import Now
 
 
 class QuestionnaireResponse(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey("accounts.account", on_delete=models.CASCADE)
     submission_date = models.DateTimeField(db_default=Now())
     updated_date = models.DateTimeField(db_default=Now(), auto_now=True)
 
@@ -17,9 +16,6 @@ class Response(models.Model):
         QuestionnaireResponse, related_name="responses", on_delete=models.CASCADE
     )
     question_key = models.CharField(max_length=50)
-    answer = models.CharField(
-        max_length=3, choices=[("Yes", "Yes"), ("No", "No")], default="No"
-    )
 
     def __str__(self):
-        return f"{self.question_key}: {self.answer}"
+        return f"{self.question_key}: {self.questionnaire_response}"
