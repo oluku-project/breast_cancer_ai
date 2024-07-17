@@ -116,3 +116,6 @@ debug.log
 help/
 # Ignore debug logs
 debug.log.*
+
+#static
+static/
