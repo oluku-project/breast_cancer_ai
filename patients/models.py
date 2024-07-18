@@ -4,6 +4,7 @@ from django.db.models.functions import Now
 
 class QuestionnaireResponse(models.Model):
     user = models.ForeignKey("accounts.account", on_delete=models.CASCADE)
+    progress = models.FloatField(db_default=0)
     submission_date = models.DateTimeField(db_default=Now())
     updated_date = models.DateTimeField(db_default=Now(), auto_now=True)
 
