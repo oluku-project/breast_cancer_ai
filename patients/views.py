@@ -1,6 +1,133 @@
-from django.shortcuts import render
-
+from django.urls import reverse
 from django.shortcuts import render, redirect
+from django.db import transaction
+from patients.utils import QUESTIONS, section_headers
+from django.views.generic import DetailView, View
+from typing import List
+from django.shortcuts import get_object_or_404
+from .models import QuestionnaireResponse, Response
+
+
+class QuestionnaireView(View):
+    template_name = "patients/questionnaier.html"
+    responseID = None
+
+    def get(self, request, *args, **kwargs):
+        self.responseID = kwargs.get("pk", None)
+        return render(request, self.template_name, self.get_context())
+
+    def post(self, request, *args, **kwargs):
+        self.responseID = kwargs.get("pk", None)
+
+        # Extract form data
+        form_data = request.POST
+        progress = form_data.get("progress", 0)
+
+        # Filter out questions with "Yes" responses (where answer is "on")
+        responses = {key: value for key, value in form_data.items() if value == "on"}
+        if responses:
+            # Save responses to the database
+            response_instance, msg = self.save_responses(
+                request.user,
+                responses,
+                progress,
+            )
+            # Add a success message
+            messages.success(request, msg)
+            return redirect(reverse("summary", kwargs={"pk": response_instance.id}))
+
+        return render(request, self.template_name, self.get_context())
+
+    def get_context(self):
+        question_keys = (
+            self.get_question_keys_for_response(self.responseID)
+            if self.responseID
+            else None
+        )
+        context = {
+            "questions": QUESTIONS,
+            "section_headers": section_headers,
+            "question_keys": question_keys,
+            "title_root": "Questionnaire",
+        }
+        return context
+
+    def save_responses(self, user, responses, progress):
+        # Start a transaction to ensure atomicity
+        with transaction.atomic():
+            # Check if responseID is provided
+            if self.responseID:
+                # Try to retrieve the existing QuestionnaireResponse instance
+                response_instance = QuestionnaireResponse.objects.get(
+                    id=self.responseID
+                )
+
+                # Delete existing responses
+                response_instance.responses.all().delete()
+
+                # Update progress if it has changed
+                if response_instance.progress != progress:
+                    response_instance.progress = progress
+                    response_instance.save()
+                    msg = "Your responses have been updated and successfully submitted."
+            else:
+                # Create a new QuestionnaireResponse instance
+                response_instance = QuestionnaireResponse.objects.create(
+                    user=user, progress=progress
+                )
+                msg = "Your responses have been created and successfully submitted."
+            # Create new responses for the QuestionnaireResponse instance
+            response_objects = [
+                Response(questionnaire_response=response_instance, question_key=key)
+                for key in responses.keys()
+            ]
+            Response.objects.bulk_create(response_objects)
+
+        return response_instance, msg
+
+    def get_question_keys_for_response(self, pk) -> List[str]:
+        response_instance = get_object_or_404(QuestionnaireResponse, pk=pk)
+        # Retrieve all related Response instances and extract question_key as a list
+        question_keys = response_instance.responses.all().values_list(
+            "question_key",
+            flat=True,
+        )
+        return list(question_keys)
+
+
+questionnaier = QuestionnaireView.as_view()
+
+
+class SummaryView(DetailView):
+    model = QuestionnaireResponse
+    template_name = "patients/summary.html"
+    context_object_name = "response_instance"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        response_instance = self.object
+        grouped_questions = {header: [] for header in section_headers}
+
+        for response in response_instance.responses.all():
+            question = next(q for q in QUESTIONS if q[1] == response.question_key)
+            index = QUESTIONS.index(question) // 6
+            section_header = section_headers[index]
+            grouped_questions[section_header].append(question[0])
+
+        # Remove empty groups
+        grouped_questions = {k: v for k, v in grouped_questions.items() if v}
+        context.update(
+            {
+                "grouped_questions": grouped_questions,
+                "section_headers": section_headers,
+            }
+        )
+        return context
+
+
+summary_view = SummaryView.as_view()
+
+
 from django.http import HttpResponse
 import csv
 import json
