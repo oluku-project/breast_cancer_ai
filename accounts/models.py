@@ -85,7 +85,7 @@ class Account(AbstractBaseUser):
     email = models.EmailField(_("email address"), max_length=100, unique=True)
     gender = models.CharField(max_length=10, choices=Gender, default=Gender.MALE)
     country = models.CharField(
-        max_length=2, choices=CountryChoices.as_choices(), default="GHANA"
+        max_length=20, choices=CountryChoices.as_choices(), default="Gh"
     )
     agree = models.BooleanField(default=False)
     date_joined = models.DateTimeField(db_default=Now())
