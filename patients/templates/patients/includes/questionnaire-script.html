@@ -1,0 +1,45 @@
+{% load static %}
+<script src="{% static 'assets/vendor_components/jquery-steps-master/build/jquery.steps.js' %}"></script>
+<script>
+  $(document).ready(function () {
+    $(".tab-wizard").steps({
+        headerTag: "h6"
+        , bodyTag: "section"
+        , transitionEffect: "none"
+        , titleTemplate: '<span class="step">#index#</span> #title#'
+        , labels: {
+            finish: "Submit"
+        }
+        , onFinished: function (event, currentIndex) {
+          event.preventDefault(); 
+          $('#questionnaireForm').submit();
+        }
+    });
+    // Total possible score based on sum of all values
+    let totalPossibleScore = 0;
+    $('#questionnaireForm .form-check-input').each(function () {
+      totalPossibleScore += parseFloat($(this).data('value'));
+    });
+
+    function updateProgressBar() {
+      let currentScore = 0;
+      $('#questionnaireForm .form-check-input:checked').each(function () {
+        currentScore += parseFloat($(this).data('value'));
+      });
+
+      let progress = (currentScore / totalPossibleScore) * 100;
+      $('#progressBar').css('width', progress + '%');
+      value = progress.toFixed(2)
+      $('#progressBar').html( value+ '%')
+      $('#progress').val( value)
+
+    }
+
+    $('#questionnaireForm .form-check-input').on('change', function () {
+      updateProgressBar();
+    });
+
+    // Initial update
+    updateProgressBar();
+  });
+</script>
