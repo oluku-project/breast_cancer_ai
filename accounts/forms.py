@@ -7,6 +7,7 @@ from django.contrib.auth import password_validation
 from django.contrib.auth.forms import SetPasswordForm as AuthSetPasswordForm
 from django.utils.translation import gettext_lazy as _
 
+
 class LoginForm(AuthenticationForm):
     username = forms.EmailField(
         widget=forms.EmailInput(
@@ -186,3 +187,33 @@ class SetPasswordForm(AuthSetPasswordForm):
             }
         ),
     )
+
+
+class UpdateAccountForm(forms.ModelForm):
+    date_of_birth = forms.DateField(
+        required=True,
+        widget=forms.SelectDateWidget(
+            years=range(1900, 2050), attrs={"class": "form-select"}
+        ),
+    )
+
+    class Meta:
+        model = Account
+        fields = (
+            "username",
+            "first_name",
+            "last_name",
+            "gender",
+            "date_of_birth",
+            "country",
+        )
+        widgets = {
+            "username": forms.TextInput(attrs={"class": "form-control"}),
+            "first_name": forms.TextInput(attrs={"class": "form-control"}),
+            "last_name": forms.TextInput(attrs={"class": "form-control"}),
+            "gender": forms.Select(attrs={"class": "form-select ps-15 bg-transparent"}),
+            "country": forms.Select(
+                choices=CountryChoices.as_choices(),
+                attrs={"class": "form-select ps-15 bg-transparent"},
+            ),
+        }
