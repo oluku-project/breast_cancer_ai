@@ -2,7 +2,11 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from accounts.forms import CustomUserChangeForm, CustomUserCreationForm
 from accounts.models import Account
+from django.utils.translation import gettext_lazy as _
 
+admin.site.site_header = _("Breast Cancer Prediction Administration")
+admin.site.site_title = _("Breast Cancer Prediction Admin Portal")
+admin.site.index_title = _("Welcome to the Breast Cancer Prediction Admin Portal")
 
 @admin.register(Account)
 class AccountAdmin(UserAdmin):
