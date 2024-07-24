@@ -34,7 +34,8 @@ class PredictionResult(models.Model):
     probability_benign = models.DecimalField(max_digits=5, decimal_places=2)
     probability_malignant = models.DecimalField(max_digits=5, decimal_places=2)
     chart_data = models.JSONField()
-    timestamp = models.DateTimeField(auto_now_add=True)
+    submission_date = models.DateTimeField(db_default=Now())
+    timestamp = models.DateTimeField(db_default=Now(), auto_now=True)
 
     def __str__(self):
         return f"Prediction for {self.user.username} at {self.timestamp}"
