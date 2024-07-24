@@ -1,0 +1,208 @@
+{% extends "base.html" %} 
+{% load static %} 
+{% load custom_filters %} 
+{% block content %}
+<section class="content">
+  <div class="row">
+    <!-- Me -->
+    <div class="col-xl-4 col-lg-5">
+      <div class="card text-center">
+        <div class="card-body">
+          {% with sex=user.gender|gender_to_avatar %}
+          <img
+            src="{% static 'images/avatar/avatar-' %}{{ sex }}.png"
+            class="bg-light w-100 h-100 rounded-circle avatar-lg img-thumbnail"
+            alt="{{ sex }}"
+          />
+          {% endwith %}
+
+          <h4 class="mb-0 mt-2">
+            {{user.username.upper|default:user.first_name.upper}}
+          </h4>
+          <p class="text-muted fs-14">
+            {% if user.is_staff %}Staff {% else %}User{% endif %}
+          </p>
+
+          <button type="button" class="btn btn-primary btn-sm mb-2">
+            Gender
+          </button>
+          <button type="button" class="btn btn-light btn-sm mb-2">
+            {{user.gender}}
+          </button>
+
+          <div class="text-start mt-3">
+            <p class="text-muted mb-2">
+              <strong class="text-dark">User ID :</strong>
+              <span class="ms-2">{{user.usid}}</span>
+            </p>
+            <p class="text-muted mb-2">
+              <strong class="text-dark">Full Name :</strong>
+              <span class="ms-2">{{user.full_name.title}}</span>
+            </p>
+
+            <p class="text-muted mb-2">
+              <strong class="text-dark">Email :</strong>
+              <span class="ms-2">{{user.email}}</span>
+            </p>
+            <p class="text-muted mb-2">
+              <strong class="text-dark">Location :</strong>
+              <span class="ms-2">{{user.country}}</span>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="col-xl-8 col-lg-7">
+      <div class="card">
+        <div class="card-body">
+          <ul class="nav nav-pills bg-nav-pills nav-justified mb-3">
+            <li class="nav-item">
+              <a
+                href="#aboutme"
+                data-bs-toggle="tab"
+                aria-expanded="true"
+                class="nav-link rounded-0 active"
+              >
+                &nbsp; Profile Update
+              </a>
+            </li>
+            <li class="nav-item">
+              <a
+                href="#changepwd"
+                data-bs-toggle="tab"
+                aria-expanded="false"
+                class="nav-link rounded-0"
+              >
+                Change Password
+              </a>
+            </li>
+          </ul>
+          <!-- tab-content -->
+          <div class="tab-content">
+            <!-- start profile update content-->
+            <div class="tab-pane show active" id="aboutme">
+              <form id="profileUpdateForm" method="post" >
+                {% csrf_token %}
+                <h5 class="mb-4 text-uppercase">
+                  <i class="mdi mdi-account-circle me-1"></i> Personal Info
+                </h5>
+                <div class="row">
+                  <div class="col-md-6">
+                    <div class="mb-3">
+                      <label for="id_firstname" class="form-label"
+                        >First Name</label
+                      >
+                      {{update_form.first_name}}
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="mb-3">
+                      <label for="id_lastname" class="form-label">Last Name</label>
+                      {{update_form.last_name}}
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="mb-3">
+                      <label for="lastname" class="form-label">User Name</label>
+                      {{update_form.username}}
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="mb-3">
+                      <label for="id_gender" class="form-label">Gender</label>
+                      {{update_form.gender}}
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="mb-3">
+                      <label for="id_date_of_birth" class="form-label">Date of Birth</label>
+                      {{update_form.date_of_birth}}
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="mb-3">
+                      <label for="id_country" class="form-label">Country</label>
+                      {{update_form.country}}
+                    </div>
+                  </div>
+                </div>
+                <!-- end row -->
+
+                <div class="text-end">
+                  <button type="submit" name="update_profile" class="btn btn-primary mt-2">
+                    <i class="mdi mdi-content-save"></i> Update Profile
+                  </button>
+                </div>
+              </form>
+            </div>
+            <!-- end profile update content-->
+
+            <!-- pwd change -->
+            <div class="tab-pane" id="changepwd">
+              <div class="rounded">
+                <form id="changePasswordForm" method="post">
+                  {% csrf_token %}
+                  <div class="row">
+                    <h5 class="mb-4 text-uppercase">
+                      <i class="mdi mdi-account-key me-1"></i> Password Change
+                    </h5>
+                    {% for valid in validity  %}
+                        <div class="col-md-6 mb-3">
+                          <div class="timeline-label">
+                            <div class="timeline-item">
+                              <div class="timeline-label fw-500 fs-16">{{valid.title}}
+                                <i class="fa fa-dot-circle-o {{valid.txt}} fs-14"></i>
+                              </div>
+                              {% if valid.css in 'text-muted' %}
+                                  <div class="timeline-content {{valid.css}} ps-3">
+                                    {{valid.des}}
+                                  </div>
+                                {% else %}
+                                  <span class="fw-500 {{valid.css}} ps-3">
+                                    {{valid.des}}
+                                  </span>
+                              {% endif %}
+                            </div>
+                          </div>
+                        </div>
+                    {% endfor %}
+                    <div class="col-md-6">
+                      <div class="mb-3">
+                        <div class="input-group mb-3">
+                          <span class="input-group-text bg-transparent"
+                            ><i class="text-fade ti-lock"></i
+                          ></span>
+                          {{password_form.new_password1}}
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="input-group mb-3">
+                        <span class="input-group-text bg-transparent"
+                          ><i class="text-fade ti-lock"></i
+                        ></span>
+                        {{password_form.new_password2}}
+                      </div>
+                    </div>
+                  </div>
+                  <div class="text-end">
+                    <button type="submit" name="change_password" class="btn btn-primary mt-2">
+                      <i class="mdi mdi-content-save"></i> Change Password
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+            <!-- end pwd change -->
+          </div>
+          <!-- end tab-content -->
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% endblock %} 
+
