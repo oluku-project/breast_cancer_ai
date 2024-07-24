@@ -20,3 +20,21 @@ class Response(models.Model):
 
     def __str__(self):
         return f"{self.question_key}: {self.questionnaire_response}"
+
+from django.db import models
+
+
+class PredictionResult(models.Model):
+    user = models.ForeignKey("accounts.account", on_delete=models.CASCADE)
+    questionnaire_response = models.ForeignKey(
+        QuestionnaireResponse, on_delete=models.CASCADE
+    )
+    risk_level = models.CharField(max_length=20)
+    risk_score = models.DecimalField(max_digits=5, decimal_places=2)
+    probability_benign = models.DecimalField(max_digits=5, decimal_places=2)
+    probability_malignant = models.DecimalField(max_digits=5, decimal_places=2)
+    chart_data = models.JSONField()
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Prediction for {self.user.username} at {self.timestamp}"
