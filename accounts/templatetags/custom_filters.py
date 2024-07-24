@@ -1,3 +1,4 @@
+from datetime import date
 from django import template
 
 register = template.Library()
@@ -9,6 +10,20 @@ def gender_to_avatar(gender):
     return value
 
 
+@register.filter
+def get_grouped_questions(grouped_questions, section_header):
+    return grouped_questions.get(section_header, [])
+
+
+@register.filter
+def get_section_header(counter, section_headers):
+    index = counter // 6
+    try:
+        return section_headers[index]
+    except IndexError:
+        return ""
+
+
 @register.simple_tag(takes_context=True)
 def update_registration_session(context):
     request = context["request"]
@@ -17,3 +32,14 @@ def update_registration_session(context):
         success = request.session.pop("registration_success")
         return success
     return False
+
+
+@register.filter
+def calculate_age(date_of_birth):
+    today = date.today()
+    age = (
+        today.year
+        - date_of_birth.year
+        - ((today.month, today.day) < (date_of_birth.month, date_of_birth.day))
+    )
+    return age
