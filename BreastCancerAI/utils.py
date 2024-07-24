@@ -12,6 +12,34 @@ class UserTypes:
     DOCTOR_GROUP = "Professional Doctors"
 
 
+PASSWORD_VALIDITY = [
+    {
+        "title": "Step One",
+        "des": "Your password can’t be too similar to your other personal information.",
+        "css": "text-muted text-warning",
+        "txt": "text-warning",
+    },
+    {
+        "title": "Step Two",
+        "des": "Your password must contain at least 8 characters.",
+        "css": "text-success",
+        "txt": "text-success",
+    },
+    {
+        "title": "Step Three",
+        "des": "Your password can’t be a commonly used password.",
+        "css": "text-muted text-danger",
+        "txt": "text-danger",
+    },
+    {
+        "title": "Step Four",
+        "des": "Your password can’t be entirely numeric.",
+        "css": "text-primary",
+        "txt": "text-primary",
+    },
+]
+
+
 class MailUtils:
 
     def compose_email(self, request, user, **kwargs):
