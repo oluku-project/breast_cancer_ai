@@ -49,5 +49,9 @@ urlpatterns = [
     path("contacts/", contacts, name="contacts"),
     path("record-details/", record_details, name="record_details"),
     path("visualization/", charts_and_data_visualization, name="visualization"),
-    path("questionnaier/", questionnaier, name="questionnaire"),
+    # Done with the below urls
+    path("questionnaire/", questionnaier, name="questionnaire"),
+    path("questionnaire/update/<int:pk>/", questionnaier, name="update_questionnaire"),
+    path("summary/<pk>/", summary_view, name="summary"),
+    path("results/<pk>/", results, name="results"),
 ]
