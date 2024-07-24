@@ -29,6 +29,7 @@ class PredictionResult(models.Model):
     questionnaire_response = models.ForeignKey(
         QuestionnaireResponse, on_delete=models.CASCADE
     )
+    dob = models.DateField(verbose_name="Birthday", null=True)
     risk_level = models.CharField(max_length=20)
     risk_score = models.DecimalField(max_digits=5, decimal_places=2)
     probability_benign = models.DecimalField(max_digits=5, decimal_places=2)
