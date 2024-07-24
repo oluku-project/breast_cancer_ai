@@ -34,12 +34,12 @@ def create_model(data):
     X_test = scaler.transform(X_test)
 
     # Train the model
-    model = LogisticRegression()
-    model.fit(x_train, y_train)
+    # model = LogisticRegression()
+    # model.fit(x_train, y_train)
 
     # # Alternatively, use RandomForestClassifier
-    # model = RandomForestClassifier(n_estimators=100, random_state=42)
-    # model.fit(X_train_scaled, y_train)
+    model = RandomForestClassifier(n_estimators=100, random_state=42)
+    model.fit(x_train, y_train)
 
     # Test the model
     y_pred = model.predict(X_test)
@@ -49,16 +49,26 @@ def create_model(data):
     return model, scaler
 
 
+def calculate_default_values(data):
+    X = data.drop("diagnosis", axis=1)
+    default_values = X.mean().to_dict()
+    return default_values
+
+
 class Command(BaseCommand):
-    help = "Train a machine learning model and save it."
+    help = (
+        "Train a machine learning model and save it, along with default feature values. "
+    )
 
     def handle(self, *args, **kwargs):
         data = get_clean_data()
 
         model, scaler = create_model(data)
+        default_values = calculate_default_values(data)
 
         model_path = f"{settings.STATICFILES_DIRS[0]}/model/model.pkl"
         scaler_path = f"{settings.STATICFILES_DIRS[0]}/model/scaler.pkl"
+        default_values_path = f"{settings.STATICFILES_DIRS[0]}/model/default_values.pkl"
 
         with open(model_path, "wb") as model_file:
             pickle.dump(model, model_file)
@@ -66,6 +76,11 @@ class Command(BaseCommand):
         with open(scaler_path, "wb") as scaler_file:
             pickle.dump(scaler, scaler_file)
 
+        with open(default_values_path, "wb") as default_values_file:
+            pickle.dump(default_values, default_values_file)
+
         self.stdout.write(
-            self.style.SUCCESS("Successfully trained and saved the model.")
+            self.style.SUCCESS(
+                "Successfully trained and saved the model, scaler, and default values."
+            )
         )
