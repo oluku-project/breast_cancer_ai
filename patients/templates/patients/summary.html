@@ -40,7 +40,9 @@
             </div>
         </div>
         <div class="card-footer text-end">
-            <a href="#" class="btn btn-primary me-3"><i class="fa fa-check me-1"></i> Confirm and Proceed</a>
+            <a onclick="navigateToUrl(this)"
+            data-url="{% url 'result' response_instance.pk %}"
+            href="javascript:void(0);" class="btn btn-primary me-3"><i class="fa fa-check me-1"></i> Confirm and Proceed</a>
             <a 
             onclick="navigateToUrl(this)"
             data-url="{% url 'update_questionnaire' response_instance.pk %}"
