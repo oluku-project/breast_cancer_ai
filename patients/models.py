@@ -38,5 +38,11 @@ class PredictionResult(models.Model):
     submission_date = models.DateTimeField(db_default=Now())
     timestamp = models.DateTimeField(db_default=Now(), auto_now=True)
 
+    def benign(self):
+        return f"{self.probability_benign * 100:.2f}"
+
+    def malignant(self):
+        return f"{self.probability_malignant * 100:.2f}"
+
     def __str__(self):
         return f"Prediction for {self.user.username} at {self.timestamp}"
