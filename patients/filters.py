@@ -175,3 +175,76 @@ class PredictionResultFilter(django_filters.FilterSet):
             "min_age",
             "max_age",
         ]
+
+
+class QuestionnaireResponseFilter(django_filters.FilterSet):
+    # Progress Min field
+    progress_min = django_filters.NumberFilter(
+        field_name="progress",
+        lookup_expr="gte",
+        label="Min Progress Score",
+        widget=forms.NumberInput(
+            attrs={"class": "form-control", "placeholder": "Min Progress Score"}
+        ),
+    )
+
+    # Progress Score Max field
+    progress_max = django_filters.NumberFilter(
+        field_name="progress",
+        lookup_expr="lte",
+        label="Max Progress Score",
+        widget=forms.NumberInput(
+            attrs={"class": "form-control", "placeholder": "Max Progress Score"}
+        ),
+    )
+
+    # Submission Date Start field
+    submission_date_start = django_filters.DateFilter(
+        field_name="submission_date",
+        lookup_expr="gte",
+        label="Submission Date Start",
+        widget=DateInput(
+            attrs={"class": "form-control", "placeholder": "Submission Date Start"}
+        ),
+    )
+
+    # Submission Date End field
+    submission_date_end = django_filters.DateFilter(
+        field_name="submission_date",
+        lookup_expr="lte",
+        label="Submission Date End",
+        widget=DateInput(
+            attrs={"class": "form-control", "placeholder": "Submission Date End"}
+        ),
+    )
+    # Updated Date Start field
+    updated_date_start = django_filters.DateFilter(
+        field_name="updated_date",
+        lookup_expr="gte",
+        label="Updated Date Start",
+        widget=DateInput(
+            attrs={"class": "form-control", "placeholder": "Updated Date Start"}
+        ),
+    )
+
+    # Updated Date End field
+    updated_date_end = django_filters.DateFilter(
+        field_name="updated_date",
+        lookup_expr="lte",
+        label="Updated Date End",
+        widget=DateInput(
+            attrs={"class": "form-control", "placeholder": "Updated Date End"}
+        ),
+    )
+
+
+    class Meta:
+        model = PredictionResult
+        fields = [
+            "progress_min",
+            "progress_max",
+            "submission_date_start",
+            "submission_date_end",
+            "updated_date_start",
+            "updated_date_end",
+        ]
