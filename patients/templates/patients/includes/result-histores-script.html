@@ -1,0 +1,50 @@
+<script>
+        let resultIdToDelete = null;
+
+        function confirmDelete(resultId) {
+            resultIdToDelete = resultId;
+        }
+
+        function deleteResult() {
+            const url = "{% url 'delete_result' %}";
+            const deleteBtn = document.getElementById('confirmDeleteBtn');
+            const spinner = document.getElementById('loadingSpinner');
+
+            deleteBtn.classList.add('d-none');
+            spinner.classList.remove('d-none');
+
+            $.ajax({
+                url: url,
+                method: 'POST',
+                data: {
+                    result_id: resultIdToDelete,
+                    csrfmiddlewaretoken: '{{ csrf_token }}'
+                },
+                success: function (data) {
+                    location.reload();
+                },
+                error: function (xhr, status, error) {
+                    var jsonResponse = JSON.parse(xhr.responseText);
+                    var errors = xhr.responseJSON.errors;
+                    showToast("Error", errors, "error");
+                    deleteBtn.classList.remove('d-none');
+                    spinner.classList.add('d-none');
+                }
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const deleteButtons = document.querySelectorAll('.delete-btn');
+            deleteButtons.forEach(function (button) {
+                button.addEventListener('click', function () {
+                    const resultId = this.getAttribute('data-id');
+                    confirmDelete(resultId);
+                });
+            });
+
+            const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+            confirmDeleteBtn.onclick = function () {
+                deleteResult();
+            };
+        });
+    </script>
