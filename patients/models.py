@@ -2,11 +2,18 @@ from django.db import models
 from django.db.models.functions import Now
 
 
+class STATE(models.TextChoices):
+    INITIATE = "Initiate", "Initiate"
+    START = "Start", "Start"
+    COMPLETE = "Complete", "Complete"
+
+
 class QuestionnaireResponse(models.Model):
     user = models.ForeignKey("accounts.account", on_delete=models.CASCADE)
     progress = models.FloatField(db_default=0)
     submission_date = models.DateTimeField(db_default=Now())
     updated_date = models.DateTimeField(db_default=Now(), auto_now=True)
+    state = models.CharField(max_length=10, choices=STATE, default=STATE.INITIATE)
 
     def __str__(self):
         return f"{self.user.username} - {self.submission_date.strftime('%Y-%m-%d %H:%M:%S')}"
