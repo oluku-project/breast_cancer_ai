@@ -4,10 +4,40 @@
       <div class="multinav-scroll" style="height: 97%">
         <!-- sidebar menu-->
         <ul class="sidebar-menu" data-widget="tree">
+          <li class="treeview">
+            <a href="#">
+            <i data-feather="home"></i>
+            <span>Home</span>
+            <span class="pull-right-container">
+              <i class="fa fa-angle-right pull-right"></i>
+            </span>
+            </a>
+            <ul class="treeview-menu">
+              <li>
+                <li><a href="{% url 'index' %}"><i class="icon-Commit"><span class="path1"></span><span class="path2"></span></i>Home</a></li>
+                <li><a href="{% url 'auth:user_dashboard' %}"><i class="icon-Commit"><span class="path1"></span><span class="path2"></span></i>Dashboard</a></li>
+              </li>	
+            </ul>
+          </li>
+          <li class="treeview">
+            <a href="#">
+            <i data-feather="paperclip"></i>
+            <span>Questionnaire</span>
+            <span class="pull-right-container">
+              <i class="fa fa-angle-right pull-right"></i>
+            </span>
+            </a>
+            <ul class="treeview-menu">
+              <li>
+                <li><a href="{% url 'questionnaire' %}"><i class="icon-Commit"><span class="path1"></span><span class="path2"></span></i>Questionnaire</a></li>
+                <li><a href="{% url 'pending_results' %}"><i class="icon-Commit"><span class="path1"></span><span class="path2"></span></i>Pending Results</a></li>
+              </li>	
+            </ul>
+          </li>
           <li>
-            <a href="{% url 'index' %}">
-              <i data-feather="home"></i>
-              <span>Home</span>
+            <a href="{% url 'result_hostores' %}">
+              <i data-feather="file-text"></i>
+              <span>Results</span>
             </a>
           </li>
           <li>
@@ -17,20 +47,13 @@
             </a>
           </li>
           <li>
-            <a href="{% url 'questionnaire' %}">
-              <i data-feather="paperclip"></i>
-              <span>Questionnaire</span>
-            </a>
-          </li>
-
-          <li>
             <a href="extra_profile.html">
               <i data-feather="wind"></i>
               <span>Charts and Data</span>
             </a>
           </li>
           <li>
-            <a href="{% url 'results' %}">
+            <a href="results">
               <i data-feather="disc"></i>
               <span>Record Details</span>
             </a>
