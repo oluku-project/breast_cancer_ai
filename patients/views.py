@@ -127,10 +127,26 @@ class SummaryView(HelpResponse,DetailView):
 
 summary_view = SummaryView.as_view()
 
-class PredictionView(DetailView):
-    model = QuestionnaireResponse
+
+class PredictionView(HelpResponse,DetailView):
     template_name = "patients/results.html"
     context_object_name = "response_instance"
+    def get_queryset(self):
+        """
+        Override to return different querysets based on URL name.
+        """
+        if self.request.resolver_match.url_name == "detailed_result":
+            return PredictionResult.objects.all()
+        return QuestionnaireResponse.objects.all()
+
+    def get_object(self, queryset=None):
+        """
+        Override to get the object based on the dynamic model.
+        """
+        if self.request.resolver_match.url_name == "detailed_result":
+            return get_object_or_404(PredictionResult, pk=self.kwargs["pk"])
+        else:
+            return get_object_or_404(QuestionnaireResponse, pk=self.kwargs["pk"])
 
     def get_clean_data(self):
         data = pd.read_csv(f"{settings.STATICFILES_DIRS[0]}/model/data.csv")
@@ -175,9 +191,9 @@ class PredictionView(DetailView):
         probabilities = model.predict_proba(input_array_scaled)
         return probabilities
 
-    def make_prediction(self, probabilities):
+    def make_prediction(self, probabilities=None, risk_score=None):
         # Get the probability of the positive class (malignant)
-        risk_score = probabilities[0][1]
+        risk_score = risk_score if risk_score else probabilities[0][1]
         risk_level = self.get_risk_level_from_score(risk_score)
         return risk_level, risk_score
 
@@ -250,7 +266,6 @@ class PredictionView(DetailView):
     def save_prediction_result(
         self, user, response_instance, risk_level, risk_score, probabilities, chart_data
     ):
-        # Check if there is an existing prediction result for the same questionnaire response
         existing_result = PredictionResult.objects.filter(
             user=user, questionnaire_response=response_instance
         ).first()
@@ -276,51 +291,68 @@ class PredictionView(DetailView):
                 probability_malignant=probabilities[0][1],
                 chart_data=chart_data,
             )
+            response_instance.state = STATE.COMPLETE
+            response_instance.save()
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         response_instance = self.object
-        question_keys = response_instance.responses.all().values_list(
-            "question_key",
-            flat=True,
-        )
-
-        # Load default values
-        default_values = self.get_default_values()
-
-        user_responses = {}
-        for _, k, v in QUESTIONS:
-            user_responses[k] = v if k in question_keys else default_values.get(k, 0.00)
-
-        probabilities = self.add_predictions(user_responses)
-
-        chart_data = self.get_line_scatter_chart(user_responses)
         explanations = self.display_explanations()
-        risk_level, risk_score = self.make_prediction(probabilities)
-        risk_score = f"{risk_score * 100:.2f}"
 
-        # Save the prediction result
-        self.save_prediction_result(
-            self.request.user,
-            response_instance,
-            risk_level,
-            risk_score,
-            probabilities,
-            chart_data,
-        )
+        url_name = self.request.resolver_match.url_name
+        if url_name == "detailed_result":
+            score = response_instance.risk_score
+            risk_level, risk_score = self.make_prediction(risk_score=score)
+            probability_benign = response_instance.probability_benign
+            probability_malignant = response_instance.probability_malignant
+            chart_data = response_instance.chart_data
+            grouped_questions = self.fetchRespondedQuestions(
+                response_instance.questionnaire_response
+            )
+            title = "Detailed Result"
+        else:
+            question_keys = response_instance.responses.all().values_list(
+                "question_key",
+                flat=True,
+            )
+            # Load default values
+            default_values = self.get_default_values()
+            user_responses = {}
+            for _, k, v in QUESTIONS:
+                user_responses[k] = v if k in question_keys else default_values.get(k, 0.00)
+            probabilities = self.add_predictions(user_responses)
+            chart_data = self.get_line_scatter_chart(user_responses)
+            risk_level, risk_score = self.make_prediction(probabilities)
+            risk_score = f"{risk_score * 100:.2f}"
+
+            # Save the prediction result
+            self.save_prediction_result(
+                self.request.user,
+                response_instance,
+                risk_level,
+                risk_score,
+                probabilities,
+                chart_data,
+            )
+            probability_benign = f"{probabilities[0][0]:.2f}"
+            probability_malignant = f"{probabilities[0][1]:.2f}"
+            grouped_questions = None
+            title = "Result"
 
         context.update(
             {
                 "risk_level": risk_level,
                 "risk_score": risk_score,
-                "probability_benign": f"{probabilities[0][0]:.2f}",
-                "probability_malignant": f"{probabilities[0][1]:.2f}",
+                "probability_benign": probability_benign,
+                "probability_malignant": probability_malignant,
                 "risk_explanation": explanations,
                 "chart_data": chart_data,
-                "title_root": "Result",
+                "grouped_questions": grouped_questions,
+                "title_root": title,
             }
         )
         return context
+
 
 results = PredictionView.as_view()
 
