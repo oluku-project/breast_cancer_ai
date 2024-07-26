@@ -111,16 +111,8 @@ class SummaryView(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         response_instance = self.object
-        grouped_questions = {header: [] for header in section_headers}
 
-        for response in response_instance.responses.all():
-            question = next(q for q in QUESTIONS if q[1] == response.question_key)
-            index = QUESTIONS.index(question) // 6
-            section_header = section_headers[index]
-            grouped_questions[section_header].append(question[0])
-
-        # Remove empty groups
-        grouped_questions = {k: v for k, v in grouped_questions.items() if v}
+        grouped_questions = self.fetchRespondedQuestions(response_instance)
         context.update(
             {
                 "grouped_questions": grouped_questions,
