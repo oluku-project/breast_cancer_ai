@@ -103,7 +103,7 @@ class QuestionnaireView(View):
 questionnaier = QuestionnaireView.as_view()
 
 
-class SummaryView(DetailView):
+class SummaryView(HelpResponse,DetailView):
     model = QuestionnaireResponse
     template_name = "patients/summary.html"
     context_object_name = "response_instance"
@@ -120,7 +120,10 @@ class SummaryView(DetailView):
                 "title_root": "Summary",
             }
         )
+        response_instance.state = STATE.START
+        response_instance.save()
         return context
+
 
 summary_view = SummaryView.as_view()
 
