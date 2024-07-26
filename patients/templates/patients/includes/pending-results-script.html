@@ -1,0 +1,27 @@
+<script>
+    let resultIdToDelete = null;
+    function confirmDelete(resultId) {
+        resultIdToDelete = resultId;
+    }
+    function deleteResult() {
+        url = "{% url 'delete_pending_result' %}"
+        $.ajax({
+            url: url,
+            method: 'POST',
+            data: {
+                result_id: resultIdToDelete,
+                csrfmiddlewaretoken: '{{ csrf_token }}'
+            },
+            success: function (data) {
+                if (data.success) {
+                    location.reload();
+                } 
+            },
+            error: function (xhr, status, error) {
+                var jsonResponse = JSON.parse(xhr.responseText);
+                var errors = xhr.responseJSON.errors;
+                showToast("Error", errors, "error");
+            }
+        });
+    }
+</script>
