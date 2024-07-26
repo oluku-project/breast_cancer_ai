@@ -28,7 +28,21 @@ class Response(models.Model):
     def __str__(self):
         return f"{self.question_key}: {self.questionnaire_response}"
 
-from django.db import models
+
+class PredictionResultManager(models.Manager):
+    def get_queryset(self):
+        if not hasattr(self, "_user") or not (
+            self._user.is_superuser or self._user.is_staff
+        ):
+            return super().get_queryset().filter(deleted=False)
+        return super().get_queryset()
+
+    def for_user(self, user):
+        manager = self.__class__()
+        manager._user = user
+        manager.model = self.model
+        manager._db = self._db
+        return manager
 
 
 class PredictionResult(models.Model):
@@ -44,6 +58,10 @@ class PredictionResult(models.Model):
     chart_data = models.JSONField()
     submission_date = models.DateTimeField(db_default=Now())
     timestamp = models.DateTimeField(db_default=Now(), auto_now=True)
+
+    deleted = models.BooleanField(default=False)
+
+    objects = PredictionResultManager()
 
     def benign(self):
         return f"{self.probability_benign * 100:.2f}"
