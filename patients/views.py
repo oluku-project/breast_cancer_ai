@@ -399,7 +399,7 @@ pending_result_delete = PendingResultDeleteView.as_view()
 class PredictionResultView(FilterView):
     filterset_class = PredictionResultFilter
     model = PredictionResult
-    template_name = "result-histores.html"
+    template_name = "patients/result-histores.html"
     context_object_name = "results"
     ordering = ["-submission_date", "-timestamp"]
     paginate_by = 9
