@@ -412,6 +412,27 @@ class PredictionResultView(FilterView):
 result_hostores = PredictionResultView.as_view()
 
 
+class PredictionResultDeleteView(View):
+    def post(self, request, *args, **kwargs):
+        try:
+            result_id = request.POST.get("result_id")
+            result = get_object_or_404(PredictionResult, id=result_id)
+            result.deleted = True
+            result.save()   
+            messages.success(request, "Resulte deleted successfully.")
+            return JsonResponse(
+                {"success": True, "message": "Result deleted successfully."}
+            )
+        except Exception as e:
+            messages.error(request, "Unable to delete result.")
+            return JsonResponse(
+                {"success": False, "message": "Resulte unable to delete!"}
+            )
+
+
+resultdelete_view = PredictionResultDeleteView.as_view()
+
+
 from django.http import HttpResponse
 import csv
 import json
