@@ -356,6 +356,46 @@ class PredictionView(HelpResponse,DetailView):
 
 results = PredictionView.as_view()
 
+
+class PendingResultView(FilterView):
+    filterset_class = QuestionnaireResponseFilter
+    model = QuestionnaireResponse
+    template_name = "patients/pending-results.html"
+    context_object_name = "items"
+    ordering = ["-submission_date", "-updated_date"]
+    paginate_by = 9
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        return queryset.filter(state=STATE.START)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["title_root"] = "Pending Results"
+        return context
+
+
+pending_result = PendingResultView.as_view()
+
+
+class PendingResultDeleteView(View):
+    def post(self, request, *args, **kwargs):
+        try:
+            result_id = request.POST.get("result_id")
+            result = get_object_or_404(QuestionnaireResponse, id=result_id)
+            # result.delete()
+            messages.success(request, "Resulte deleted successfully.")
+            return JsonResponse(
+                {"success": True, "message": "Result deleted successfully."}
+            )
+        except Exception as e:
+            messages.error(request, "Unable to delete result.")
+            return JsonResponse(
+                {"success": False, "message": "Resulte unable to delete!"}
+            )
+
+pending_result_delete = PendingResultDeleteView.as_view()
+
 class PredictionResultView(FilterView):
     filterset_class = PredictionResultFilter
     model = PredictionResult
