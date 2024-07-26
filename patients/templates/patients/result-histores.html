@@ -71,32 +71,31 @@
     
     <div class="row">
         <div class="card">
-        <div class="card-header d-flex justify-content-between align-items-center">
-            <h5 class="mb-0">Prediction Result Filters</h5>
-            <button class="btn btn-link" data-bs-toggle="collapse" data-bs-target="#filterForm" aria-expanded="true">
-                Filter Prediction Results
-            </button>
-        </div>
-        <div id="filterForm" class="collapse">
-            <div class="card-body">
-                <form method="get">
-                    <div class="row g-3">
-                        
-                        {% for field in filter.form %}
-                            <div class="col-md-4">
-                                {{field.as_field_group}}
-                            </div>
-                        {% endfor %}
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Prediction Result Filters</h5>
+                <button class="btn btn-link" data-bs-toggle="collapse" data-bs-target="#filterForm" aria-expanded="true">
+                    Filter Prediction Results
+                </button>
+            </div>
+            <div id="filterForm" class="collapse">
+                <div class="card-body">
+                    <form method="get">
+                        <div class="row g-3">
                             
-                        
-                        <div class="col-md-12">
-                            <button type="submit" class="btn btn-primary">Apply Filters</button>
+                            {% for field in filter.form %}
+                                <div class="col-md-4">
+                                    {{field.as_field_group}}
+                                </div>
+                            {% endfor %}
+                                
+                            <div class="col-md-12">
+                                <button type="submit" class="btn btn-primary">Apply Filters</button>
+                            </div>
                         </div>
-                    </div>
-                </form>
+                    </form>
+                </div>
             </div>
         </div>
-    </div>
         {% for result in results  %}
             <div class="col-lg-4">
                 <div class="box ribbon-box pull-up">
@@ -138,8 +137,15 @@
                         </div>
                     </div>
                     <div class="box-footer text-end">
-                        <button class="btn btn-primary">View Details</button>
-                        <button class="btn btn-danger">Delete</button>
+                        <button onclick="navigateToUrl(this)"
+                            data-url="{% url 'detailed_result' result.pk %}" 
+                            class="btn btn-primary">View Details
+                        </button>
+                        <button class="btn btn-danger" 
+                        data-bs-toggle="modal" data-bs-target="#deleteModal" 
+                        onclick="confirmDelete('{{ result.id }}')">
+                            Delete
+                        </button>
                     </div>
                 </div>
             </div>
@@ -153,10 +159,16 @@
         </p>
     {% endif %}
     {% include 'includes/pagenator.html' %}
-
+    {% include 'patients/includes/result-histores-modal.html' %}
+    
 </div>
 
 </div>
 {% endblock %}
 
 
+{% block scripts %}
+{% include 'patients/includes/result-histores-script.html' %}
+    
+{% endblock scripts %}
+    
