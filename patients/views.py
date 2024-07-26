@@ -1,16 +1,17 @@
 from django.urls import reverse
 from django.shortcuts import render, redirect
 from django.db import transaction
-from patients.utils import QUESTIONS, section_headers, RISK_LEVEL, CATEGORIES
+from patients.utils import QUESTIONS, HelpResponse, section_headers, RISK_LEVEL, CATEGORIES
 from django.views.generic import DetailView, View
 from typing import List
 from django.shortcuts import get_object_or_404
-from .models import PredictionResult, QuestionnaireResponse, Response
+from .models import STATE, PredictionResult, QuestionnaireResponse, Response
 from BreastCancerAI import settings
 import pandas as pd
 import pickle5 as pickle
 from django_filters.views import FilterView
-from .filters import PredictionResultFilter
+from .filters import PredictionResultFilter, QuestionnaireResponseFilter
+
 
 class QuestionnaireView(View):
     template_name = "patients/questionnaire.html"
