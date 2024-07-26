@@ -52,4 +52,6 @@ urlpatterns = [
     path("delete/pending-results/", pending_result_delete, name="delete_pending_result"),
     path("summary/<pk>/", summary_view, name="summary"),
     path("result/<pk>/", results, name="result"),
+    path("delete-result/", resultdelete_view, name="delete_result"),
+    path("detailed/result/<pk>/", results, name="detailed_result"),
 ]
