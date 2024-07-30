@@ -9,7 +9,6 @@ urlpatterns = [
     path("user-dashboard/", user_dashboard, name="user_dashboard"),  # done
     path("user-profile/", user_profile, name="user_profile"),  # done
     path("contact/", contact, name="contact"),
-    path("faqs/", faqs, name="faqs"),
     path("export/", export_data, name="export_data"),
     path("import/", import_data, name="import_data"),
     path("data/", data_export_import, name="data_export_import"),
@@ -48,7 +47,9 @@ urlpatterns = [
     path("questionnaire/", questionnaier, name="questionnaire"),
     path("questionnaire/update/<int:pk>/", questionnaier, name="update_questionnaire"),
     path("pending/results/", pending_result, name="pending_results"),
-    path("delete/pending-results/", pending_result_delete, name="delete_pending_result"),
+    path(
+        "delete/pending-results/", pending_result_delete, name="delete_pending_result"
+    ),
     path("summary/<pk>/", summary_view, name="summary"),
     path("result/<pk>/", results, name="result"),
     path("delete-result/", resultdelete_view, name="delete_result"),
