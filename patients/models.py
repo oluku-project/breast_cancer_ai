@@ -71,3 +71,25 @@ class PredictionResult(models.Model):
 
     def __str__(self):
         return f"Prediction for {self.user.username} at {self.timestamp}"
+
+class Feedback(models.Model):
+    name = models.CharField(max_length=100)
+    email = models.EmailField()
+    message = models.TextField()
+    submitted_at = models.DateTimeField(db_default=Now())
+
+    def __str__(self):
+        return f"Feedback from {self.name} at {self.submitted_at}"
+
+
+class Contact(models.Model):
+    name = models.CharField(max_length=100)
+    email = models.EmailField()
+    subject = models.CharField(max_length=200)
+    message = models.TextField()
+    submitted_at = models.DateTimeField(db_default=Now())
+
+    def __str__(self):
+        return (
+            f"Contact request from {self.name} - {self.subject} at {self.submitted_at}"
+        )
