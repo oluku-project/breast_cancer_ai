@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from patients.models import QuestionnaireResponse, Response, PredictionResult
+from patients.models import Contact, Feedback, QuestionnaireResponse, Response, PredictionResult
 
 # Register your models here.
 admin.site.register(QuestionnaireResponse)
@@ -50,3 +50,15 @@ class PredictionResultAdmin(admin.ModelAdmin):
 
 
 admin.site.register(PredictionResult, PredictionResultAdmin)
+
+
+@admin.register(Feedback)
+class FeedbackAdmin(admin.ModelAdmin):
+    list_display = ("name", "email", "submitted_at")
+    search_fields = ("name", "email", "message")
+
+
+@admin.register(Contact)
+class ContactAdmin(admin.ModelAdmin):
+    list_display = ("name", "email", "subject", "submitted_at")
+    search_fields = ("name", "email", "subject", "message")
