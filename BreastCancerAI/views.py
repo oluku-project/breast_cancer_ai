@@ -5,7 +5,7 @@ import requests
 from django.utils.http import urlsafe_base64_decode
 from django.contrib.auth.tokens import default_token_generator
 from accounts.models import Account
-
+from django.views.generic import View
 
 def login(request):
     if request.method == "POST":
@@ -54,3 +54,18 @@ def activate(request, uidb64, token):
     else:
         messages.error(request, "Invalid activation link")
         return redirect("account:register")
+
+
+class AboutView(View):
+    template_name = "about.html"
+
+    def get(self, request, *args, **kwargs):
+        return render(request, self.template_name, self.get_context())
+
+    def get_context(self):
+        context = {
+            "title_root": "About Us",
+        }
+        return context
+
+about = AboutView.as_view()
