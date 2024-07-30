@@ -1,17 +1,17 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load custom_filters %}
 
 {% block headers %}
     <style>
-       .hero-section {
-            position: relative;
+    .hero-section {
+            background: url('{% static "images/result-repor-bg.jpg" %}') no-repeat center center/cover;
+            background-size: cover;
+            background-position: center;
+            color: #fff;
             text-align: center;
-            color: white;
-        }
-
-        .hero-section .container {
+            padding: 5rem 0;
             position: relative;
-            z-index: 2;
         }
 
         .hero-section::before {
@@ -19,263 +19,142 @@
             position: absolute;
             top: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
+            right: 0;
+            bottom: 0;
             background: rgba(0, 0, 0, 0.5);
-            z-index: 1;
         }
 
-        .faq-categories h3 {
-            margin-bottom: 1rem;
+        .hero-section .container {
+            position: relative;
+            z-index: 2;
         }
 
-        .accordion-button:not(.collapsed) {
-            color: #007bff;
-            background-color: #e7f1ff;
+        .hero-section h1 {
+            font-size: 3.5rem;
+            font-weight: bold;
         }
 
-        .user-feedback-section,
-        .contact-form-section {
-            padding: 4rem 0;
+        .hero-section p {
+            font-size: 1.5rem;
         }
-
-        .user-feedback-section .form-control,
-        .contact-form-section .form-control {
-            margin-bottom: 1rem;
-        }
-
-        .footer {
-            background: #343a40;
-            color: white;
-            padding: 2rem 0;
-        }
-
-        .footer h5 {
-            margin-bottom: 1rem;
-        }
-
-        .footer a {
-            color: white;
-            text-decoration: none;
-        }
-
-        .footer a:hover {
-            text-decoration: underline;
-        }
-
     </style>
+
 {% endblock headers %}
     
 
 {% block content %}
-    <div class="faq-page">
+<div class="content">
     <!-- Hero Section -->
-    <section class="hero-section" style="background-image: url('/static/images/hero-faq-background.jpg'); background-size: cover; background-position: center; padding: 100px 0;">
-        <div class="container text-center text-white">
-            <h1 class="display-4">Frequently Asked Questions</h1>
-            <p class="lead">Find answers to common questions about our breast cancer risk assessment tool.</p>
+    <section class="hero-section">
+        <div class="container">
+            <h1>Frequently Asked Questions</h1>
+            <p>Find answers to common questions about our breast cancer risk assessment tool.</p>
         </div>
     </section>
 
-    <!-- Search Bar -->
     <section class="search-bar py-5 bg-light">
         <div class="container">
             <div class="row justify-content-center">
                 <div class="col-md-8">
                     <div class="input-group">
-                        <input type="text" class="form-control" placeholder="Search for answers...">
-                        <button class="btn btn-primary" type="button">
-                            <i class="fa fa-search"></i>
-                        </button>
+                        <div class="input-group-addon">
+                        <i class="fa fa-search"></i>
+                        </div>
+                    <input type="search" id="search-input" class="form-control" placeholder="Search for answers...">
                     </div>
                 </div>
             </div>
         </div>
     </section>
-
-    <!-- FAQ Categories Section -->
-    <section class="faq-categories py-5">
-        <div class="container">
-            <div class="row">
-                <!-- General Information -->
-                <div class="col-md-6">
-                    <h3>General Information</h3>
-                    <div class="accordion" id="generalInfoAccordion">
-                        <div class="accordion-item">
-                            <h2 class="accordion-header" id="generalInfoHeading1">
-                                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#generalInfoCollapse1" aria-expanded="true" aria-controls="generalInfoCollapse1">
-                                    What is the breast cancer risk assessment tool?
-                                </button>
-                            </h2>
-                            <div id="generalInfoCollapse1" class="accordion-collapse collapse show" aria-labelledby="generalInfoHeading1" data-bs-parent="#generalInfoAccordion">
-                                <div class="accordion-body">
-                                    <p>The breast cancer risk assessment tool is designed to estimate a woman's risk of developing invasive breast cancer.</p>
-                                </div>
-                            </div>
+    
+    <div class="container">
+        <div class="row my-20">
+            <div class="col-12">
+                <div class="box">
+                    <div class="box-body">
+                        <ul class="nav nav-pills bg-nav-pills nav-justified" id="faq-sections">
+                            <!-- Sections will be loaded here dynamically -->
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="container">
+                <div class="box">
+                    <div class="box-body">
+                        <div class="tab-content faq-bx" id="faq-contents">
+                            <!-- FAQ contents will be loaded here dynamically -->
                         </div>
-                        <div class="accordion-item">
-                            <h2 class="accordion-header" id="generalInfoHeading2">
-                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#generalInfoCollapse2" aria-expanded="false" aria-controls="generalInfoCollapse2">
-                                    How accurate is the risk assessment?
-                                </button>
-                            </h2>
-                            <div id="generalInfoCollapse2" class="accordion-collapse collapse" aria-labelledby="generalInfoHeading2" data-bs-parent="#generalInfoAccordion">
-                                <div class="accordion-body">
-                                    <p>The risk assessment is based on statistical models and should be used as a guide, not a definitive prediction.</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!-- More categories here... -->
-                <!-- Questionnaire Details -->
-                <div class="col-md-6">
-                    <h3>Questionnaire Details</h3>
-                    <div class="accordion" id="questionnaireDetailsAccordion">
-                        <!-- Questions and answers... -->
-                    </div>
-                </div>
-                <!-- Data Privacy and Security -->
-                <div class="col-md-6 mt-4">
-                    <h3>Data Privacy and Security</h3>
-                    <div class="accordion" id="dataPrivacyAccordion">
-                        <!-- Questions and answers... -->
-                    </div>
-                </div>
-                <!-- Results Interpretation -->
-                <div class="col-md-6 mt-4">
-                    <h3>Results Interpretation</h3>
-                    <div class="accordion" id="resultsInterpretationAccordion">
-                        <div class="accordion-item">
-                            <h2 class="accordion-header" id="resultsInterpretationHeading1">
-                                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#resultsInterpretationCollapse1" aria-expanded="true" aria-controls="resultsInterpretationCollapse1">
-                                    How do I interpret my risk level?
-                                </button>
-                            </h2>
-                            <div id="resultsInterpretationCollapse1" class="accordion-collapse collapse show" aria-labelledby="resultsInterpretationHeading1" data-bs-parent="#resultsInterpretationAccordion">
-                                <div class="accordion-body">
-                                    <p>Your risk level indicates the likelihood of developing breast cancer based on your provided information. Low risk suggests minimal likelihood, medium risk suggests moderate likelihood, and high risk suggests significant likelihood. It's important to discuss these results with a healthcare professional for a comprehensive understanding.</p>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- More questions and answers... -->
-                    </div>
-                </div>
-                <!-- Technical Support -->
-                <div class="col-md-6 mt-4">
-                    <h3>Technical Support</h3>
-                    <div class="accordion" id="technicalSupportAccordion">
-                        <!-- Questions and answers... -->
-                    </div>
-                </div>
-                <!-- Contact and Support -->
-                <div class="col-md-6 mt-4">
-                    <h3>Contact and Support</h3>
-                    <div class="accordion" id="contactSupportAccordion">
-                        <!-- Questions and answers... -->
                     </div>
                 </div>
             </div>
         </div>
-    </section>
-
-    <!-- User Feedback and Rating Section -->
-    <section class="user-feedback-section py-5 bg-light">
-        <div class="container">
-            <h3 class="text-center mb-4">Your Feedback Matters</h3>
-            <div class="row justify-content-center">
-                <div class="col-md-8">
-                    <form>
-                        <div class="mb-3">
-                            <label for="rating" class="form-label">Rate the Helpfulness of the FAQs</label>
-                            <select class="form-select" id="rating">
-                                <option value="5">5 - Excellent</option>
-                                <option value="4">4 - Good</option>
-                                <option value="3">3 - Average</option>
-                                <option value="2">2 - Below Average</option>
-                                <option value="1">1 - Poor</option>
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label for="suggestions" class="form-label">Suggestions</label>
-                            <textarea class="form-control" id="suggestions" rows="4" placeholder="Suggest new FAQs or improvements..."></textarea>
-                        </div>
-                        <button type="submit" class="btn btn-primary w-100">Submit Feedback</button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Contact Form Section -->
-    <section class="contact-form-section py-5 bg-light">
-        <div class="container">
-            <h3 class="text-center mb-4">Contact Us</h3>
-            <div class="row justify-content-center">
-                <div class="col-md-8">
-                    <form>
-                        <div class="mb-3">
-                            <label for="name" class="form-label">Name</label>
-                            <input type="text" class="form-control" id="name" placeholder="Your Name">
-                        </div>
-                        <div class="mb-3">
-                            <label for="email" class="form-label">Email</label>
-                            <input type="email" class="form-control" id="email" placeholder="Your Email">
-                        </div>
-                        <div class="mb-3">
-                            <label for="subject" class="form-label">Subject</label>
-                            <input type="text" class="form-control" id="subject" placeholder="Subject">
-                        </div>
-                        <div class="mb-3">
-                            <label for="message" class="form-label">Message</label>
-                            <textarea class="form-control" id="message" rows="5" placeholder="Your Message"></textarea>
-                        </div>
-                        <button type="submit" class="btn btn-primary w-100">Submit</button>
-                    </form>
-                </div>
-            </div>
-            <div class="text-center mt-4">
-                <p>Support Email: support@example.com | Support Phone: (123) 456-7890</p>
-                <p>Support Hours: Monday to Friday, 9 AM - 5 PM</p>
-            </div>
-        </div>
-    </section>
-
-    <!-- Footer -->
-    <footer class="footer bg-dark text-white py-4">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-4">
-                    <h5>Quick Links</h5>
-                    <ul class="list-unstyled">
-                        <li><a href="#" class="text-white">Home</a></li>
-                        <li><a href="#" class="text-white">About</a></li>
-                        <li><a href="#" class="text-white">Services</a></li>
-                        <li><a href="#" class="text-white">Contact</a></li>
-                    </ul>
-                </div>
-                <div class="col-md-4">
-                    <h5>Contact Information</h5>
-                    <p>1234 Street Name, City, State, 12345</p>
-                    <p>Email: info@example.com</p>
-                    <p>Phone: (123) 456-7890</p>
-                </div>
-                <div class="col-md-4">
-                    <h5>Follow Us</h5>
-                    <a href="#" class="text-white me-2"><i class="fa fa-facebook"></i></a>
-                    <a href="#" class="text-white me-2"><i class="fa fa-twitter"></i></a>
-                    <a href="#" class="text-white me-2"><i class="fa fa-instagram"></i></a>
-                    <a href="#" class="text-white"><i class="fa fa-linkedin"></i></a>
-                </div>
-            </div>
-        </div>
-    </footer>
+    </div>
 </div>
 {% endblock content %}
 
-
 {% block scripts %}
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const searchInput = document.getElementById('search-input');
+        function SearchFaqs() {
+            const query = searchInput.value;
+            fetch(`?q=${query}`, {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                const sections = document.getElementById('faq-sections');
+                const contents = document.getElementById('faq-contents');
+                
+                sections.innerHTML = '';
+                contents.innerHTML = '';
 
+                data.forEach((section, index) => {
+                    sections.innerHTML += `
+                        <li class="nav-item text-center">
+                            <a href="#navpills-${index}" class="nav-link ${index === 0 ? 'active' : ''}" data-bs-toggle="tab" aria-expanded="${index === 0 ? 'true' : 'false'}">
+                                ${section.heading}
+                            </a>
+                        </li>
+                    `;
+
+                    let questionsHTML = '';
+                    section.questions.forEach((question, qIndex) => {
+                        questionsHTML += `
+                            <div class="panel">
+                                <div class="panel-heading" id="question-${index}-${qIndex}" role="tab">
+                                    <a class="panel-title fs-16 fw-500" aria-controls="answer-${index}-${qIndex}" aria-expanded="${qIndex === 0 ? 'true' : 'false'}" data-bs-toggle="collapse" href="#answer-${index}-${qIndex}" data-parent="#accordion${index}">
+                                        ${question.question}
+                                    </a>
+                                </div>
+                                <div class="panel-collapse collapse ${qIndex === 0 ? 'show' : ''}" id="answer-${index}-${qIndex}" aria-labelledby="question-${index}-${qIndex}" role="tabpanel" data-bs-parent="#category-${index}">
+                                    <div class="panel-body text-fade">
+                                        ${question.answer}
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    });
+
+                    contents.innerHTML += `
+                        <div id="navpills-${index}" class="tab-pane ${index === 0 ? 'active' : ''}">
+                            <div class="tab-pane animation-fade ${index === 0 ? 'active' : ''}" id="category-${index}" role="tabpanel">
+                                <div class="panel-group panel-group-simple panel-group-continuous" id="accordion${index}" aria-multiselectable="true" role="tablist">
+                                    ${questionsHTML}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+            });
+        }
+        searchInput.addEventListener('keyup',SearchFaqs);
+        SearchFaqs()
+    });
+</script>
 {% endblock scripts %}
+    
     
     
