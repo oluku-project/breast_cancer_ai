@@ -46,3 +46,9 @@ def calculate_age(date_of_birth):
     except:
         return 0
     return age
+
+
+@register.filter
+def ternary(value, arg):
+    arg1, arg2 = arg.split(",")
+    return arg1 if value else arg2
