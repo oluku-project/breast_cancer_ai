@@ -1,0 +1,67 @@
+{% load static %}
+{% load custom_filters %}
+
+<div class="modal modal-right fade" id="quick_user_toggle" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content slim-scroll3">
+            <div class="modal-body p-30 bg-white">
+                <div class="d-flex align-items-center justify-content-between pb-30">
+                    <h4 class="m-0">User Profile</h4>
+                    <a href="#" class="btn btn-icon btn-primary-light btn-sm no-shadow" data-bs-dismiss="modal">
+                        <span class="fa fa-close"></span>
+                    </a>
+                </div>
+                <div>
+                    <div class="d-flex flex-row">
+                        {% with sex=user.gender|gender_to_avatar %}
+                        <div class="">
+                            <img src="{% static 'images/avatar/avatar-' %}{{ sex }}.png" alt="user" class="rounded bg-primary-light w-150" width="100">
+                        </div>
+                        {% endwith %}
+                        <div class="ps-20">
+                            <h5 class="mb-0">{{user.full_name.title}}</h5>
+                            <p class="my-5 text-fade"> {% if user.is_staff %}Manager {% else %}User{% endif %}</p>
+                            <a href="mailto:{{user.email}}"><span class="icon-Mail-notification me-5 text-primary"><span class="path1"></span><span class="path2"></span></span> {{user.email}}</a>
+                            <button class="btn btn-primary-light btn-sm mt-5" onclick="navigateToUrl(this)" data-url="{% url 'auth:logout' %}">
+                                <i class="ti-new-window"></i> Log out</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="dropdown-divider my-30"></div>
+                <div>
+                    <div class="d-flex align-items-center mb-30">
+                        <div class="me-15 bg-primary-light h-50 w-50 l-h-60 rounded text-center">
+                            <span class="icon-Library fs-24"><span class="path1"></span><span class="path2"></span></span>
+                        </div>
+                        <div class="d-flex flex-column fw-500">
+                            <a 
+                                onclick="navigateToUrl(this)"
+                                data-url="{% url 'auth:profile' %}"
+                                href="javascript:void(0);"
+                                class="text-dark hover-primary mb-1 fs-16">
+                                My Profile
+                            </a>
+                            <span class="text-fade">Account settings and more</span>
+                        </div>
+                    </div>
+                    {% if user.is_staff %}
+                    <div class="d-flex align-items-center mb-30">
+                        <div class="me-15 bg-primary-light h-50 w-50 l-h-60 rounded text-center">
+                            <span class="icon-Group-chat fs-24"><span class="path1"></span><span class="path2"></span></span>
+                        </div>
+                        <div class="d-flex flex-column fw-500">
+                            <a 
+                                 onclick="navigateToUrl(this)"
+                                    data-url="#"
+                                    href="javascript:void(0);"
+                            class="text-dark hover-primary mb-1 fs-16">Settings</a>
+                            <span class="text-fade">Video Settings</span>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="dropdown-divider my-30"></div>
+            </div>
+            </div>
+        </div>
+    </div>
