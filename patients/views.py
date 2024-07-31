@@ -8,9 +8,10 @@ from patients.utils import (
     section_headers,
     RISK_LEVEL,
     CATEGORIES,
+    FAQS
 )
 from django.http import HttpResponse, JsonResponse
-from django.views.generic import DetailView, View
+from django.views.generic import DetailView, View, TemplateView
 from typing import List
 from django.shortcuts import get_object_or_404
 from .models import STATE, PredictionResult, QuestionnaireResponse, Response
@@ -111,7 +112,7 @@ class QuestionnaireView(View):
 questionnaier = QuestionnaireView.as_view()
 
 
-class SummaryView(HelpResponse,DetailView):
+class SummaryView(HelpResponse, DetailView):
     model = QuestionnaireResponse
     template_name = "patients/summary.html"
     context_object_name = "response_instance"
@@ -136,9 +137,10 @@ class SummaryView(HelpResponse,DetailView):
 summary_view = SummaryView.as_view()
 
 
-class PredictionView(HelpResponse,DetailView):
+class PredictionView(HelpResponse, DetailView):
     template_name = "patients/results.html"
     context_object_name = "response_instance"
+
     def get_queryset(self):
         """
         Override to return different querysets based on URL name.
@@ -443,7 +445,92 @@ class PredictionResultDeleteView(View):
 resultdelete_view = PredictionResultDeleteView.as_view()
 
 
-from django.http import HttpResponse
+class FeedbackView(View):
+
+    def post(self, request, *args, **kwargs):
+        form = FeedbackForm(request.POST)
+        if form.is_valid():
+            feedback = form.save(commit=False)
+            feedback.user = request.user
+            feedback.save()
+            return JsonResponse(
+                {"success": True, "message": "Thank you for your feedback!"}
+            )
+        else:
+            return JsonResponse({"success": False, "errors": form.errors})
+
+
+feedback = FeedbackView.as_view()
+
+class ContactView(View):
+
+    def post(self, request, *args, **kwargs):
+        form = ContactForm(request.POST)
+        if form.is_valid():
+            contact_message = form.save(commit=False)
+            if request.user.is_authenticated:
+                contact_message.user = request.user
+            contact_message.save()
+            return JsonResponse(
+                {"success": True, "message": "Thank you for your message!"}
+            )
+        else:
+            return JsonResponse({"success": False, "errors": form.errors})
+
+
+contactview = ContactView.as_view()
+
+
+class AboutView(View):
+    template_name = "about.html"
+
+    def get(self, request, *args, **kwargs):
+        return render(request, self.template_name, self.get_context())
+
+    def get_context(self):
+        context = {
+            "title_root": "About Us",
+        }
+        return context
+
+
+about = AboutView.as_view()
+
+
+class FAQView(TemplateView):
+    template_name = "faqs.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["faqs"] = FAQS
+        context["title_root"] = "FAQs"
+        return context
+
+    def get(self, request, *args, **kwargs):
+        if request.headers.get("x-requested-with") == "XMLHttpRequest":
+            query = request.GET.get("q", "").lower()
+            filtered_faqs = []
+
+            for section in FAQS:
+                filtered_questions = [
+                    question
+                    for question in section["questions"]
+                    if query in question["question"].lower()
+                    or query in question["answer"].lower()
+                ]
+                if filtered_questions:
+                    filtered_faqs.append(
+                        {"heading": section["heading"], "questions": filtered_questions}
+                    )
+
+            return JsonResponse(filtered_faqs, safe=False)
+
+        return super().get(request, *args, **kwargs)
+
+
+faqs = FAQView.as_view()
+
+
 import csv
 import json
 from django.contrib.auth.decorators import login_required

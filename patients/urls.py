@@ -56,4 +56,6 @@ urlpatterns = [
     path("detailed/result/<pk>/", results, name="detailed_result"),
     path("feedback/", feedback, name="feedback"),
     path("contact/", contactview, name="contact"),
+    path("about/", about, name="about"),
+    path("faqs", faqs, name="faqs"),
 ]

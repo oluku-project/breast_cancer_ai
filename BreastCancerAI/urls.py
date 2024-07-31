@@ -11,8 +11,6 @@ urlpatterns = [
     path("login/", login, name="login"),
     path("logout/", logout, name="logout"),
     path("activate/<uidb64>/<token>/", activate, name="activate"),
-    path("about/", about, name="about"),
-    path("faqs", faqs, name="faqs"),
 ]
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
