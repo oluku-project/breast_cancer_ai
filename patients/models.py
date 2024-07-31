@@ -89,6 +89,7 @@ class Contact(models.Model):
         "accounts.account", on_delete=models.SET_NULL, null=True, blank=True
     )
     name = models.CharField(max_length=100)
+    subject = models.CharField(max_length=200, null=True)
     email = models.EmailField()
     message = models.TextField()
     submitted_at = models.DateTimeField(db_default=Now())
