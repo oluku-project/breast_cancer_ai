@@ -491,7 +491,13 @@ FAQS = [
         ],
     },
 ]
-
+RATE_CHOICES = [
+    (1, "Very Poor"),
+    (2, "Poor"),
+    (3, "Average"),
+    (4, "Good"),
+    (5, "Excellent"),
+]
 
 class HelpResponse:
 
