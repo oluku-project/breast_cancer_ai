@@ -9,6 +9,7 @@ from patients.utils import (
     RISK_LEVEL,
     CATEGORIES,
 )
+from django.http import HttpResponse, JsonResponse
 from django.views.generic import DetailView, View
 from typing import List
 from django.shortcuts import get_object_or_404
