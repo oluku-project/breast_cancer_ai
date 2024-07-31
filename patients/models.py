@@ -1,6 +1,8 @@
 from django.db import models
 from django.db.models.functions import Now
 
+from patients.utils import RATE_CHOICES
+
 
 class STATE(models.TextChoices):
     INITIATE = "Initiate", "Initiate"
@@ -73,23 +75,23 @@ class PredictionResult(models.Model):
         return f"Prediction for {self.user.username} at {self.timestamp}"
 
 class Feedback(models.Model):
-    name = models.CharField(max_length=100)
-    email = models.EmailField()
+    user = models.ForeignKey("accounts.account", on_delete=models.CASCADE)
+    rating = models.IntegerField(choices=RATE_CHOICES)
     message = models.TextField()
     submitted_at = models.DateTimeField(db_default=Now())
 
     def __str__(self):
-        return f"Feedback from {self.name} at {self.submitted_at}"
+        return f"Feedback from {self.user.full_name()} at {self.submitted_at}"
 
 
 class Contact(models.Model):
+    user = models.ForeignKey(
+        "accounts.account", on_delete=models.SET_NULL, null=True, blank=True
+    )
     name = models.CharField(max_length=100)
     email = models.EmailField()
-    subject = models.CharField(max_length=200)
     message = models.TextField()
     submitted_at = models.DateTimeField(db_default=Now())
 
     def __str__(self):
-        return (
-            f"Contact request from {self.name} - {self.subject} at {self.submitted_at}"
-        )
+        return f"Message from {self.name or self.user.username if self.user else 'Anonymous'}"
