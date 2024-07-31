@@ -8,7 +8,7 @@ urlpatterns = [
     path("profile/", profile, name="profile"),  # done
     path("user-dashboard/", user_dashboard, name="user_dashboard"),  # done
     path("user-profile/", user_profile, name="user_profile"),  # done
-    path("contact/", contact, name="contact"),
+    # path("contact/", contact, name="contact"),
     path("export/", export_data, name="export_data"),
     path("import/", import_data, name="import_data"),
     path("data/", data_export_import, name="data_export_import"),
@@ -54,4 +54,6 @@ urlpatterns = [
     path("result/<pk>/", results, name="result"),
     path("delete-result/", resultdelete_view, name="delete_result"),
     path("detailed/result/<pk>/", results, name="detailed_result"),
+    path("feedback/", feedback, name="feedback"),
+    path("contact/", contactview, name="contact"),
 ]
