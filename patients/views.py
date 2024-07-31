@@ -1,7 +1,14 @@
 from django.urls import reverse
 from django.shortcuts import render, redirect
 from django.db import transaction
-from patients.utils import QUESTIONS, HelpResponse, section_headers, RISK_LEVEL, CATEGORIES
+from patients.forms import ContactForm, FeedbackForm
+from patients.utils import (
+    QUESTIONS,
+    HelpResponse,
+    section_headers,
+    RISK_LEVEL,
+    CATEGORIES,
+)
 from django.views.generic import DetailView, View
 from typing import List
 from django.shortcuts import get_object_or_404
@@ -319,7 +326,9 @@ class PredictionView(HelpResponse,DetailView):
             default_values = self.get_default_values()
             user_responses = {}
             for _, k, v in QUESTIONS:
-                user_responses[k] = v if k in question_keys else default_values.get(k, 0.00)
+                user_responses[k] = (
+                    v if k in question_keys else default_values.get(k, 0.00)
+                )
             probabilities = self.add_predictions(user_responses)
             chart_data = self.get_line_scatter_chart(user_responses)
             risk_level, risk_score = self.make_prediction(probabilities)
