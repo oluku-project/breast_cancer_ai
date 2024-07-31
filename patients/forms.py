@@ -1,5 +1,5 @@
 from django import forms
-
+from patients.models import Contact, Feedback
 
 class QuestionnaireForm(forms.Form):
     questions = [
@@ -122,3 +122,15 @@ class QuestionnaireForm(forms.Form):
             widget=forms.RadioSelect,
             required=True,
         )
+
+
+class FeedbackForm(forms.ModelForm):
+    class Meta:
+        model = Feedback
+        fields = ["message", "rating"]
+
+
+class ContactForm(forms.ModelForm):
+    class Meta:
+        model = Contact
+        fields = ["name", "email", "message"]
