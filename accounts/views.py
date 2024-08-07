@@ -107,7 +107,21 @@ class LoginView(FormView):
             return self.form_invalid(form)
 
     def form_invalid(self, form):
-        messages.error(self.request, _("Invalid form submission."))
+        try:
+            user = User.objects.get(email=form.cleaned_data.get("username"))
+            if user.is_active:
+                messages.error(
+                    self.request, _("Invalid credentials. Please try again.")
+                )
+            else:
+                messages.error(
+                    self.request,
+                    _(
+                        "Your account is inactive. Please check your email for activation instructions."
+                    ),
+                )
+        except User.DoesNotExist:
+            messages.error(self.request, _("Invalid email address. Please try again."))
         return self.render_to_response(self.get_context_data(form=form))
 
     def get_context_data(self, **kwargs):
