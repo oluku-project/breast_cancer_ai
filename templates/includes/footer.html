@@ -1,4 +1,4 @@
-<footer class="pt-5 pb-4">
+<footer class="main-footer pt-5 pb-4">
     <div class="container text-md-left">
         <div class="row text-md-left">
             <!-- About Section -->
@@ -9,10 +9,17 @@
             <!-- Products Section -->
             <div class="col-md-2 col-lg-2 col-xl-2 mx-auto mt-3">
                 <h5 class="text-uppercase mb-4 font-weight-bold">Products</h5>
-                <p><a href="#" class="text-decoration-none">Prediction Services</a></p>
-                <p><a href="#" class="text-decoration-none">Analytics</a></p>
-                <p><a href="#" class="text-decoration-none">Consulting</a></p>
-                <p><a href="#" class="text-decoration-none">Support</a></p>
+                <p><a onclick="navigateToUrl(this)"
+                    data-url="{% url 'auth:terms' %}"
+                    href="javascript:void(0);" class="text-decoration-none">Terms</a></p>
+                <p><a onclick="navigateToUrl(this)"
+                    data-url="{% url 'auth:privacy' %}"
+                    href="javascript:void(0);" class="text-decoration-none">Privicy</a></p>
+                <p><a 
+                    onclick="navigateToUrl(this)"
+                    data-url="{% url 'contact' %}"
+                    href="javascript:void(0);"
+                    class="text-decoration-none">Support</a></p>
             </div>
             <!-- Useful Links Section -->
             <div class="col-md-3 col-lg-2 col-xl-2 mx-auto mt-3">
@@ -24,26 +31,22 @@
                                 data-url="{% url 'about' %}"
                                 href="javascript:void(0);" class="text-decoration-none"><i class="fa fa-info-circle me-2"></i>About</a></p>
                 <p><a onclick="navigateToUrl(this)"
-                                data-url="{% url 'contact' %}"
-                                href="javascript:void(0);" class="text-decoration-none"><i class="fa fa-envelope me-2"></i>Contact</a></p>
-                <p><a onclick="navigateToUrl(this)"
-                                data-url="{% url 'home' %}"
-                                href="javascript:void(0);" class="text-decoration-none"><i class="fa fa-cogs me-2"></i>Services</a></p>
+                                data-url="{% url 'faqs' %}"
+                                href="javascript:void(0);" class="text-decoration-none"><i class="fa fa-cogs me-2"></i>FAQs</a></p>
             </div>
             <!-- Contact Section -->
             <div class="col-md-4 col-lg-3 col-xl-3 mx-auto mt-3">
                 <h5 class="text-uppercase mb-4 font-weight-bold">Contact</h5>
-                <p><i class="fa fa-home me-3"></i> 123 Main Street, Anytown, USA</p>
-                <p><i class="fa fa-envelope me-3"></i> info@example.com</p>
+                <p><i class="fa fa-home me-3"></i> 123 Main Street, Paraku Estate, XEZ</p>
+                <p><i class="fa fa-envelope me-3"></i> info.bcp.@gmail.com</p>
                 <p><i class="fa fa-phone me-3"></i> (123) 456-7890</p>
-                <p><i class="fa fa-print me-3"></i> (123) 456-7891</p>
             </div>
         </div>
         <hr class="mb-4">
         <!-- Social Media Section -->
         <div class="row align-items-center">
             <div class="col-md-7 col-lg-8">
-                <p class="text-center text-md-start">© 2024 Your Company. All rights reserved.</p>
+                <p class="text-center text-md-start">&copy; {% now 'Y' %} Zila Tech. All rights reserved.</p>
             </div>
             <div class="col-md-5 col-lg-4">
                 <div class="text-center text-md-end">
