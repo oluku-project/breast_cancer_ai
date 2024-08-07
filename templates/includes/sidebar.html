@@ -1,26 +1,28 @@
+{% load static %}
 <aside class="main-sidebar">
   <section class="sidebar position-relative">
     <div class="multinav">
       <div class="multinav-scroll" style="height: 97%">
         <!-- sidebar menu-->
+        {% if user.is_active %}
         <ul class="sidebar-menu" data-widget="tree">
           <li class="treeview">
-            <a href="#">
-            <i data-feather="home"></i>
-            <span>Home</span>
-            <span class="pull-right-container">
-              <i class="fa fa-angle-right pull-right"></i>
-            </span>
+            <a href="javascript:void(0)">
+              <i data-feather="home"></i>
+              <span>Home</span>
+              <span class="pull-right-container">
+                <i class="fa fa-angle-right pull-right"></i>
+              </span>
             </a>
             <ul class="treeview-menu">
               <li>
-                <li><a href="{% url 'index' %}"><i class="icon-Commit"><span class="path1"></span><span class="path2"></span></i>Home</a></li>
+                <li><a href="{% url 'home' %}"><i class="icon-Commit"><span class="path1"></span><span class="path2"></span></i>Home</a></li>
                 <li><a href="{% url 'auth:user_dashboard' %}"><i class="icon-Commit"><span class="path1"></span><span class="path2"></span></i>Dashboard</a></li>
               </li>	
             </ul>
           </li>
           <li class="treeview">
-            <a href="#">
+            <a href="javascript:void(0)">
             <i data-feather="paperclip"></i>
             <span>Questionnaire</span>
             <span class="pull-right-container">
@@ -30,8 +32,8 @@
             <ul class="treeview-menu">
               <li>
                 <li><a href="{% url 'questionnaire' %}"><i class="icon-Commit"><span class="path1"></span><span class="path2"></span></i>Questionnaire</a></li>
-                <li><a href="{% url 'pending_results' %}"><i class="icon-Commit"><span class="path1"></span><span class="path2"></span></i>Pending Results</a></li>
-              </li>	
+                  <li><a href="{% url 'pending_results' %}"><i class="icon-Commit"><span class="path1"></span><span class="path2"></span></i>Pending Results</a></li>
+                </li>	
             </ul>
           </li>
           <li>
@@ -47,43 +49,31 @@
             </a>
           </li>
           <li>
-            <a href="extra_profile.html">
-              <i data-feather="wind"></i>
-              <span>Charts and Data</span>
-            </a>
-          </li>
-          <li>
-            <a href="results">
-              <i data-feather="disc"></i>
-              <span>Record Details</span>
-            </a>
-          </li>
-          <li>
-            <a href="setting.html">
+            <a href="{% url 'faqs' %}">
               <i data-feather="tag"></i>
               <span>FAQs</span>
             </a>
           </li>
           <li>
-            <a href="setting.html">
+            <a href="{% url 'contact' %}">
               <i data-feather="voicemail"></i>
               <span>Contact</span>
             </a>
           </li>
         </ul>
-
-        <!-- <div class="sidebar-widgets">
+         <div class="sidebar-widgets">
           <div class="mx-25 mb-30 pb-20 side-bx bg-primary-light rounded20">
             <div class="text-center">
               <img
-                src="https://investx-admin-template.multipurposethemes.com/New_InvestX-main-files/html/images/svg-icon/color-svg/custom-32.svg"
+                src="{% static 'images/side-footer.svg' %}"
                 class="sideimg p-5"
                 alt=""
               />
-              <h4 class="title-bx text-primary">Best Invest Portal</h4>
+              <h4 class="title-bx text-primary">QuickDiag</h4>
             </div>
           </div>
-        </div> -->
+        </div> 
+        {% endif %}
       </div>
     </div>
   </section>
