@@ -64,7 +64,8 @@
             <i class="fa fa-home"></i> Home
           </a>
           <a
-            href="#"
+            onclick="navigateToUrl(this)"
+            data-url="{% url 'contact' %}"
             class="waves-effect waves-light btn btn-outline-light btn-lg m-2"
           >
             <i class="fa fa-envelope"></i> Contact Us
@@ -313,10 +314,11 @@
                   This paper discusses various machine learning techniques used in
                   breast cancer prediction and their effectiveness.
                 </p>
-                <a
-                  href="https://example.com/full-text-1"
+                <button
+                  onclick="navigateToUrl(this,true)"
+                  data-url="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC9175124/"
                   class="waves-effect waves-light btn btn-primary"
-                  >Read Full Text</a
+                  >Read Full Text</button
                 >
               </div>
             </div>
@@ -330,10 +332,11 @@
                   An in-depth analysis of data sources and methods used for the
                   early detection of breast cancer.
                 </p>
-                <a
-                  href="https://example.com/full-text-2"
+                <button
+                  onclick="navigateToUrl(this,true)"
+                    data-url="{% static 'assets/files/Prediction_of_Breast_Cancer_Comparative_Review_of_.pdf' %}"
                   class="waves-effect waves-light btn btn-primary"
-                  >Read Full Text</a
+                  >Read Full Text</button
                 >
               </div>
             </div>
@@ -347,10 +350,11 @@
                   Overview of different predictive models and their validation
                   processes in breast cancer diagnosis.
                 </p>
-                <a
-                  href="https://example.com/full-text-3"
+                <button
+                  onclick="navigateToUrl(this,true)"
+                  data-url="{% static 'assets/files/PredictiveModel.pdf.pdf' %}"
                   class="waves-effect waves-light btn btn-primary"
-                  >Read Full Text</a
+                  >Read Full Text</button
                 >
               </div>
             </div>
@@ -366,10 +370,11 @@
                   Examines the role of artificial intelligence in enhancing the
                   accuracy and efficiency of breast cancer detection.
                 </p>
-                <a
-                  href="https://example.com/full-text-4"
+                <button
+                  onclick="navigateToUrl(this,true)"
+                  data-url="{% static 'assets/files/AI_breast_cancer_detection_ Technology.pdf' %}"
                   class="waves-effect waves-light btn btn-primary"
-                  >Read Full Text</a
+                  >Read Full Text</button
                 >
               </div>
             </div>
@@ -523,7 +528,10 @@
                     Featured in University Times for our innovative approach to breast
                     cancer prediction using AI.
                   </p>
-                  <a href="#" class="waves-effect waves-light btn btn-primary">Read Article</a>
+                  <button 
+                  onclick="navigateToUrl(this,true)"
+                  data-url="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC10625863/"
+                  class="waves-effect waves-light btn btn-primary">Read Article</button>
                 </div>
               </div>
             </div>
@@ -540,7 +548,10 @@
                     Interviewed on Health Tech News discussing the impact of our
                     project on early breast cancer detection.
                   </p>
-                  <a href="#" class="waves-effect waves-light btn btn-primary">Watch Interview</a>
+                  <button 
+                  onclick="navigateToUrl(this,true)"
+                  data-url="https://youtu.be/8XsiMQQ-4mM?si=EeWxkezOCRjqCr0c"
+                  class="waves-effect waves-light btn btn-primary">Watch Interview</button>
                 </div>
               </div>
             </div>
