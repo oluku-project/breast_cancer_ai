@@ -11,6 +11,7 @@ from django.contrib import messages
 from django.utils.translation import gettext_lazy as _
 from BreastCancerAI.utils import PASSWORD_VALIDITY, MailUtils
 from accounts.mixins import ActiveUserRequiredMixin
+from ml.utils import log_user_activity
 from patients.models import PredictionResult
 from .forms import LoginForm, RegistrationForm, SetPasswordForm, UpdateAccountForm
 from .models import Account
@@ -50,7 +51,7 @@ class UserRegistrationView(MailUtils, CreateView):
         )
 
         self.request.session["registration_success"] = True
-
+        log_user_activity(self.request, 'Signed up')
         return redirect(self.success_url)
 
     def form_invalid(self, form):
@@ -80,6 +81,7 @@ class ActivateAccountView(View):
         if user is not None and default_token_generator.check_token(user, token):
             user.is_active = True
             user.save()
+            log_user_activity(request, "Activated account")
             messages.success(request, _("Congratulations! Your account is activated."))
             return redirect("auth:login")
         else:
@@ -102,6 +104,7 @@ class LoginView(FormView):
         user = auth.authenticate(email=username, password=password)
         if user is not None:
             auth.login(self.request, user)
+            log_user_activity(self.request, "Logged in")
             messages.success(self.request, _("You are now logged in."))
             return super().form_valid(form)
         else:
@@ -138,6 +141,7 @@ loginview = LoginView.as_view()
 class LogoutView(ActiveUserRequiredMixin, View):
     def get(self, request):
         auth.logout(request)
+        log_user_activity(request, "Logged out")
         messages.success(request, _("You are logged out."))
         return redirect("auth:login")
 
@@ -160,6 +164,7 @@ class ForgotPasswordView(MailUtils, View):
             self.compose_email(
                 self.request, user, mail_subject=mail_subject, mail_temp=mail_temp
             )
+            log_user_activity(request, "Requested password change")
             messages.success(
                 request, _("Password reset email has been sent to your email address.")
             )
@@ -179,6 +184,7 @@ class PasswordResetConfirmView(AuthPasswordResetConfirmView):
 
     def form_valid(self, form):
         user = form.save()
+        log_user_activity(self.request, "Password changed")
         messages.success(
             self.request,
             _(
@@ -219,6 +225,7 @@ class PrivacyView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        log_user_activity(self.request, "Viewed privacy page")
         context["title_root"] = _("Privacy")
         return context
 
@@ -231,6 +238,7 @@ class TermsView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        log_user_activity(self.request, "Viewed terms page")
         context["title_root"] = _("Terms")
         return context
 
@@ -316,7 +324,7 @@ class UserDashboardView(ActiveUserRequiredMixin,TemplateView):
             latest_prediction.submission_date if latest_prediction else "N/A"
         )
 
-        print("avg_chart_data: ", avg_chart_data)
+        log_user_activity(self.request, "Viewed dashboard page")
         context["area_chart_data"] = area_chart_data
         context["avg_chart_data"] = avg_chart_data
         context["area_chart_labels"] = months
@@ -355,9 +363,11 @@ class UpdateAccountView(ActiveUserRequiredMixin,View):
 
             if form.is_valid():
                 form.save()
+                log_user_activity(request, "Updated account")
                 msg = "Account updated sucessfully"
                 if form_type == "password":
                     update_session_auth_hash(request, form.user)
+                    log_user_activity(request, "Updated password")
                     msg = "Password updated successfully."
                 messages.success(request, msg)
                 return redirect("auth:profile")
