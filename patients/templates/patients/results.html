@@ -310,8 +310,10 @@
                             <div class="card-body">
                                 <h5 class="card-title">Printable Report</h5>
                                 <p>Download or print your results and recommendations for future reference:</p>
-                                <button class="btn btn-primary">Download Report</button>
-                                <button class="btn btn-secondary">Print Report</button>
+                                <button class="btn btn-primary" onclick="navigateToUrl(this,true)"
+                                    data-url="{% url 'report_download' %}">Download Report</button>
+                                <button onclick="navigateToUrl(this,true)"
+                                    data-url="{% url 'report_print' %}"class="btn btn-secondary">Print Report</button>
                             </div>
                         </div>
                     </div>
@@ -320,7 +322,7 @@
                             <div class="card-body">
                                 <h5 class="card-title">Share Results</h5>
                                 <p>Securely share your results with your healthcare provider:</p>
-                                <button class="btn btn-primary">Email Results</button>
+                                <button class="btn btn-primary">Email Result</button>
                                 <button class="btn btn-secondary">Download Results</button>
                             </div>
                         </div>
