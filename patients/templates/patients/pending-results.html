@@ -1,0 +1,152 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block headers %}
+    <!-- Custom CSS -->
+<style>
+    .hero-section {
+            background: url('{% static "images/result-repor-bg.jpg" %}') no-repeat center center/cover;
+            background-size: cover;
+            background-position: center;
+            color: #fff;
+            text-align: center;
+            padding: 5rem 0;
+            position: relative;
+        }
+
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+        }
+
+        .hero-section .container {
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero-section h1 {
+            font-size: 3.5rem;
+            font-weight: bold;
+        }
+
+        .hero-section p {
+            font-size: 1.5rem;
+        }
+    </style>
+{% endblock headers %}
+{% block content %}
+    <section class="content">
+        <!-- Hero Section -->
+        <section class="hero-section">
+            <div class="container text-center">
+                <h1 class="display-4">Pending Results</h1>
+                <p class="lead">View and filter your breast cancer risk assessment pending results.</p>
+            </div>
+        </section>
+        <div class="container my-5">
+            <div class="row mb-4">
+                <div class="col text-center">
+                    <h2 class="display-5">Filter Results</h2>
+                </div>
+
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">Pending Result Filters</h5>
+                        <button class="btn btn-link" data-bs-toggle="collapse" data-bs-target="#filterForm" aria-expanded="true">
+                            Filter Pending Results
+                        </button>
+                    </div>
+                    <div id="filterForm" class="collapse">
+                        <div class="card-body">
+                            <form method="get">
+                                <div class="row g-3">
+                                    
+                                    {% for field in filter.form %}
+                                        <div class="col-md-4">
+                                            {{field.as_field_group}}
+                                        </div>
+                                    {% endfor %}
+                                        
+                                    <div class="col-md-12 mt-4">
+                                        <button type="submit" class="btn btn-primary">Apply Filters</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="table-responsive">
+            <table class="table table-centered mb-0">
+                <thead class="table-light text-fade">
+                    <tr class="text-dark">
+                        <th>#</th>
+                        <th>Created By</th>
+                        <th>Progress</th>
+                        <th>Submission On</th>
+                        <th>Updated On</th>
+                        <th>State</th>
+                        <th style="width: 125px;">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    
+                    {% for item in items  %}
+                        <tr>
+                                <td>
+                                #{% if  forloop.counter > 9%}{{forloop.counter}} {% else %}0{{forloop.counter}}{% endif %}
+                                </td>
+                                <td>{{ item.user.username }}</td>
+                                <td>{{ item.progress }}%</td>
+                                <td>{{ item.submission_date|date:"Y-m-d H:i:s" }}</td>
+                                <td>{{ item.updated_date|date:"Y-m-d H:i:s" }}</td>
+                                <td>{{ item.get_state_display }}</td>
+                                <td>
+                                <a href="javascript:void(0);" class="action-icon" 
+                                onclick="navigateToUrl(this)" 
+                                data-url="{% url 'summary' item.id %}"> 
+                                    <i class="fa fa-eye"></i>
+                                </a>
+                                <a href="javascript:void(0);" class="action-icon ms-2" 
+                                    data-bs-toggle="modal" 
+                                    data-bs-target="#deleteModal" 
+                                    onclick="confirmDelete('{{ item.id }}')"
+                                        > 
+                                    <i class="fa fa-trash-o"></i>
+                                </a>
+                                </td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="7" class="text-center">No pending results available.</td>
+                        </tr>
+                    {% endfor %}
+
+
+                </tbody>
+            </table>
+            {% if items %}
+                <p class="mt-2 fst-italic text-muted">
+                    Total pending results found: {{ items|length }}
+                </p>
+            {% endif %}
+        </div>
+        {% include 'includes/pagenator.html' %}
+        <!-- Modal -->
+        {% include 'patients/includes/pending-results-modal.html' %}
+        </div>
+        
+        
+    </section>
+    {% endblock content %}
+    
+    {% block scripts %}
+        {% include 'patients/includes/pending-results-script.html' %}
+    {% endblock scripts %}
+    
+    

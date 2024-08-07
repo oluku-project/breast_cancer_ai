@@ -1,0 +1,25 @@
+<div class="card">
+    <div class="card-body">
+        <form id="feedbackForm" action="{% url 'feedback' %}">
+            {% csrf_token %}
+            <h5 class="card-title">Your Feedback Matterss</h5>
+            <div class="mb-3">
+                <label for="rating" class="form-label">Rate the Helpfulness of the Results</label>
+                <select class="form-select" id="rating" name="rating" required>
+                    <option value="5">5 - Excellent</option>
+                    <option value="4">4 - Good</option>
+                    <option value="3">3 - Average</option>
+                    <option value="2">2 - Below Average</option>
+                    <option value="1">1 - Poor</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <div class="form-group">
+                    <label for="message">Comments</label>
+                    <textarea class="form-control" id="message" name="message" rows="4" placeholder="Your Comments" required></textarea>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary">Submit Feedback</button>
+        </form>
+    </div>
+</div>

@@ -1,5 +1,6 @@
 from pathlib import Path
 import environ
+import os
 
 env = environ.Env(
     # set casting, default value
@@ -24,8 +25,7 @@ ALLOWED_HOSTS = []
 
 
 # Application definition
-DEFAULT_APPS=[
-
+DEFAULT_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -36,6 +36,7 @@ DEFAULT_APPS=[
 LOCAL_APPS = [
     "accounts",
     "patients",
+    "ml",
 ]
 INSTALLED_APPS = DEFAULT_APPS + LOCAL_APPS
 
@@ -85,7 +86,16 @@ DATABASES = {
         "NAME": BASE_DIR / "db.sqlite3",
     }
 }
-
+# DATABASES = {
+#     "default": {
+#         "ENGINE": env("DATABASE_ENGINE"),
+#         "NAME": env("DATABASE_NAME"),
+#         "USER": env("DATABASE_USER"),
+#         "PASSWORD": env("DATABASE_PASSWORD"),
+#         "HOST": env("DATABASE_HOST"),
+#         "PORT": env("DATABASE_PORT"),
+#     }
+# }
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
@@ -127,6 +137,10 @@ STATIC_URL = "/static/"
 STATIC_ROOT = BASE_DIR / "static"
 STATICFILES_DIRS = ["BreastCancerAI/static"]
 
+# STATIC_URL = "/static/"
+# STATIC_ROOT = BASE_DIR / "staticfiles_build" / "static"
+# STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
+
 # AUTHENTICATION_BACKENDS = ("django.contrib.auth.backends.ModelBackend",)
 ACCOUNT_AUTHENTICATION_METHOD = "email"
 ACCOUNT_EMAIL_REQUIRED = True
@@ -147,7 +161,7 @@ EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD")
 # LOGIN_REDIRECT_URL = "account:profile_complete"
 LOGOUT_REDIRECT_URL = "auth:login"
 
-# LOGIN_URL = "account:profile_complete"
+LOGIN_URL = "auth:login"
 LOGOUT_URL = "auth:logout"
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field

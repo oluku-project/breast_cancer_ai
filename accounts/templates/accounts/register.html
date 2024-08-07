@@ -1,4 +1,5 @@
 {% extends 'root.html' %}
+{% load static %}
 
 {% block body %}
 	<div class="container h-p100">
@@ -8,8 +9,8 @@
 					<div class="col-lg-5 col-md-5 col-12">
 						<div class="bg-white rounded10 shadow-lg">
 							<div class="content-top-agile p-20 pb-0">
-								<h2 class="text-primary fw-600">Get started with Us</h2>
-								<p class="mb-0 text-fade">Register a new membership</p>							
+								<h2 class="text-primary fw-600">Create Your Account</h2>
+								<p class="mb-0 text-fade">Join us to manage your health information and receive personalized insights.</p>							
 							</div>
 							<div class="p-40">
 								<form method="post">
@@ -53,8 +54,8 @@
 									  <div class="row">
 										<div class="col-6">
 											<div class="checkbox">
-											<input type="checkbox" id="basic_checkbox_1" >
-											<label for="basic_checkbox_1">You agree to our</label>
+											{{ form.agree }}
+											<label for="id_agree">You agree to our</label>
 											</div>
 										</div>
 									<!-- /.col -->

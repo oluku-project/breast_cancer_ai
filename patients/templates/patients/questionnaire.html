@@ -1,0 +1,59 @@
+{% extends 'base.html' %} 
+{% load static %}
+{% load custom_filters %}
+{% block content %}
+<section class="content">
+  <div class="box">
+    <div class="box-header with-border">
+      <h4 class="box-title">Breast Cancer Risk Assessment Questionnaire</h4>
+      <h6 class="box-subtitle">
+        Please answer the following questions to help us assess your risk for breast cancer.
+      </h6>
+      <div class="progressbar1 mt-2 mb-0">
+        <div class="progress-bar bg-primary"  role="progressbar" id="progressBar" aria-valuenow="0" style="width: 25%;" aria-valuemin="0" aria-valuemax="100">0%</div>
+      </div>
+    </div>
+    <!-- /.box-header -->
+    <div class="box-body wizard-content">
+      <form id="questionnaireForm" method="post" class="tab-wizard wizard-circle">
+        <input type="text" name="progress" id="progress" hidden>
+         {% csrf_token %}
+         {% for question, key, value in questions %}
+            {% if forloop.first or forloop.counter0|divisibleby:6 %}
+                {% if not forloop.first %}
+                    </div>
+                  </section>
+                {% endif %}
+                  <h6>{{ forloop.counter0|get_section_header:section_headers }} </h6>
+                    <section>
+                  <div class="row">
+            {% endif %}
+              <div class="col-md-6">
+                <div class="form-group">
+                  <p class="text-muted fs-14">{{question}}</p>
+                    <div class="form-check form-switch">
+                      <input
+                        class="form-check-input"
+                        type="checkbox"
+                        id="id_{{ key }}"
+                        name="{{ key }}"
+                        {% if key in question_keys %} checked {% endif %}
+                        data-value="{{ value }}"
+                      />
+                      <label class="form-check-label" for="id_{{ key }}">Yes</label>
+                    </div>
+                </div>
+              </div>
+          {% endfor %}
+              </div>
+         </section>
+      </form>
+    </div>
+  </div>
+</section>
+{% endblock content %}
+
+{% block scripts %}
+    {% include 'patients/includes/questionnaire-script.html' %}
+{% endblock scripts %}
+    

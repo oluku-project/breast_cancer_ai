@@ -1,0 +1,32 @@
+{% load static %}
+
+<script>
+    $(document).ready(function() {
+        $('#contactForm').on('submit', function(event) {
+            event.preventDefault();
+            var formData = $(this).serialize();
+
+            $.ajax({
+                type: 'POST',
+                url: $(this).attr('action'),
+                data: formData,
+                dataType: 'json',
+                success: function(response) {
+                    if (response.success) {
+                        showToast("Success", response.message, "success");
+                        $('#contactForm')[0].reset();
+                    } else {
+                        var errors = '';
+                        $.each(response.errors, function(field, error) {
+                            errors += '<p>' + field + ': ' + error + '</p>';
+                        });
+                        showToast("Error", errors, "error");
+                    }
+                },
+                error: function(xhr, status, error) {
+                    showToast("Error", "An error occurred. Please try again later.", "error");
+                }
+            });
+        });
+    });
+</script>

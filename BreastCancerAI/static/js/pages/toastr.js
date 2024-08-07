@@ -1,5 +1,4 @@
 function showToast(heading, text, icon) {
-  console.log('Hi dey');
   $.toast({
     heading: heading,
     text: text,
@@ -11,4 +10,3 @@ function showToast(heading, text, icon) {
   });
 }
 
-console.log('Hi welcome');

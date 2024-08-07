@@ -7,16 +7,30 @@
           
         {% endblock headers %}
     </head>
-  {% with url_name=request.resolver_match.url_name urls='signup,login,forgotPassword' %}
+  {% with url_name=request.resolver_match.url_name urls='signup,login,forgotPassword,password_reset_confirm,password_reset_complete' %}
     <body class=
       "hold-transition theme-primary
       {% if url_name in urls %}
         bg-img
       {% else %}
-        light-skin sidebar-mini fixed sidebar-collapse
+        light-skin sidebar-mini fixed 
+        {% if not user.is_active %}
+          sidebar-collapse
+        {% endif %}
+          
       {% endif %}
       " {% if url_name in urls %}
-          style="background-image: url('{% static 'images/auth-bg/bg-16.jpg' %}')"
+          style="margin: 0;
+          padding: 0;
+          width: 100%;
+          height: 100%;
+          font-family: Arial, sans-serif important;
+          background: url('{% static 'images/auth-bg/bg-16.jpg' %}') no-repeat center center fixed;
+          background-size: cover;
+          justify-content: center important;
+          align-items: center important;
+          text-align: center important;
+          "
         {% endif %}
     >
 

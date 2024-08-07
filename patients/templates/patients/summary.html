@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load custom_filters %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="card ">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h4 class="card-title">
+                Summary of <strong>Questionnaire</strong> Responses
+            </h4>
+            <div class="d-flex align-items-center">
+                <span>{{ response_instance.user.username }}</span>
+                <span class="text-muted ms-2">| {{ response_instance.submission_date }}</span>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="progress my-4">
+                <div class="progress-bar bg-primary"  role="progressbar" id="progressBar" aria-valuenow="{{ response_instance.progress }}" style="width: {{ response_instance.progress }}%;" aria-valuemin="{{ response_instance.progress }}" aria-valuemax="100">{{ response_instance.progress }}%</div>
+            </div>
+            <div class="timeline5">
+                <!-- Loop through section headers and display grouped questions -->
+                {% for section_header, questions in grouped_questions.items %}
+                    <div class="timeline__group">
+                    <span class="timeline__year">{{ section_header }}</span>
+                    {% for question in questions %}
+                    <div class="timeline__box">
+                        <div class="timeline__date">
+                            <span class="timeline__day">{{ forloop.counter }}</span>
+                        </div>
+                        <div class="timeline__post">
+                            <div class="timeline__content">
+                                <p>{{ question }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="card-footer text-end">
+            <a onclick="navigateToUrl(this)"
+            data-url="{% url 'result' response_instance.pk %}"
+            href="javascript:void(0);" class="btn btn-primary me-3"><i class="fa fa-check me-1"></i> Confirm and Proceed</a>
+            <a 
+            onclick="navigateToUrl(this)"
+            data-url="{% url 'update_questionnaire' response_instance.pk %}"
+            href="javascript:void(0);"
+            class="btn btn-secondary"><i class="fa fa-edit me-1"></i> Edit</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

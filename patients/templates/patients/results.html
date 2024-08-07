@@ -1,0 +1,377 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load custom_filters %}
+
+{% block headers %}
+    <style>
+        /* Hero Section */
+        .hero-section {
+            background: url('{% static "images/results-img-1.png" %}') no-repeat center center/cover;
+            background-size: cover;
+            background-position: center;
+            color: #fff;
+            text-align: center;
+            padding: 5rem 0;
+            position: relative;
+        }
+
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+        }
+
+        .hero-section .container {
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero-section h1 {
+            font-size: 3.5rem;
+            font-weight: bold;
+        }
+
+        .hero-section p {
+            font-size: 1.5rem;
+        }
+        
+        /* Risk Assessment Section */
+        .risk-assessment-section .card {
+            border-radius: 8px;
+        }
+        .risk-indicator {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            margin: 0 auto;
+        }
+        .risk-indicator.low {
+            background-color: #28a745;
+        }
+        .risk-indicator.moderate {
+            background-color: #ffc107;
+        }
+        .risk-indicator.high {
+            background-color: #dc3545;
+        }
+        .risk-label {
+            font-size: 1.2rem;
+            color: #fff;
+            font-weight: bold;
+        }
+        .risk-score h3 {
+            font-size: 2rem;
+            color: #007bff;
+        }
+    </style>
+{% endblock headers %}
+
+{% block content %}
+    <div class="content">
+        <!-- hero sectction -->
+        <section class="hero-section mb-50">
+            <div class="container">
+                <h1>Your Breast Cancer Risk Assessment Results</h1>
+                <p>
+                    Based on your responses, here’s your personalized risk assessment.
+                </p>
+            </div>
+        </section>
+        <!-- risk level -->
+        <section class="row mb-50">
+            <a class="col-md-6 col-lg-4">
+                <div class="box-round pull-up">
+                    <div class="box-body box-hover-shadow">
+                        <div class="d-flex align-items-center mb-3">
+                            <i class="fa fa-user-md fa-5x"></i>
+                            <h4 class="mx-3">Risk Level</h4>
+                        </div>
+                        <p class="text-fade">{{risk_level.info|safe}}</p>
+                    </div>
+                </div>
+            </a>
+            <a class="col-md-6 col-lg-4">
+                <div class="box-round pull-up">
+                    <div class="box-body">
+                        <div class="d-flex align-items-center mb-3">
+                            <i class="fa fa-thermometer-2 fa-5x"></i>
+                            <h4 class="mx-3">Score</h4>
+                        </div>
+                        <p class="text-fade">{{risk_level.score|safe}}</p>
+                    </div>
+                </div>
+            </a>
+            <a class="col-md-6 col-lg-4">
+                <div class="box-round pull-up">
+                    <div class="box-body">
+                        <div class="d-flex align-items-center mb-3">
+                            <i class="fa fa-calendar-check-o fa-5x"></i>
+                            <h4 class="mx-3">Next Steps</h4>
+                        </div>
+                        <p class="text-fade">{{risk_level.next|safe}}</p>
+                    </div>
+                </div>
+            </a>
+            <a class="col-md-6 col-lg-4 mt-4">
+                <div class="box-round pull-up">
+                    <div class="box-body">
+                        <div class="d-flex align-items-center mb-3">
+                            <i class="ti-book fa-5x"></i>
+                            <h4 class="mx-3">Resources</h4>
+                        </div>
+                        <p class="text-fade">
+                            Explore our resources for more information on breast cancer, prevention strategies, and support groups.
+                        </p>
+                        
+                    </div>
+                </div>
+            </a>
+        </section>
+        <!--Questions-->
+        {% if grouped_questions %}
+            <div class="container my-5">
+                <div class="row mb-4">
+                    <div class="col text-center">
+                        <h2 class="display-5">Summary of Questionnaire</h2>
+                    </div>
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0">Questions Answered</h5>
+                            <button class="btn btn-link" data-bs-toggle="collapse" data-bs-target="#filterForm" aria-expanded="true">
+                                View Questions
+                            </button>
+                        </div>
+                            <div id="filterForm" class="collapse">
+                                <div class="card-body">
+                                    <div class="timeline5">
+                                        <!-- Loop through section headers and display grouped questions -->
+                                        {% for section_header, questions in grouped_questions.items %}
+                                            <div class="timeline__group">
+                                            <span class="timeline__year">{{ section_header }}</span>
+                                            {% for question in questions %}
+                                                <div class="timeline__box">
+                                                    <div class="timeline__date">
+                                                        <span class="timeline__day">{{ forloop.counter }}</span>
+                                                    </div>
+                                                    <div class="timeline__post">
+                                                        <div class="timeline__content">
+                                                            <p>{{ question }}</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            {% endfor %}
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                    
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+        <!-- summery of me -->
+        <div class="row justify-content-center mb-50">
+            <div class="col-12 mb-4">
+                <h2 class="display-5 mb-10 text-center">
+                    Summary of Your Information
+                </h2>
+                <p class="fs-5 mb-10 text-center">
+                    Review the information you provided. If there are any errors, you can edit and resubmit your responses.
+                </p>
+            </div>
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">User Information</h5>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item"><strong>Name:</strong> {{ user.full_name }}</li>
+                            <li class="list-group-item"><strong>Gender:</strong> {{ user.gender }}</li>
+                            {% with dob=response_instance.dob|calculate_age progress=response_instance.questionnaire_response.progress %}
+                            <li class="list-group-item"><strong>Age:</strong> {{ user.date_of_birth|calculate_age|default:dob }}</li>
+                            <li class="list-group-item"><strong>Key Health History Points:</strong> {{ response_instance.progress|default:progress }}</li>
+                            {% endwith %}
+                            <li class="list-group-item"><strong>Symptoms Reported:</strong> {{ risk_level.level }}</li>
+                            <li class="list-group-item">
+                                <strong>Probability of being benign:</strong> {{ probability_benign }}
+                                <i class="fa fa-info-circle ms-2" data-bs-toggle="tooltip" data-bs-placement="right" title="The probability that the tumor is benign (non-cancerous)."></i>
+                                <span class="text-success">🟢</span>
+                            </li>
+                            <li class="list-group-item">
+                                <strong>Probability of being malignant:</strong> {{ probability_malignant }}
+                                <i class="fa fa-info-circle ms-2" data-bs-toggle="tooltip" data-bs-placement="right" title="The probability that the tumor is malignant (cancerous)."></i>
+                                <span class="text-danger">🔴</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                {% if editable %}
+                <div class="text-center mt-4">
+                    <a href="{% url 'edit-assessment' %}" class="btn btn-primary">Edit Your Information</a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        <!-- Risk Assessment and Visual Analysis -->
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card text-center">
+                    <div class="box-header text-center">
+                        <h5 class="box-title">Risk Assessment</h5>
+                        <h6 class="box-subtitle text-muted">
+                            A breakdown of your responses and their impact on your risk assessment.
+                        </h6>       
+                    </div>
+                    <div class="card-body">
+                        <div class="risk-indicator {{ risk_level.level|lower|default:'low' }}">
+                            <span class="risk-label">{{ risk_level.level|default:"Low" }}</span>
+                        </div>
+                        <div class="risk-score mt-3">
+                            <h3>Risk Score: {{ risk_score }}%</h3>
+                        </div>
+                            
+                        {% for key, value in risk_explanation.items %}
+                            <p class="text-muted"><strong>{{ key }}:</strong> {{ value }}</p>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="box">
+                    <div class="box-header text-center">
+                        <h5 class="box-title">Visual Analysis</h5>
+                    </div>
+                    <div class="card-body text-center">
+                        <div class="chart">
+                            <div id="chart" style="max-width: 650px; margin: 35px auto;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Personlized recomendations -->
+        <section>
+            <div class="row">
+                <div class="col-12 mb-4 text-center">
+                    <h2>Personalized Recommendations</h2>
+                    <p>Based on your risk level, here are some steps you can take.</p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12 mb-4">
+                    <h5>Resources and Links</h5>
+                    <ul class="resources-list">
+                        {% for r in risk_level.resources %}
+                            <li>
+                                <a href="{{ r.url }}" target="_blank">
+                                    {{ r.text }}
+                                </a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </section>
+        <!-- Next Steps -->
+        <div class="box">
+            <div class="box-body">
+                <div class="row">
+                    <div class="col-12 text-center mb-4">
+                        <h2>Next Steps</h2>
+                        <p>Based on your risk assessment, here are the next steps you should consider.</p>
+                    </div>
+                </div>
+                <div class="row">
+                    {% for ns in risk_level.next_steps %}
+                        <div class="col-md-6 mb-4">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title">{{ns.title}}</h5>
+                                    <p>{{ns.subtitle}}:</p>
+                                    <ul>
+                                        {% for msg in ns.messages %}
+                                            <li>{{msg}}</li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-4">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">Printable Report</h5>
+                                <p>Download or print your results and recommendations for future reference:</p>
+                                <button class="btn btn-primary" onclick="navigateToUrl(this,true)"
+                                    data-url="{% url 'report_download' %}">Download Report</button>
+                                <button onclick="navigateToUrl(this,true)"
+                                    data-url="{% url 'report_print' %}"class="btn btn-secondary">Print Report</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-4">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">Share Results</h5>
+                                <p>Securely share your results with your healthcare provider:</p>
+                                <button class="btn btn-primary">Email Result</button>
+                                <button class="btn btn-secondary">Download Results</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Recommendations -->
+        <div class="box">
+            <div class="box-body">
+                <div class="row">
+                    <div class="col-12 mb-4">
+                        <h2 class="display-3 text-center">Recommendations</h2>
+                        <p class="fs-4 text-center">Based on your assessment, we suggest the following steps.</p>
+                    </div>
+                </div>
+                <div class="row justify-content-center">
+                    <div class="col-md-8">
+                        <div class="card">
+                            <div class="card-body">
+                                <ul class="list-group list-group-flush">
+                                    {% for r in risk_level.recommendations %}
+                                    <li class="list-group-item">
+                                        <h5>{{r.title}}</h5>
+                                        <p> {{r.message}} </p>
+                                    </li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="text-center mt-4">
+                            <a href="https://www.cancer.org" class="btn btn-primary">Explore Additional Resources</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Support and Contact -->
+        {% include 'patients/includes/supports.html' %}
+        
+        <!-- Testimonials -->
+        {% include 'patients/includes/testimonials.html' %}
+        
+    </div>
+{% endblock content %}
+
+{% block scripts %}
+    {% include 'patients/includes/results-scripts.html' %}
+    {% include 'patients/includes/contact-form-script.html' %}
+    {% include 'patients/includes/feed-back-script.html' %}
+{% endblock scripts %}
+    

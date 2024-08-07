@@ -14,31 +14,37 @@ import pycountry
 
 
 class MyAccountManager(BaseUserManager):
-    def create_user(self, first_name, last_name, username, email, password=None):
+    def create_user(
+        self, first_name, last_name, username, email, password=None, agree=False
+    ):
         if not email:
             raise ValueError("User must have an email address")
-
         if not username:
             raise ValueError("User must have a username")
+        if not agree:
+            raise ValueError("User must agree to the terms and conditions")
 
         user = self.model(
-            email=self.normalize_email(email),  # convert letters to lowercase
+            email=self.normalize_email(email),
             username=username,
             first_name=first_name,
             last_name=last_name,
+            agree=agree,
         )
-
         user.set_password(password)
         user.save(using=self.db)
         return user
 
-    def create_superuser(self, first_name, last_name, email, username, password):
+    def create_superuser(
+        self, first_name, last_name, email, username, password, agree=True
+    ):
         user = self.create_user(
             email=self.normalize_email(email),
             username=username,
             password=password,
             first_name=first_name,
             last_name=last_name,
+            agree=agree,
         )
         user.is_admin = True
         user.is_active = True
@@ -79,21 +85,20 @@ class Account(AbstractBaseUser):
     email = models.EmailField(_("email address"), max_length=100, unique=True)
     gender = models.CharField(max_length=10, choices=Gender, default=Gender.MALE)
     country = models.CharField(
-        max_length=2, choices=CountryChoices.as_choices(), default="GHANA"
+        max_length=20, choices=CountryChoices.as_choices(), default="Gh"
     )
-    # Required fields
+    agree = models.BooleanField(default=False)
     date_joined = models.DateTimeField(db_default=Now())
     last_login = models.DateTimeField(db_default=Now(), auto_now=True)
     is_admin = models.BooleanField(db_default=False)
     is_staff = models.BooleanField(db_default=False)
     is_active = models.BooleanField(db_default=False)
     is_superadmin = models.BooleanField(db_default=False)
-
     usid = models.CharField(max_length=10, unique=True, editable=False)
     date_of_birth = models.DateField(verbose_name="Birthday", null=True)
 
     USERNAME_FIELD = "email"
-    REQUIRED_FIELDS = ["username", "first_name", "last_name"]
+    REQUIRED_FIELDS = ["username", "first_name", "last_name", "agree"]
 
     objects = MyAccountManager()
 
@@ -120,15 +125,9 @@ class Account(AbstractBaseUser):
     def has_module_perms(self, app_label):
         return True
 
-    def get_user_type(self):
-        if self.is_accountant:
-            return "accountant"
-
     @property
     def is_superuser(self):
         return self.is_admin
-
-from django.db import models
 
 
 class PrivacyPolicySection(models.Model):

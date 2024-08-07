@@ -1,0 +1,174 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load custom_filters %}
+
+{% block headers %}
+    <!-- Custom CSS -->
+<style>
+    .hero-section {
+            background: url('{% static "images/result-repor-bg.jpg" %}') no-repeat center center/cover;
+            background-size: cover;
+            background-position: center;
+            color: #fff;
+            text-align: center;
+            padding: 5rem 0;
+            position: relative;
+        }
+
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+        }
+
+        .hero-section .container {
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero-section h1 {
+            font-size: 3.5rem;
+            font-weight: bold;
+        }
+
+        .hero-section p {
+            font-size: 1.5rem;
+        }
+        .progress {
+            height: 20px;
+            border-radius: 10px;
+        }
+        .progress-bar-benign {
+            background-color: #28a745;
+        }
+        .progress-bar-malignant {
+            background-color: #dc3545;
+        }
+    </style>
+{% endblock headers %}
+    
+{% block content %}
+<div class="content">
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="container text-center">
+        <h1 class="display-4">Prediction Results</h1>
+        <p class="lead">View and filter your breast cancer risk assessment reports.</p>
+    </div>
+</section>
+
+<!-- Main Content -->
+<div class="container my-5">
+    <div class="row mb-4">
+        <div class="col text-center">
+            <h2 class="display-5">Filter Results</h2>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Prediction Result Filters</h5>
+                <button class="btn btn-link" data-bs-toggle="collapse" data-bs-target="#filterForm" aria-expanded="true">
+                    Filter Prediction Results
+                </button>
+            </div>
+            <div id="filterForm" class="collapse">
+                <div class="card-body">
+                    <form method="get">
+                        <div class="row g-3">
+                            
+                            {% for field in filter.form %}
+                                <div class="col-md-4">
+                                    {{field.as_field_group}}
+                                </div>
+                            {% endfor %}
+                                
+                            <div class="col-md-12">
+                                <button type="submit" class="btn btn-primary">Apply Filters</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        {% for result in results  %}
+            <div class="col-lg-4">
+                <div class="box ribbon-box pull-up">
+                    <div class="box-header text-center">
+                        <h5 class="box-title">
+                            Prediction Result - {{ result.timestamp|date:"F Y" }}
+                        </h5>
+                    </div>
+                    <div class="box-body">
+                        <div class="ribbon-two ribbon-two-{% if result.risk_level == 'High' %}danger{% else %}success{% endif %}"><span> 
+                        {% if result.risk_level == "High" %}Malignant{% else %}Benign{% endif %}
+                        </span></div>
+                        <table class="table">
+                            <tbody>
+                            <tr>
+                                <th scope="row"><i class="fa fa-user fa-1x"></i></th>
+                                <td>{{user.first_name}}</td>
+                                <td>{{user.last_name}}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row"><i class="fa fa-venus fa-1x"></i></th>
+                                <td>{{user.gender|title}}</td>
+                                {% with db=user.date_of_birth|calculate_age %}
+                                    <td>{{ result.dob|calculate_age|default:db  }} years old</td>
+                                {% endwith %}
+                            </tr>
+                            <tr>
+                                <th scope="row"><i class="fa fa-exclamation-triangle fa-1x"></i></th>
+                                <td>Risk Level</td>
+                                <td>{{result.risk_level}}</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                        <div class="progress mb-3">
+                            {% with pb=result.benign pm=result.malignant %}
+                            <div class="progress-bar progress-bar-benign" role="progressbar" style="width: {{pb}}%;" aria-valuenow="{{pb}}" aria-valuemin="0" aria-valuemax="100">Benign: {{pb}}%</div>
+                            <div class="progress-bar progress-bar-malignant" role="progressbar" style="width: {{pm}}%;" aria-valuenow="{{pm}}" aria-valuemin="0" aria-valuemax="100">Malignant: {{pm}}%</div>
+                            {% endwith %}
+                        </div>
+                    </div>
+                    <div class="box-footer text-end">
+                        <button onclick="navigateToUrl(this)"
+                            data-url="{% url 'detailed_result' result.pk %}" 
+                            class="btn btn-primary">View Details
+                        </button>
+                        <button class="btn btn-danger" 
+                        data-bs-toggle="modal" data-bs-target="#deleteModal" 
+                        onclick="confirmDelete('{{ result.id }}')">
+                            Delete
+                        </button>
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            No Results found
+        {% endfor %}
+    </div>
+    {% if results %}
+        <p class="mt-2 fst-italic text-muted">
+            Total results found: {{ results|length }}
+        </p>
+    {% endif %}
+    {% include 'includes/pagenator.html' %}
+    {% include 'patients/includes/result-histores-modal.html' %}
+    
+</div>
+
+</div>
+{% endblock %}
+
+
+{% block scripts %}
+{% include 'patients/includes/result-histores-script.html' %}
+    
+{% endblock scripts %}
+    

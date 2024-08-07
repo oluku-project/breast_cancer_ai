@@ -1,684 +1,619 @@
-{% extends 'base.html' %} {% load static %} {% block headers %}
-<style>
-  /* Call-to-Action Section Styling */
-  .cta-section .box {
-    border: 1px solid var(--bs-primary);
-    border-radius: 10px;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-  }
+{% extends 'base.html' %} 
+{% load static %} 
+{% block headers %}
+  <style>
+    .hero-section {
+        background: url('{% static "images/about/about-img-3.png" %}') no-repeat center center/cover;
+        background-size: cover;
+        background-position: center;
+        color: #fff;
+        text-align: center;
+        padding: 5rem 0;
+        position: relative;
+    }
 
-  .cta-section .box:hover {
-    transform: translateY(-10px);
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-  }
+    .hero-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+    }
 
-  /* Research and Publications Section Styling */
-  .research-publications-section .card {
-    border: 1px solid var(--bs-primary);
-    border-radius: 10px;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-  }
+    .hero-section .container {
+        position: relative;
+        z-index: 2;
+    }
 
-  .research-publications-section .card:hover {
-    transform: translateY(-10px);
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-  }
+    .hero-section h1 {
+        font-size: 3.5rem;
+        font-weight: bold;
+    }
 
-  .research-publications-section .card-title {
-    font-size: 1.25rem;
-    font-weight: bold;
-  }
+    .hero-section p {
+        font-size: 1.5rem;
+    }
+    /* Social Links */
+    .social-links a {
+      transition: color 0.3s ease, border-color 0.3s ease;
+    }
 
-  /* Animations for Methodology Items */
-  .methodology-item {
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-  }
+    .social-links a:hover {
+      color: #fff !important;
+      background-color: #007bff;
+      border-color: #007bff;
+    }
+  </style>
+{% endblock headers %} 
+{% block content %}
+  <section class="content">
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="container text-center">
+            <h1 class="display-4 ">About Our Breast Cancer Prediction Project</h1>
+            <p class="lead">Learn more about our mission, team, and methodology.</p>
+            <a
 
-  .methodology-item .card-body .card-text {
-    visibility: hidden;
-  }
+            href="javascript:void(0)"
+            onclick="navigateToUrl(this)" 
+            data-url="{% url 'home' %}"
+            class="waves-effect waves-light btn btn-primary btn-lg m-2"
+          >
+            <i class="fa fa-home"></i> Home
+          </a>
+          <a
+            onclick="navigateToUrl(this)"
+            data-url="{% url 'contact' %}"
+            class="waves-effect waves-light btn btn-outline-light btn-lg m-2"
+          >
+            <i class="fa fa-envelope"></i> Contact Us
+          </a>
+        </div>
+    </section>
 
-  .methodology-item:hover {
-    transform: translateY(-50px);
-    box-shadow: 0 20px 30px rgba(0, 0, 0, 0.1);
-  }
 
-  .methodology-item .card-body {
-    transition: background-color 0.3s ease;
-  }
-
-  .methodology-item:hover .card-body {
-    background-color: inherit;
-  }
-
-  .methodology-item:hover .card-text {
-    visibility: visible;
-  }
-
-  /* Social Links */
-  .social-links a {
-    transition: color 0.3s ease, border-color 0.3s ease;
-  }
-
-  .social-links a:hover {
-    color: #fff !important;
-    background-color: #007bff;
-    border-color: #007bff;
-  }
-</style>
-{% endblock headers %} {% block content %}
-<!-- Hero Section with Background Image -->
-<section
-  class="hero-section"
-  style="
-    background-image: url('{% static 'images/about/about-img-3.png' %}');
-    background-size: cover;
-    background-position: center;
-    position: relative;
-    height: 70vh;
-    color: white;
-  "
->
-  <div
-    class="hero-overlay"
-    style="
-      background-color: rgba(0, 0, 0, 0.5);
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-    "
-  ></div>
-  <div class="container h-100">
-    <div
-      class="row h-100 align-items-center justify-content-center text-center"
-    >
-      <div class="col-lg-8">
-        <h1 class="display-4 waves-effect waves-light mb-3">
-          About Our Breast Cancer Prediction Project
-        </h1>
-        <p class="lead waves-effect waves-light text-white mb-5">
-          Learn more about our mission, team, and methodology.
-        </p>
-        <br />
-        <a
-          href="#"
-          class="waves-effect waves-light btn btn-primary btn-lg mr-2"
-        >
-          <i class="fa fa-home"></i> Home
-        </a>
-        <a
-          href="#"
-          class="waves-effect waves-light btn btn-outline-light btn-lg"
-        >
-          <i class="fa fa-envelope"></i> Contact Us
-        </a>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- Mission Statement Section -->
-<section class="mission-statement-section py-5">
-  <div class="container">
-    <div class="row text-center mb-4">
-      <div class="col">
-        <h2 class="font-weight-bold">Our Mission</h2>
-        <p class="lead">
-          Dedicated to early detection and comprehensive support for breast
-          cancer through advanced prediction technology.
-        </p>
-      </div>
-    </div>
-    <div class="row">
-      <div class="col-md-4 text-center mb-4">
-        <i class="fa fa-heartbeat fa-3x text-primary mb-3"></i>
-        <h4 class="font-weight-bold">Early Detection</h4>
-        <p>
-          Utilizing cutting-edge algorithms to identify breast cancer at its
-          earliest stages.
-        </p>
-      </div>
-      <div class="col-md-4 text-center mb-4">
-        <i class="fa fa-users fa-3x text-primary mb-3"></i>
-        <h4 class="font-weight-bold">Patient Support</h4>
-        <p>
-          Providing resources and support for individuals diagnosed with breast
-          cancer.
-        </p>
-      </div>
-      <div class="col-md-4 text-center mb-4">
-        <i class="fa fa-flask fa-3x text-primary mb-3"></i>
-        <h4 class="font-weight-bold">Research & Innovation</h4>
-        <p>
-          Continuously improving our prediction technology through research and
-          innovation.
-        </p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- Team Members Section -->
-<section class="content">
-  <div class="row text-center mb-4">
-    <div class="col">
-      <h2 class="font-weight-bold">Meet Our Team</h2>
-      <p class="lead">
-        The dedicated professionals behind our breast cancer prediction project.
-      </p>
-    </div>
-  </div>
-  <div class="row">
-    <div class="col-lg-6">
-      <div class="box pull-up">
-        <div class="box-body">
-          <div class="d-md-flex justify-content-between align-items-center">
-            <div class="col-lg-8 offset-lg-2 text-center">
-              <img
-                src="https://via.placeholder.com/300"
-                class="card-img-top rounded-circle mx-auto mt-4"
-                style="width: 150px; height: 150px; object-fit: cover"
-                alt="Team Member Photo"
-              />
-              <h5 class="card-title font-weight-bold">John Smith</h5>
-              <p class="card-text">Software Engineer</p>
-              <p class="card-text">
-                John Smith is a seasoned software engineer specializing in
-                developing robust and scalable healthcare applications.
+    <section class="container">
+      <!-- Mission Statement Section -->
+      <section class="py-20">
+        <div class="row text-center mb-4">
+            <div class="col">
+              <h2 class="font-weight-bold">Our Mission</h2>
+              <p class="lead">
+                Dedicated to early detection and comprehensive support for breast
+                cancer through advanced prediction technology.
               </p>
-              <div class="social-links">
-                <a href="#" class="btn btn-outline-primary btn-sm mx-1"
-                  ><i class="fa fa-linkedin"></i
-                ></a>
-                <a href="#" class="btn btn-outline-secondary btn-sm mx-1"
-                  ><i class="fa fa-github"></i
-                ></a>
+            </div>
+        </div>
+        <div class="row">
+          <div class="col-md-4 text-center mb-4">
+            <i class="fa fa-heartbeat fa-3x text-primary mb-3"></i>
+            <h4 class="font-weight-bold">Early Detection</h4>
+            <p>
+              Utilizing cutting-edge algorithms to identify breast cancer at its
+              earliest stages.
+            </p>
+          </div>
+          <div class="col-md-4 text-center mb-4">
+            <i class="fa fa-users fa-3x text-primary mb-3"></i>
+            <h4 class="font-weight-bold">Patient Support</h4>
+            <p>
+              Providing resources and support for individuals diagnosed with breast
+              cancer.
+            </p>
+          </div>
+          <div class="col-md-4 text-center mb-4">
+            <i class="fa fa-flask fa-3x text-primary mb-3"></i>
+            <h4 class="font-weight-bold">Research & Innovation</h4>
+            <p>
+              Continuously improving our prediction technology through research and
+              innovation.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Team Members Section -->
+      <section class="mt-20">
+        <div class="row text-center mb-4">
+          <div class="col">
+            <h2 class="font-weight-bold">Meet Our Team</h2>
+            <p class="lead">
+              The dedicated professionals behind our breast cancer prediction project.
+            </p>
+          </div>
+        </div>
+        <div class="row fx-element-overlay">
+          <div class="col-md-12 col-lg-4">
+            <div class="box">
+              <div class="fx-card-item">
+                <div class="fx-card-avatar fx-overlay-1"> <img src="{% static 'images/card/2.jpg' %}" alt="user">
+                  <div class="fx-overlay scrl-up">						
+                    <ul class="fx-info">
+                      <li><a class="btn default btn-outline" href="javascript:void(0);"><i class="fa fa-facebook"></i></a></li>
+                      <li><a class="btn default btn-outline" href="javascript:void(0);"><i class="fa fa-twitter"></i></a></li>
+                      <li><a class="btn default btn-outline" href="javascript:void(0);"><i class="fa fa-instagram"></i></a></li>
+                    </ul>
+                  </div>
+                </div>
+                <div class="fx-card-content">
+                  <h3 class="box-title">Maical Luka</h3> <small>Managing Director</small>
+                  <br> </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-12 col-lg-4">
+            <div class="box">
+              <div class="fx-card-item">
+                <div class="fx-card-avatar fx-overlay-1"> <img src="{% static 'images/card/2.jpg' %}" alt="user">
+                  <div class="fx-overlay scrl-up">						
+                    <ul class="fx-info">
+                      <li><a class="btn default btn-outline" href="javascript:void(0);"><i class="fa fa-facebook"></i></a></li>
+                      <li><a class="btn default btn-outline" href="javascript:void(0);"><i class="fa fa-twitter"></i></a></li>
+                      <li><a class="btn default btn-outline" href="javascript:void(0);"><i class="fa fa-instagram"></i></a></li>
+                    </ul>
+                  </div>
+                </div>
+                <div class="fx-card-content">
+                  <h3 class="box-title">Maical Luka</h3> <small>Managing Director</small>
+                  <br> </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-12 col-lg-4">
+            <div class="box">
+              <div class="fx-card-item">
+                <div class="fx-card-avatar fx-overlay-1"> <img src="{% static 'images/card/2.jpg' %}" alt="user">
+                  <div class="fx-overlay scrl-up">						
+                    <ul class="fx-info">
+                      <li><a class="btn default btn-outline" href="javascript:void(0);"><i class="fa fa-facebook"></i></a></li>
+                      <li><a class="btn default btn-outline" href="javascript:void(0);"><i class="fa fa-twitter"></i></a></li>
+                      <li><a class="btn default btn-outline" href="javascript:void(0);"><i class="fa fa-instagram"></i></a></li>
+                    </ul>
+                  </div>
+                </div>
+                <div class="fx-card-content">
+                  <h3 class="box-title">Maical Luka</h3> <small>Managing Director</small>
+                  <br> </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
-    </div>
-    <div class="col-lg-6">
-      <div class="box pull-up">
-        <div class="box-body">
-          <div class="d-md-flex justify-content-between align-items-center">
-            <div class="col-lg-8 offset-lg-2 text-center">
-              <img
-                src="https://via.placeholder.com/300"
-                class="card-img-top rounded-circle mx-auto mt-4"
-                style="width: 150px; height: 150px; object-fit: cover"
-                alt="Team Member Photo"
-              />
-              <h5 class="card-title font-weight-bold">Dr. Jane Doe</h5>
-              <p class="card-text">Lead Data Scientist</p>
-              <p class="card-text">
-                Dr. Jane Doe leads our data science team, driving innovation in
-                cancer prediction algorithms.
-              </p>
-              <div class="social-links">
-                <a href="#" class="btn btn-outline-primary btn-sm mx-1"
-                  ><i class="fa fa-linkedin"></i
-                ></a>
-                <a href="#" class="btn btn-outline-secondary btn-sm mx-1"
-                  ><i class="fa fa-twitter"></i
-                ></a>
+      </section>
+
+      <!-- Methodology Section -->
+      <section class="py-40">
+        <div class="row text-center mb-4">
+          <div class="col">
+            <h2 class="font-weight-bold">Our Methodology</h2>
+            <p class="lead">
+              Discover the scientific approach behind our breast cancer prediction
+              project.
+            </p>
+          </div>
+        </div>
+        <div class="row">
+          <!-- Data Sources -->
+          <div class="col-md-4 mb-4">
+            <div class="card border-0 shadow-lg p-4">
+              <div class="card-body text-center">
+                <i class="fa fa-database fa-3x text-primary mb-3"></i>
+                <h5 class="card-title font-weight-bold">Data Sources</h5>
+                <p class="card-text">
+                  We utilize data from reputable sources such as medical research
+                  institutions and public health databases to ensure accuracy and
+                  reliability.
+                </p>
+              </div>
+            </div>
+          </div>
+          <!-- Algorithm and Analysis -->
+          <div class="col-md-4 mb-4">
+            <div class="card border-0 shadow-lg p-4">
+              <div class="card-body text-center">
+                <i class="fa fa-cogs fa-3x text-primary mb-3"></i>
+                <h5 class="card-title font-weight-bold">Algorithm & Analysis</h5>
+                <p class="card-text">
+                  Our prediction model is built using advanced machine learning
+                  algorithms that analyze various risk factors to provide accurate
+                  predictions.
+                </p>
+              </div>
+            </div>
+          </div>
+          <!-- Validation -->
+          <div class="col-md-4 mb-4">
+            <div class="card border-0 shadow-lg p-4">
+              <div class="card-body text-center">
+                <i class="fa fa-check-circle fa-3x text-primary mb-3"></i>
+                <h5 class="card-title font-weight-bold">Validation</h5>
+                <p class="card-text">
+                  We rigorously validate our methods through clinical trials and
+                  peer-reviewed studies to ensure high accuracy and reliability of
+                  our predictions.
+                </p>
               </div>
             </div>
           </div>
         </div>
-      </div>
-    </div>
-  </div>
-</section>
+      </section>
 
-<!-- Methodology Section -->
-<section class="methodology-section py-40">
-  <div class="container">
-    <div class="row text-center mb-4">
-      <div class="col">
-        <h2 class="font-weight-bold">Our Methodology</h2>
-        <p class="lead">
-          Discover the scientific approach behind our breast cancer prediction
-          project.
-        </p>
-      </div>
-    </div>
-    <div class="row">
-      <!-- Data Sources -->
-      <div class="col-md-4 mb-4">
-        <div class="methodology-item card h-120 border-0 shadow-lg p-4">
-          <div class="card-body text-center">
-            <i class="fa fa-database fa-3x text-primary mb-3"></i>
-            <h5 class="card-title font-weight-bold">Data Sources</h5>
-            <p class="card-text">
-              We utilize data from reputable sources such as medical research
-              institutions and public health databases to ensure accuracy and
-              reliability.
+      <!-- Impact Section -->
+      <section class="my-60">
+        <div class="row text-center mb-4">
+          <div class="col">
+            <h2 class="font-weight-bold">Our Impact</h2>
+            <p class="lead">
+              See the difference our project has made in the fight against breast
+              cancer.
             </p>
           </div>
         </div>
-      </div>
-      <!-- Algorithm and Analysis -->
-      <div class="col-md-4 mb-4">
-        <div class="methodology-item card h-120 border-0 shadow-lg p-4">
-          <div class="card-body text-center">
-            <i class="fa fa-cogs fa-3x text-primary mb-3"></i>
-            <h5 class="card-title font-weight-bold">Algorithm & Analysis</h5>
-            <p class="card-text">
-              Our prediction model is built using advanced machine learning
-              algorithms that analyze various risk factors to provide accurate
-              predictions.
-            </p>
-          </div>
-        </div>
-      </div>
-      <!-- Validation -->
-      <div class="col-md-4 mb-4">
-        <div class="methodology-item card h-120 border-0 shadow-lg p-4">
-          <div class="card-body text-center">
-            <i class="fa fa-check-circle fa-3x text-primary mb-3"></i>
-            <h5 class="card-title font-weight-bold">Validation</h5>
-            <p class="card-text">
-              We rigorously validate our methods through clinical trials and
-              peer-reviewed studies to ensure high accuracy and reliability of
-              our predictions.
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- Impact Section -->
-<section class="impact-section my-60">
-  <div class="container">
-    <div class="row text-center mb-4">
-      <div class="col">
-        <h2 class="font-weight-bold">Our Impact</h2>
-        <p class="lead">
-          See the difference our project has made in the fight against breast
-          cancer.
-        </p>
-      </div>
-    </div>
-    <div class="row">
-      <!-- Statistics and Metrics -->
-      <div class="col-md-4 mb-4">
-        <div class="methodology-item card border-primary h-100">
-          <div class="card-body text-center">
-            <i class="fa fa-bar-chart fa-3x text-primary mr-3"></i>
-            <h4 class="card-title">Statistics & Metrics</h4>
-            <div
-              class="card-text d-flex justify-content-center align-items-center"
-            >
-              <ul class="list-unstyled mb-0">
-                <li><strong>Users:</strong> 50,000+</li>
-                <li><strong>Accuracy Rate:</strong> 95%</li>
-                <li><strong>Positive Feedback:</strong> 4,500+</li>
-              </ul>
+        <div class="row">
+          <!-- Statistics and Metrics -->
+          <div class="col-md-4 mb-4">
+            <div class="card border-primary">
+              <div class="card-body text-center">
+                <i class="fa fa-bar-chart fa-3x text-primary mr-3"></i>
+                <h4 class="card-title">Statistics & Metrics</h4>
+                <div
+                  class="card-text d-flex justify-content-center align-items-center"
+                >
+                  <ul class="list-unstyled mb-0">
+                    <li><strong>Users:</strong> 50,000+</li>
+                    <li><strong>Accuracy Rate:</strong> 95%</li>
+                    <li><strong>Positive Feedback:</strong> 4,500+</li>
+                  </ul>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-      </div>
-      <!-- Success Stories -->
-      <div class="col-md-8 mb-4">
-        <div class="methodology-item card border-primary h-100">
-          <div class="card-body">
-            <h4 class="card-title">Success Stories</h4>
-            <div class="d-flex justify-content-center align-items-center mb-4">
-              <i class="fa fa-heart fa-3x text-primary mr-3"></i>
-              <p class="mb-0">Hover over the cards to see more stories!</p>
-            </div>
-            <div class="card-deck card-text b-20">
-              <!-- Success Story 1 -->
-              <div class="card">
-                <div class="card-body text-center">
+          <!-- Success Stories -->
+          <div class="col-md-8 mb-4">
+            <div class="card border-primary">
+              <div class="card-body">
+                <h4 class="card-title">Success Stories</h4>
+                <div class="d-flex justify-content-center align-items-center mb-4">
+                  <i class="fa fa-heart fa-3x text-primary mr-3"></i>
+                  <p class="mb-0">Hover over the cards to see more stories!</p>
+                </div>
                   <h5 class="card-title">Sarah Johnson</h5>
                   <p>
                     "Thanks to this project, I got an early warning and took the
                     necessary steps to protect my health."
                   </p>
-                  <a href="#" class="btn btn-primary btn-sm">Read More</a>
-                </div>
-                <div class="card-footer text-muted">
-                  <small>User</small>
                 </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
-    </div>
-  </div>
-</section>
+      </section>
 
-<!-- Research and Publications Section -->
+      <!-- Research and Publications Section -->
+      <section class="py-50">
+        <div class="row text-center mb-4">
+          <div class="col">
+            <h2 class="font-weight-bold">Research and Publications</h2>
+            <p class="lead">
+              Explore our research papers and articles that contribute to the breast
+              cancer prediction project.
+            </p>
+          </div>
+        </div>
+        <div class="container">
+          <div class="row">
+          <!-- Research Paper 1 -->
+          <div class="col-md-6 mb-4">
+            <div class="card">
+              <div class="card-body">
+                <h4 class="card-title">
+                  Machine Learning in Breast Cancer Prediction
+                </h4>
+                <p class="card-text">
+                  This paper discusses various machine learning techniques used in
+                  breast cancer prediction and their effectiveness.
+                </p>
+                <button
+                  onclick="navigateToUrl(this,true)"
+                  data-url="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC9175124/"
+                  class="waves-effect waves-light btn btn-primary"
+                  >Read Full Text</button
+                >
+              </div>
+            </div>
+          </div>
+          <!-- Research Paper 2 -->
+          <div class="col-md-6 mb-4">
+            <div class="card">
+              <div class="card-body">
+                <h4 class="card-title">Data Analysis for Early Detection</h4>
+                <p class="card-text">
+                  An in-depth analysis of data sources and methods used for the
+                  early detection of breast cancer.
+                </p>
+                <button
+                  onclick="navigateToUrl(this,true)"
+                    data-url="{% static 'assets/files/Prediction_of_Breast_Cancer_Comparative_Review_of_.pdf' %}"
+                  class="waves-effect waves-light btn btn-primary"
+                  >Read Full Text</button
+                >
+              </div>
+            </div>
+          </div>
+          <!-- Research Paper 3 -->
+          <div class="col-md-6 mb-4">
+            <div class="card">
+              <div class="card-body">
+                <h4 class="card-title">Predictive Models and Their Validation</h4>
+                <p class="card-text">
+                  Overview of different predictive models and their validation
+                  processes in breast cancer diagnosis.
+                </p>
+                <button
+                  onclick="navigateToUrl(this,true)"
+                  data-url="{% static 'assets/files/PredictiveModel.pdf.pdf' %}"
+                  class="waves-effect waves-light btn btn-primary"
+                  >Read Full Text</button
+                >
+              </div>
+            </div>
+          </div>
+          <!-- Research Paper 4 -->
+          <div class="col-md-6 mb-4">
+            <div class="card">
+              <div class="card-body">
+                <h4 class="card-title">
+                  AI and Its Impact on Breast Cancer Detection
+                </h4>
+                <p class="card-text">
+                  Examines the role of artificial intelligence in enhancing the
+                  accuracy and efficiency of breast cancer detection.
+                </p>
+                <button
+                  onclick="navigateToUrl(this,true)"
+                  data-url="{% static 'assets/files/AI_breast_cancer_detection_ Technology.pdf' %}"
+                  class="waves-effect waves-light btn btn-primary"
+                  >Read Full Text</button
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+        </div>
+      </section>
 
-<!-- Research and Publications Section -->
-<section class="research-publications-section py-5">
-  <div class="container">
-    <div class="row text-center mb-4">
-      <div class="col">
-        <h2 class="font-weight-bold">Research and Publications</h2>
-        <p class="lead">
-          Explore our research papers and articles that contribute to the breast
-          cancer prediction project.
-        </p>
-      </div>
-    </div>
-    <div class="row">
-      <!-- Research Paper 1 -->
-      <div class="col-md-6 mb-4">
-        <div class="card h-100">
-          <div class="card-body">
-            <h4 class="card-title">
-              Machine Learning in Breast Cancer Prediction
-            </h4>
-            <p class="card-text">
-              This paper discusses various machine learning techniques used in
-              breast cancer prediction and their effectiveness.
-            </p>
-            <a
-              href="https://example.com/full-text-1"
-              class="waves-effect waves-light btn btn-primary"
-              >Read Full Text</a
-            >
+      <!-- Partnerships and Collaborations Section -->
+      <section class="py-5">
+        <div class="container">
+          <div class="row text-center mb-4">
+            <div class="col">
+              <h2 class="font-weight-bold">Partnerships and Collaborations</h2>
+              <p class="lead">
+                We collaborate with various organizations to enhance our research and
+                reach.
+              </p>
+            </div>
+          </div>
+          <div class="row my-20">
+            <!-- Partner 1 -->
+            <div class="col-md-4 mb-4">
+              <div class="card">
+                <div class="card-body text-center">
+                  <i
+                    class="fa fa-hospital-o fa-5x text-primary mb-3"
+                    aria-hidden="true"
+                  ></i>
+                  <h5 class="card-title">General Hospital</h5>
+                  <p class="card-text">
+                    General Hospital has been instrumental in providing critical data
+                    and support for our research efforts, especially in the early
+                    detection of breast cancer.
+                  </p>
+                </div>
+              </div>
+            </div>
+            <!-- Partner 2 -->
+            <div class="col-md-4 mb-4">
+              <div class="card">
+                <div class="card-body text-center">
+                  <i
+                    class="fa fa-flask fa-5x text-primary mb-3"
+                    aria-hidden="true"
+                  ></i>
+                  <h5 class="card-title">Cancer Research Institute</h5>
+                  <p class="card-text">
+                    Cancer Research Institute collaborates with us on algorithm
+                    development and validation processes, ensuring the accuracy and
+                    reliability of our predictive models.
+                  </p>
+                </div>
+              </div>
+            </div>
+            <!-- Partner 3 -->
+            <div class="col-md-4 mb-4">
+              <div class="card">
+                <div class="card-body text-center">
+                  <i
+                    class="fa fa-university fa-5x text-primary mb-3"
+                    aria-hidden="true"
+                  ></i>
+                  <h5 class="card-title">State University</h5>
+                  <p class="card-text">
+                    State University supports our project through academic research
+                    and providing expert insights from leading oncologists and data
+                    scientists.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <!-- Collaborative Efforts -->
+            <div class="col-12">
+              <div class="card mt-4">
+                <div class="card-body">
+                  <h4 class="card-title">Collaborative Efforts</h4>
+                  <p class="card-text">
+                    Our project thrives on the collaborative efforts with hospitals,
+                    research institutes, and universities. These partnerships enhance
+                    the accuracy of our predictive models and expand the reach of our
+                    research. We are committed to working together to make a
+                    significant impact in the early detection and treatment of breast
+                    cancer.
+                  </p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
-      <!-- Research Paper 2 -->
-      <div class="col-md-6 mb-4">
-        <div class="card h-100">
-          <div class="card-body">
-            <h4 class="card-title">Data Analysis for Early Detection</h4>
-            <p class="card-text">
-              An in-depth analysis of data sources and methods used for the
-              early detection of breast cancer.
-            </p>
-            <a
-              href="https://example.com/full-text-2"
-              class="waves-effect waves-light btn btn-primary"
-              >Read Full Text</a
-            >
-          </div>
-        </div>
-      </div>
-      <!-- Research Paper 3 -->
-      <div class="col-md-6 mb-4">
-        <div class="card h-100">
-          <div class="card-body">
-            <h4 class="card-title">Predictive Models and Their Validation</h4>
-            <p class="card-text">
-              Overview of different predictive models and their validation
-              processes in breast cancer diagnosis.
-            </p>
-            <a
-              href="https://example.com/full-text-3"
-              class="waves-effect waves-light btn btn-primary"
-              >Read Full Text</a
-            >
-          </div>
-        </div>
-      </div>
-      <!-- Research Paper 4 -->
-      <div class="col-md-6 mb-4">
-        <div class="card h-100">
-          <div class="card-body">
-            <h4 class="card-title">
-              AI and Its Impact on Breast Cancer Detection
-            </h4>
-            <p class="card-text">
-              Examines the role of artificial intelligence in enhancing the
-              accuracy and efficiency of breast cancer detection.
-            </p>
-            <a
-              href="https://example.com/full-text-4"
-              class="waves-effect waves-light btn btn-primary"
-              >Read Full Text</a
-            >
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
+      </section>
 
-<!-- Partnerships and Collaborations Section -->
-<section class="py-5">
-  <div class="container">
-    <div class="row text-center mb-4">
-      <div class="col">
-        <h2 class="font-weight-bold">Partnerships and Collaborations</h2>
-        <p class="lead">
-          We collaborate with various organizations to enhance our research and
-          reach.
-        </p>
-      </div>
-    </div>
-    <div class="row my-20">
-      <!-- Partner 1 -->
-      <div class="col-md-4 mb-4">
-        <div class="card h-120 methodology-item">
-          <div class="card-body text-center">
-            <i
-              class="fa fa-hospital-o fa-5x text-primary mb-3"
-              aria-hidden="true"
-            ></i>
-            <h5 class="card-title">General Hospital</h5>
-            <p class="card-text">
-              General Hospital has been instrumental in providing critical data
-              and support for our research efforts, especially in the early
-              detection of breast cancer.
-            </p>
+      <!-- Awards and Recognition Section -->
+      <section class="py-5">
+        <div class="container">
+          <div class="row text-center mb-4">
+            <div class="col">
+              <h2 class="font-weight-bold">Awards and Recognition</h2>
+              <p class="lead">
+                Our project has been recognized for its innovation and impact.
+              </p>
+            </div>
+          </div>
+          <div class="row my-20">
+            <!-- Award 1 -->
+            <div class="col-md-6 mb-4">
+              <div class="card">
+                <div class="card-body text-center">
+                  <i
+                    class="fa fa-trophy fa-5x text-primary mb-3"
+                    aria-hidden="true"
+                  ></i>
+                  <h5 class="card-title">Best Student Research Project</h5>
+                  <p class="card-text">
+                    Awarded by KNUST University for outstanding innovation in the
+                    field of medical technology and predictive analytics.
+                  </p>
+                </div>
+              </div>
+            </div>
+            <!-- Award 2 -->
+            <div class="col-md-6 mb-4">
+              <div class="card">
+                <div class="card-body text-center">
+                  <i
+                    class="fa fa-star fa-5x text-primary mb-3"
+                    aria-hidden="true"
+                  ></i>
+                  <h5 class="card-title">Innovation in Healthcare</h5>
+                  <p class="card-text">
+                    Recognized by ABC Conference for significant contributions to
+                    improving healthcare through technology.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <!-- Media Mention 1 -->
+            <div class="col-md-6 mb-4">
+              <div class="card">
+                <div class="card-body text-center">
+                  <i
+                    class="fa fa-newspaper-o fa-5x text-primary mb-3"
+                    aria-hidden="true"
+                  ></i>
+                  <h5 class="card-title">University Times</h5>
+                  <p class="card-text">
+                    Featured in University Times for our innovative approach to breast
+                    cancer prediction using AI.
+                  </p>
+                  <button 
+                  onclick="navigateToUrl(this,true)"
+                  data-url="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC10625863/"
+                  class="waves-effect waves-light btn btn-primary">Read Article</button>
+                </div>
+              </div>
+            </div>
+            <!-- Media Mention 2 -->
+            <div class="col-md-6 mb-4">
+              <div class="card">
+                <div class="card-body text-center">
+                  <i
+                    class="fa fa-television fa-5x text-primary mb-3"
+                    aria-hidden="true"
+                  ></i>
+                  <h5 class="card-title">Health Tech News</h5>
+                  <p class="card-text">
+                    Interviewed on Health Tech News discussing the impact of our
+                    project on early breast cancer detection.
+                  </p>
+                  <button 
+                  onclick="navigateToUrl(this,true)"
+                  data-url="https://youtu.be/8XsiMQQ-4mM?si=EeWxkezOCRjqCr0c"
+                  class="waves-effect waves-light btn btn-primary">Watch Interview</button>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
-      <!-- Partner 2 -->
-      <div class="col-md-4 mb-4">
-        <div class="card h-120 methodology-item">
-          <div class="card-body text-center">
-            <i
-              class="fa fa-flask fa-5x text-primary mb-3"
-              aria-hidden="true"
-            ></i>
-            <h5 class="card-title">Cancer Research Institute</h5>
-            <p class="card-text">
-              Cancer Research Institute collaborates with us on algorithm
-              development and validation processes, ensuring the accuracy and
-              reliability of our predictive models.
-            </p>
-          </div>
-        </div>
-      </div>
-      <!-- Partner 3 -->
-      <div class="col-md-4 mb-4">
-        <div class="card h-120 methodology-item">
-          <div class="card-body text-center">
-            <i
-              class="fa fa-university fa-5x text-primary mb-3"
-              aria-hidden="true"
-            ></i>
-            <h5 class="card-title">State University</h5>
-            <p class="card-text">
-              State University supports our project through academic research
-              and providing expert insights from leading oncologists and data
-              scientists.
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="row">
-      <!-- Collaborative Efforts -->
-      <div class="col-12">
-        <div class="card mt-4">
-          <div class="card-body">
-            <h4 class="card-title">Collaborative Efforts</h4>
-            <p class="card-text">
-              Our project thrives on the collaborative efforts with hospitals,
-              research institutes, and universities. These partnerships enhance
-              the accuracy of our predictive models and expand the reach of our
-              research. We are committed to working together to make a
-              significant impact in the early detection and treatment of breast
-              cancer.
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
+      </section>
 
-<!-- Awards and Recognition Section -->
-<section class="py-5">
-  <div class="container">
-    <div class="row text-center mb-4">
-      <div class="col">
-        <h2 class="font-weight-bold">Awards and Recognition</h2>
-        <p class="lead">
-          Our project has been recognized for its innovation and impact.
-        </p>
-      </div>
-    </div>
-    <div class="row my-20">
-      <!-- Award 1 -->
-      <div class="col-md-6 mb-4">
-        <div class="card h-120 methodology-item">
-          <div class="card-body text-center">
-            <i
-              class="fa fa-trophy fa-5x text-primary mb-3"
-              aria-hidden="true"
-            ></i>
-            <h5 class="card-title">Best Student Research Project</h5>
-            <p class="card-text">
-              Awarded by KNUST University for outstanding innovation in the
-              field of medical technology and predictive analytics.
-            </p>
-          </div>
-        </div>
-      </div>
-      <!-- Award 2 -->
-      <div class="col-md-6 mb-4">
-        <div class="card h-120 methodology-item">
-          <div class="card-body text-center">
-            <i
-              class="fa fa-star fa-5x text-primary mb-3"
-              aria-hidden="true"
-            ></i>
-            <h5 class="card-title">Innovation in Healthcare</h5>
-            <p class="card-text">
-              Recognized by ABC Conference for significant contributions to
-              improving healthcare through technology.
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="row">
-      <!-- Media Mention 1 -->
-      <div class="col-md-6 mb-4">
-        <div class="card h-120 methodology-item">
-          <div class="card-body text-center">
-            <i
-              class="fa fa-newspaper-o fa-5x text-primary mb-3"
-              aria-hidden="true"
-            ></i>
-            <h5 class="card-title">University Times</h5>
-            <p class="card-text">
-              Featured in University Times for our innovative approach to breast
-              cancer prediction using AI.
-            </p>
-            <a href="#" class="waves-effect waves-light btn btn-primary">Read Article</a>
-          </div>
-        </div>
-      </div>
-      <!-- Media Mention 2 -->
-      <div class="col-md-6 mb-4">
-        <div class="card h-120 methodology-item">
-          <div class="card-body text-center">
-            <i
-              class="fa fa-television fa-5x text-primary mb-3"
-              aria-hidden="true"
-            ></i>
-            <h5 class="card-title">Health Tech News</h5>
-            <p class="card-text">
-              Interviewed on Health Tech News discussing the impact of our
-              project on early breast cancer detection.
-            </p>
-            <a href="#" class="waves-effect waves-light btn btn-primary">Watch Interview</a>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
+      <!-- Call-to-Action Section -->
+      <section class="py-5 text-center mt-100">
+        <div class="container">
+          <h2 class="font-weight-bold">Get Involved</h2>
+          <p class="lead mb-4">
+            Join us in making a difference by volunteering, donating, or spreading
+            awareness about breast cancer.
+          </p>
 
-<!-- Call-to-Action Section -->
-<section class="cta-section py-5 text-center mt-100">
-  <div class="container">
-    <h2 class="font-weight-bold">Get Involved</h2>
-    <p class="lead mb-4">
-      Join us in making a difference by volunteering, donating, or spreading
-      awareness about breast cancer.
-    </p>
+          <div class="row justify-content-center mb-4 ">
+            <div class="col-md-4 mb-3">
+              <div class="box pt-5 pull-up">
+                  <i class="fa fa-handshake-o fa-3x text-primary mt-3" aria-hidden="true"></i>
+                <div class="box-body">
+                  <h5 class="box-title">Volunteer</h5>
+                  <p class="box-text">
+                    Help us by volunteering in various capacities to support our
+                    mission.
+                  </p>
+                  <a href="#" class="waves-effect waves-light btn btn-primary">Sign Up</a>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4 mb-3">
+              <div class="box pt-5 pull-up">
+                  <i class="fa fa-heart text-primary fa-3x mt-3" aria-hidden="true"></i>
+                <div class="box-body">
+                  <h5 class="box-title">Donate</h5>
+                  <p class="box-text">
+                    Support our cause by making a donation to help fund our research
+                    and outreach efforts.
+                  </p>
+                  <a href="#" class="waves-effect waves-light btn btn-primary">Donate Now</a>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4 mb-3">
+              <div class="box pull-up">
+                  <i class="fa fa-share-alt text-primary fa-3x mt-3" aria-hidden="true"></i>
+                <div class="box-body">
+                  <h5 class="box-title">Spread Awareness</h5>
+                  <p class="box-text">
+                    Help us spread the word about breast cancer and our mission
+                    through your network.
+                  </p>
+                  <a href="#" class="waves-effect waves-light btn btn-primary">Learn How</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
 
-    <div class="row justify-content-center mb-4 ">
-      <div class="col-md-4 mb-3">
-        <div class="box pt-5">
-            <i class="fa fa-handshake-o fa-3x text-primary mt-3" aria-hidden="true"></i>
-          <div class="box-body">
-            <h5 class="box-title">Volunteer</h5>
-            <p class="box-text">
-              Help us by volunteering in various capacities to support our
-              mission.
-            </p>
-            <a href="#" class="waves-effect waves-light btn btn-primary">Sign Up</a>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-4 mb-3">
-        <div class="box pt-5">
-            <i class="fa fa-heart text-primary fa-3x mt-3" aria-hidden="true"></i>
-          <div class="box-body">
-            <h5 class="box-title">Donate</h5>
-            <p class="box-text">
-              Support our cause by making a donation to help fund our research
-              and outreach efforts.
-            </p>
-            <a href="#" class="waves-effect waves-light btn btn-primary">Donate Now</a>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-4 mb-3">
-        <div class="box">
-            <i class="fa fa-share-alt text-primary fa-3x mt-3" aria-hidden="true"></i>
-          <div class="box-body">
-            <h5 class="box-title">Spread Awareness</h5>
-            <p class="box-text">
-              Help us spread the word about breast cancer and our mission
-              through your network.
-            </p>
-            <a href="#" class="waves-effect waves-light btn btn-primary">Learn How</a>
-          </div>
-        </div>
-      </div>
-    </div>
 
-    <h5>Contact Us</h5>
-    <p class="mb-4">
-      For more information or to get involved, please contact us at:
-    </p>
-    <p>
-      <i class="fa fa-envelope text-primary" aria-hidden="true"></i>
-      <a href="mailto:info@breastcancerproject.com">
-        info@breastcancerproject.com
-      </a>
-    </p>
-    <p><i class="fa fa-phone text-primary" aria-hidden="true"></i> (123) 456-7890</p>
-  </div>
-</section>
+    </section>
+
+  </section>
 {% endblock content %}
