@@ -1,10 +1,7 @@
 $(function () {
   'use strict';
 
-  /**
-   * Get access to plugins
-   */
-
+  // Get access to plugins
   $('[data-toggle="control-sidebar"]').controlSidebar();
   $('[data-toggle="push-menu"]').pushMenu();
 
@@ -14,11 +11,6 @@ $(function () {
   );
   var $layout = $('body').data('lte.layout');
 
-  /**
-   * List of all the available themes
-   *
-   * @type Array
-   */
   var mySkins = [
     'theme-primary',
     'theme-secondary',
@@ -28,12 +20,6 @@ $(function () {
     'theme-warning',
   ];
 
-  /**
-   * Get a prestored setting
-   *
-   * @param String name Name of the setting
-   * @returns String The value of the setting | null
-   */
   function get(name) {
     if (typeof Storage !== 'undefined') {
       return localStorage.getItem(name);
@@ -44,13 +30,6 @@ $(function () {
     }
   }
 
-  /**
-   * Store a new settings in the browser
-   *
-   * @param String name Name of the setting
-   * @param String val Value of the setting
-   * @returns void
-   */
   function store(name, val) {
     if (typeof Storage !== 'undefined') {
       localStorage.setItem(name, val);
@@ -61,26 +40,15 @@ $(function () {
     }
   }
 
-  /**
-   * Toggles layout classes
-   *
-   * @param String cls the layout class to toggle
-   * @returns void
-   */
   function changeLayout(cls) {
     $('body').toggleClass(cls);
-    if ($('body').hasClass('fixed') && cls == 'fixed') {
+    if ($('body').hasClass('fixed') && cls === 'fixed') {
       $pushMenu.expandOnHover();
       $layout.activate();
     }
     $controlSidebar.fix();
   }
 
-  /**
-   * Replaces the old skin with the new skin
-   * @param String cls the new skin class
-   * @returns Boolean false to prevent link's default action
-   */
   function changeSkin(cls) {
     $.each(mySkins, function (i) {
       $('body').removeClass(mySkins[i]);
@@ -91,11 +59,6 @@ $(function () {
     return false;
   }
 
-  /**
-   * Retrieve default settings and apply them to the project
-   *
-   * @returns void
-   */
   function setup() {
     var tmp = get('theme');
     if (tmp && $.inArray(tmp, mySkins) !== -1) {
@@ -104,14 +67,12 @@ $(function () {
       changeSkin('theme-primary');
     }
 
-    // Add the change skin listener
     $('[data-theme]').on('click', function (e) {
       if ($(this).hasClass('knob')) return;
       e.preventDefault();
       changeSkin($(this).data('theme'));
     });
 
-    // Add the layout manager
     $('[data-layout]').on('click', function () {
       changeLayout($(this).data('layout'));
     });
@@ -119,7 +80,6 @@ $(function () {
     $('[data-controlsidebar]').on('click', function () {
       changeLayout($(this).data('controlsidebar'));
       var slide = !$controlSidebar.options.slide;
-
       $controlSidebar.options.slide = slide;
       if (!slide) $('.control-sidebar').removeClass('control-sidebar-open');
     });
@@ -150,15 +110,13 @@ $(function () {
       }
     });
 
-    // Retrieve the stored sidebar skin setting
     var skin = get('theme-skin');
     if (skin) {
       $('body').removeClass('dark-skin light-skin').addClass(skin);
     } else {
-      $('body').addClass('light-skin'); // Default to light skin
+      $('body').addClass('light-skin');
     }
 
-    //  Reset options
     if ($('body').hasClass('fixed')) {
       $('[data-layout="fixed"]').attr('checked', 'checked');
     }
@@ -176,30 +134,24 @@ $(function () {
     }
   }
 
-  // Create the new tab
   var $tabPane = $('<div />', {
     id: 'control-sidebar-theme-demo-options-tab',
     class: 'tab-pane active',
   });
 
-  // Create the tab button
   var $tabButton = $('<li />', { class: 'nav-item' }).html(
     "<a href='#control-sidebar-theme-demo-options-tab' class='active' data-bs-toggle='tab' title='Setting'>" +
       '<i class="mdi mdi-settings"></i>' +
       '</a>'
   );
 
-  // Add the tab button to the right sidebar tabs
   $('[href="#control-sidebar-home-tab"]').parent().before($tabButton);
 
-  // Create the menu
   var $demoSettings = $('<div />');
 
-  // Layout options
   $demoSettings.append(
     '<h4 class="control-sidebar-heading p-0">' +
       '</h4>' +
-      // Theme Skin Toggle
       '<div class="flexbox mb-10 pb-10 bb-1 light-on-off">' +
       '<label for="toggle_left_sidebar_skin" class="control-sidebar-subheading">' +
       'Dark or Light Skin' +
@@ -212,11 +164,9 @@ $(function () {
       '</div>'
   );
 
-  // Layout options
   $demoSettings.append(
     '<h4 class="control-sidebar-heading p-0">' +
       '</h4>' +
-      // rtl layout
       '<div class="flexbox mb-10 pb-10 bb-1">' +
       '<label for="rtl" class="control-sidebar-subheading">' +
       'Turn RTL/LTR' +
@@ -229,11 +179,9 @@ $(function () {
       '</div>'
   );
 
-  // Layout options
   $demoSettings.append(
     '<h4 class="control-sidebar-heading p-0">' +
       '</h4>' +
-      // Sidebar Toggle
       '<div class="flexbox mb-10">' +
       '<label for="toggle_sidebar" class="control-sidebar-subheading">' +
       'Toggle Sidebar' +
@@ -244,7 +192,6 @@ $(function () {
       '<span class="switch-description"></span>' +
       '</label>' +
       '</div>' +
-      // Control Sidebar Toggle
       '<div class="flexbox mb-10">' +
       '<label for="toggle_right_sidebar" class="control-sidebar-subheading">' +
       'Toggle Right Sidebar Slide' +
@@ -261,7 +208,6 @@ $(function () {
     class: 'list-unstyled clearfix theme-switch',
   });
 
-  // Dark sidebar skins
   var $themePrimary = $('<li />', { style: 'padding: 5px;' }).append(
     '<a href="javascript:void(0)" data-theme="theme-primary" style="background: #46bc5c; display: block;vertical-align: middle;" class="clearfix rounded w-p100 h-30 mb-5" title="Theme primary">' +
       '</a>'
@@ -281,18 +227,24 @@ $(function () {
   $skinsList.append($themeSuccess);
 
   var $themeDanger = $('<li />', { style: 'padding: 5px;' }).append(
-    '<a href="javascript:void(0)" data-theme="theme-danger" style="background: #f2426d; display: block;vertical-align: middle;" class="clearfix rounded w-p100 h-30 mb-5" title="Theme danger">' +
+    '<a href="javascript:void(0)" data-theme="theme-danger" style="background: #fb5a7f; display: block;vertical-align: middle;" class="clearfix rounded w-p100 h-30 mb-5" title="Theme danger">' +
       '</a>'
   );
   $skinsList.append($themeDanger);
 
   var $themeWarning = $('<li />', { style: 'padding: 5px;' }).append(
-    '<a href="javascript:void(0)" data-theme="theme-warning" style="background: #fec801; display: block;vertical-align: middle;" class="clearfix rounded w-p100 h-30 mb-5" title="Theme warning">' +
+    '<a href="javascript:void(0)" data-theme="theme-warning" style="background: #fcc955; display: block;vertical-align: middle;" class="clearfix rounded w-p100 h-30 mb-5" title="Theme warning">' +
       '</a>'
   );
   $skinsList.append($themeWarning);
 
-  $demoSettings.append('<h4 class="control-sidebar-heading">Skin Colors</h4>');
+  var $themeSecondary = $('<li />', { style: 'padding: 5px;' }).append(
+    '<a href="javascript:void(0)" data-theme="theme-secondary" style="background: #1ea1f2; display: block;vertical-align: middle;" class="clearfix rounded w-p100 h-30 mb-5" title="Theme secondary">' +
+      '</a>'
+  );
+  $skinsList.append($themeSecondary);
+
+  $demoSettings.append('<h4 class="control-sidebar-heading">Theme Colors</h4>');
   $demoSettings.append($skinsList);
 
   $tabPane.append($demoSettings);
@@ -300,14 +252,27 @@ $(function () {
 
   setup();
 
-  $('[data-toggle="tooltip"]').tooltip();
-}); // End of use strict
-
-$(function () {
-  'use strict';
-
-  $('.theme-switch li a').click(function () {
-    $('.theme-switch li a').removeClass('active').addClass('inactive');
-    $(this).toggleClass('active inactive');
+  // Add event listener for sidebar toggle
+  $('#toggle_sidebar').on('click', function () {
+    var isSidebarCollapsed = $('body').hasClass('sidebar-collapse');
+    store('sidebar-collapse', isSidebarCollapsed ? '' : 'sidebar-collapse');
   });
-}); // End of use strict
+
+  // Apply sidebar state from local storage on page load
+  if (get('sidebar-collapse') === 'sidebar-collapse') {
+    $('body').addClass('sidebar-collapse');
+    $('#toggle_sidebar').attr('checked', true);
+  }
+
+  // Add event listener for RTL toggle
+  $('#rtl').on('click', function () {
+    var isRTL = $('body').hasClass('rtl');
+    store('rtl', isRTL ? '' : 'rtl');
+  });
+
+  // Apply RTL state from local storage on page load
+  if (get('rtl') === 'rtl') {
+    $('body').addClass('rtl');
+    $('#rtl').attr('checked', true);
+  }
+});
