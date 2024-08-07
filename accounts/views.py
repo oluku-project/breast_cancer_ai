@@ -9,8 +9,9 @@ from django.views.generic import CreateView, View, FormView, TemplateView
 from django.urls import reverse_lazy
 from django.contrib import messages
 from django.utils.translation import gettext_lazy as _
-from BreastCancerAI.mixins import CustomPermissionMixin
 from BreastCancerAI.utils import PASSWORD_VALIDITY, MailUtils
+from accounts.mixins import ActiveUserRequiredMixin
+from patients.models import PredictionResult
 from .forms import LoginForm, RegistrationForm, SetPasswordForm, UpdateAccountForm
 from .models import Account
 from django.contrib import auth
@@ -88,6 +89,7 @@ class ActivateAccountView(View):
 
 activateaccountview = ActivateAccountView.as_view()
 
+User = auth.get_user_model()
 
 class LoginView(FormView):
     template_name = "accounts/login.html"
@@ -133,7 +135,7 @@ class LoginView(FormView):
 loginview = LoginView.as_view()
 
 
-class LogoutView(CustomPermissionMixin, View):
+class LogoutView(ActiveUserRequiredMixin, View):
     def get(self, request):
         auth.logout(request)
         messages.success(request, _("You are logged out."))
@@ -236,7 +238,7 @@ class TermsView(TemplateView):
 termsview = TermsView.as_view()
 
 
-class UserDashboardView(TemplateView):
+class UserDashboardView(ActiveUserRequiredMixin,TemplateView):
     template_name = "accounts/user-dashboard.html"
 
     def get_context_data(self, **kwargs):
@@ -332,7 +334,7 @@ class UserDashboardView(TemplateView):
 userdashboardview = UserDashboardView.as_view()
 
 
-class UpdateAccountView(View):
+class UpdateAccountView(ActiveUserRequiredMixin,View):
     template_name = "accounts/profile.html"
 
     def get(self, request, *args, **kwargs):
