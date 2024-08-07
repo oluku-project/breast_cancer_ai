@@ -227,6 +227,90 @@ class UserDashboardView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        latest_prediction = (
+            PredictionResult.objects.filter(user=self.request.user)
+            .order_by("-submission_date")
+            .first()
+        )
+        from django.db.models import Avg, Sum
+        from django.db.models.functions import TruncMonth
+
+        # Area chart data: Group by month and sum risk scores
+        monthly_data = (
+            PredictionResult.objects.filter(user=self.request.user)
+            .annotate(month=TruncMonth("submission_date"))
+            .values("month")
+            .annotate(
+                total_risk_score=Sum("risk_score"), avg_risk_score=Avg("risk_score")
+            )
+            .order_by("month")
+        )
+
+        months = [
+            "Jan",
+            "Feb",
+            "Mar",
+            "Apr",
+            "May",
+            "Jun",
+            "Jul",
+            "Aug",
+            "Sep",
+            "Oct",
+            "Nov",
+            "Dec",
+        ]
+
+        area_chart_data = [0] * 12
+        avg_chart_data = [0] * 12 
+
+        for data in monthly_data:
+            month_idx = data["month"].month - 1  # Convert month to zero-based index
+            area_chart_data[month_idx] = float(round(data["total_risk_score"],2))
+            avg_chart_data[month_idx] = float(round(data["avg_risk_score"], 2))
+
+        # Donut chart data: Group by risk level and sum risk scores
+        risk_levels = ["High", "Moderate", "Low"]
+        risk_data = (
+            PredictionResult.objects.filter(user=self.request.user)
+            .values("risk_level")
+            .annotate(total_risk_score=Sum("risk_score"))
+        )
+
+        risk_scores = {level: 0.0 for level in risk_levels}
+        for data in risk_data:
+            risk_scores[data["risk_level"]] = float(round(data["total_risk_score"],2))
+
+        donut_chart_data = [risk_scores[level] for level in risk_levels]
+
+        # Additional Data
+        overall_risk_score = (
+            PredictionResult.objects.filter(user=self.request.user).aggregate(
+                Sum("risk_score")
+            )["risk_score__sum"]
+            or 0
+        )
+        total_predictions = PredictionResult.objects.filter(
+            user=self.request.user
+        ).count()
+        high_risk_predictions = PredictionResult.objects.filter(
+            user=self.request.user, risk_level="High"
+        ).count()
+        last_prediction_date = (
+            latest_prediction.submission_date if latest_prediction else "N/A"
+        )
+
+        print("avg_chart_data: ", avg_chart_data)
+        context["area_chart_data"] = area_chart_data
+        context["avg_chart_data"] = avg_chart_data
+        context["area_chart_labels"] = months
+        context["donut_chart_data"] = donut_chart_data
+        context["donut_chart_labels"] = risk_levels
+        context["overall_risk_score"] = float(overall_risk_score)
+        context["total_predictions"] = total_predictions
+        context["high_risk_predictions"] = high_risk_predictions
+        context["last_prediction_date"] = last_prediction_date
+        context["result"] = latest_prediction
         context["title_root"] = _("User Dashboard")
         return context
 
