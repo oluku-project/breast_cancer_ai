@@ -12,7 +12,7 @@
               <h2 class="text-center mb-4">
                 Welcome {{user.first_name.title}}
               </h2>
-              <p class="text-center">Your personalized health dashboard</p>
+              <p>Welcome to your dashboard. Here you can see an overview of your breast cancer risk assessments.</p>
             </div>
           </div>
         </div>
@@ -26,14 +26,14 @@
           <div class="row">
             <div class="col-lg-3 col-12 be-1">
               <div class="d-flex justify-content-between align-items-center">
-                <p class="mb-0 text-fade">Index</p>
-                <p class="mb-0 text-success">6210</p>
+                <p class="mb-0 text-fade">Total Risk Score </p>
+                <p class="mb-0 text-success">{{ overall_risk_score }}</p>
               </div>
               <div>
                 <h1 class="mb-0 fw-600">
-                  60,021.21
+                  Total Predictions
                   <small class="ms-10 me-5"
-                    ><i class="text-success fa fa-caret-up"></i> 1.42%</small
+                    ><i class="text-success fa fa-caret-up"></i> {{ total_predictions }}</small
                   >
                 </h1>
               </div>
@@ -43,45 +43,27 @@
                 class="ms-lg-20 mt-20 mt-lg-0 d-flex justify-content-between align-items-center"
               >
                 <div>
-                  <p class="mb-0 text-fade">Your investment</p>
-                  <h2 class="mb-0 fw-600">$8,032</h2>
+                  <p class="mb-0 text-fade">High Risk Predictions</p>
+                  <h2 class="mb-0 fw-600">{{ high_risk_predictions }}</h2>
                 </div>
                 <div>
-                  <p class="mb-0 text-fade">Current Value</p>
-                  <h2 class="mb-0 fw-600 text-success">$10,125</h2>
-                </div>
-                <div>
-                  <p class="mb-0 text-fade">ROI</p>
-                  <h2 class="mb-0 fw-600 text-success">+28.2%</h2>
+                  <p class="mb-0 text-fade">Last Prediction Date</p>
+                  <h2 class="mb-0 fw-600 text-success">{{ last_prediction_date|date:"M j, Y" }}</h2>
                 </div>
               </div>
             </div>
           </div>
           <div class="row mt-30">
             <div class="col-lg-7 col-12">
-              <h3 class="box-title">Investment Growth</h3>
-              <div id="investment-chart"></div>
+              <h3 class="box-title">Monthly Risk Scores</h3>
+              <div id="area-chart"></div>
             </div>
             <div class="col-lg-5 col-12">
-              <h3 class="box-title">Your Portfolio</h3>
+              <h3 class="box-title">Risk Levels Distribution</h3>
               <div
                 class="d-flex justify-content-start align-items-center mt-md-20 mt-0"
               >
-                <div id="portfolio-chart"></div>
-                <ul class="list-unstyled">
-                  <li>
-                    <span class="badge badge-primary badge-dot me-10"></span>
-                    Large Cap Funds
-                  </li>
-                  <li>
-                    <span class="badge badge-info badge-dot me-10"></span>
-                    Diversified Funds
-                  </li>
-                  <li>
-                    <span class="badge badge-success badge-dot me-10"></span>
-                    Debt Funds
-                  </li>
-                </ul>
+                <div id="donut-chart"></div>
               </div>
             </div>
           </div>
@@ -91,52 +73,56 @@
 
     <!-- Health Overview -->
     <div class="col-12">
-      <div class="box">
-        <div class="box-body">
-          <div class="d-md-flex justify-content-between align-items-center">
-            <div>
-              <p>
-                <span class="text-primary">Result</span> |
-                <span class="text-fade">Health Overview</span>
-              </p>
-              <h3 class="mb-0 fw-500">Summary of your health info.</h3>
-            </div>
-            <div class="mt-10 mt-md-0">
-              <a
-                href="invest.html"
-                class="waves-effect waves-light btn btn-outline btn-primary"
-                >View Now</a
-              >
-            </div>
-          </div>
-          <hr />
-          <div class="d-md-flex justify-content-between align-items-center">
-            <div class="d-flex justify-content-start align-items-center">
-              <div class="min-w-100">
-                <p class="mb-0 text-fade">Last Assessment Date</p>
-                <h6 class="mb-0">2024-06-19</h6>
-              </div>
-              <div class="mx-lg-50 mx-20 min-w-70">
-                <p class="mb-0 text-fade">Recommendations</p>
-                <h6 class="mb-0 text-success">
-                  Regular check-ups and a healthy lifestyle
-                </h6>
-              </div>
+      {% if result %}
+        <div class="box">
+          <div class="box-body">
+            <div class="d-md-flex justify-content-between align-items-center">
               <div>
-                <p class="mb-0 text-fade">Risk</p>
-                <h6 class="mb-0">Low</h6>
+                <p>
+                  <span class="text-primary">Result</span> |
+                  <span class="text-fade">Health Overview</span>
+                </p>
+                <h3 class="mb-0 fw-500">Summary of your health info.</h3>
+              </div>
+              <div class="mt-10 mt-md-0">
+                <a  onclick="navigateToUrl(this)"
+                    data-url="{% url 'detailed_result' result.pk %}"
+                    href="javascript:void(0)"
+                  class="waves-effect waves-light btn btn-outline btn-primary"
+                  >View Now</a
+                >
               </div>
             </div>
-            <div class="mt-10 mt-md-0">
-              <a
-                href="#"
-                class="waves-effect waves-light btn mb-5 bg-gradient-danger btn-flat"
-                ><i class="fa fa-trash me-10"></i>Delete</a
-              >
+            <hr />
+            <div class="d-md-flex justify-content-between align-items-center">
+              <div class="d-flex justify-content-start align-items-center">
+                <div class="min-w-100">
+                  <p class="mb-0 text-fade">Last Assessment Date</p>
+                  <h6 class="mb-0">{{result.submission_date}}</h6>
+                </div>
+                <div class="mx-lg-50 mx-20 min-w-70">
+                  <p class="mb-0 text-fade">Recommendations</p>
+                  <h6 class="mb-0 text-success">
+                    {{result.get_risk_level}}
+                  </h6>
+                </div>
+                <div>
+                  <p class="mb-0 text-fade">Risk</p>
+                  <h6 class="mb-0">{{result.risk_level}}</h6>
+                </div>
+              </div>
+              <div class="mt-10 mt-md-0">
+                <a
+                  data-bs-toggle="modal" data-bs-target="#deleteModal" 
+                  onclick="confirmDelete('{{ result.id }}')"
+                  class="waves-effect waves-light btn mb-5 bg-gradient-danger btn-flat"
+                  ><i class="fa fa-trash me-10"></i>Delete</a
+                >
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      {% endif %}
     </div>
 
     <!-- Quick Action -->
@@ -151,13 +137,20 @@
             </div>
           </div>
           <div class="d-md-flex justify-content-between align-items-center">
-            <a href="#" class="waves-effect waves-light btn btn-primary m-10 p-20"
+            <a onclick="navigateToUrl(this)"
+                  data-url="{% url 'questionnaire' %}"
+                  href="javascript:void(0);" 
+                  class="waves-effect waves-light btn btn-primary m-10 p-20"
               >Take New Questionnaire</a
             >
-            <a href="#" class="waves-effect waves-light btn btn-danger m-10 p-20"
+            <a onclick="navigateToUrl(this)"
+                  data-url="{% url 'result_hostores' %}"
+                  href="javascript:void(0);"  class="waves-effect waves-light btn btn-danger m-10 p-20"
               >View Detailed Results</a
             >
-            <a href="#" class="waves-effect waves-light btn btn-info m-10 p-20">
+            <a onclick="navigateToUrl(this)"
+                  data-url="{% url 'auth:profile' %}"
+                  href="javascript:void(0);" class="waves-effect waves-light btn btn-info m-10 p-20">
               Update Personal Information
             </a>
           </div>
@@ -165,6 +158,13 @@
       </div>
     </div>
   </div>
+  {% include 'patients/includes/result-histores-modal.html' %}
 </section>
 
 {% endblock content %}
+
+{% block scripts %}
+{% include 'patients/includes/user-dashboard.html' %}
+  
+{% endblock %}
+    
