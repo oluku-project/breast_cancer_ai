@@ -1,7 +1,7 @@
 from django.db import models
 from django.db.models.functions import Now
 
-from patients.utils import RATE_CHOICES
+from patients.utils import RATE_CHOICES, RISK_LEVEL
 
 
 class STATE(models.TextChoices):
@@ -70,6 +70,17 @@ class PredictionResult(models.Model):
 
     def malignant(self):
         return f"{self.probability_malignant * 100:.2f}"
+
+    def get_risk_level(self):
+        score = self.risk_score
+        if score < 43:
+            risk_level = RISK_LEVEL[0]
+        elif score < 79:
+            risk_level = RISK_LEVEL[1]
+        else:
+            risk_level = RISK_LEVEL[2]
+
+        return risk_level["recommendations"][0]["title"]
 
     def __str__(self):
         return f"Prediction for {self.user.username} at {self.timestamp}"
