@@ -1,115 +1,156 @@
 QUESTIONS = [
-    ("Do you feel a lump in your breast?", "radius_mean", 17.99),
+    (
+        "Do you feel a lump in your breast?",
+        "radius_mean",
+        15.5,
+    ),  
     (
         "Do you have consistent pain in your armpit or breast?",
         "texture_mean",
-        21.25,
-    ),
+        20.0,
+    ),  
     (
         "Do you notice any redness or pitting on your breast skin?",
         "perimeter_mean",
-        132.90,
-    ),
-    ("Has the size or shape of your breast changed recently?", "area_mean", 1001.0),
+        100.0,
+    ),  
+    (
+        "Has the size or shape of your breast changed recently?",
+        "area_mean",
+        800.0,
+    ),  
     (
         "Do you experience nipple discharge (not breast milk)?",
         "smoothness_mean",
-        0.1184,
-    ),
-    ("Is your nipple inverted?", "compactness_mean", 0.2776),
-    ("Do you have a rash on or around your nipple?", "concavity_mean", 0.3001),
+        0.10,
+    ),  
+    (
+        "Is your nipple inverted?",
+        "compactness_mean",
+        0.12,
+    ),  
+    (
+        "Do you have a rash on or around your nipple?",
+        "concavity_mean",
+        0.15,
+    ),  
     (
         "Is there swelling in your armpit or around your collarbone?",
         "concave points_mean",
-        0.1471,
-    ),
+        0.08,
+    ),  
     (
         "Have you noticed any puckering or dimpling of the breast skin?",
         "symmetry_mean",
-        0.1812,
-    ),
+        0.19,
+    ),  
     (
         "Do you feel areas of thickened tissue in your breast?",
         "fractal_dimension_mean",
-        0.0628,
-    ),
+        0.07,
+    ),  
     (
         "Do you have persistent breast skin irritation or dimpling?",
         "radius_se",
-        0.2500,
-    ),
+        0.35,
+    ),  
     (
         "Have you noticed redness or enlarged pores on your breast?",
         "texture_se",
-        1.22,
-    ),
-    ("Do you feel any hardness or firmness in your breast?", "perimeter_se", 2.80),
-    ("Do you experience unusual warmth in your breast?", "area_se", 40.0),
+        1.5,
+    ),  
+    (
+        "Do you feel any hardness or firmness in your breast?",
+        "perimeter_se",
+        3.0,
+    ),  
+    (
+        "Do you experience unusual warmth in your breast?",
+        "area_se",
+        50.0,
+    ),  
     (
         "Do you have persistent itching of your breast or nipple?",
         "smoothness_se",
-        0.01,
-    ),
+        0.009,
+    ),  
     (
         "Have you observed any ulceration on your breast skin?",
         "compactness_se",
-        0.03,
-    ),
-    ("Do you see prominent veins on your breast?", "concavity_se", 0.03),
-    ("Has your nipple changed shape or appearance?", "concave points_se", 0.01),
+        0.04,
+    ),  
+    (
+        "Do you see prominent veins on your breast?",
+        "concavity_se",
+        0.05,
+    ),  
+    (
+        "Has your nipple changed shape or appearance?",
+        "concave points_se",
+        0.02,
+    ),  
     (
         "Do you experience peeling or flaking of your nipple skin?",
         "symmetry_se",
-        0.02,
-    ),
+        0.03,
+    ),  
     (
         "Have you noticed any changes in the appearance of your nipple?",
         "fractal_dimension_se",
-        0.003,
-    ),
+        0.004,
+    ),  
     (
         "Have you experienced a sudden change in your breast size?",
         "radius_worst",
-        25.41,
-    ),
-    ("Do you notice asymmetry between your breasts?", "texture_worst", 39.28),
-    ("Is there swelling of your entire breast?", "perimeter_worst", 188.50),
+        20.0,
+    ),  
+    (
+        "Do you notice asymmetry between your breasts?",
+        "texture_worst",
+        30.0,
+    ),  
+    (
+        "Is there swelling of your entire breast?",
+        "perimeter_worst",
+        120.0,
+    ),  
     (
         "Do you see skin changes such as puckering or dimpling?",
         "area_worst",
-        2501.0,
-    ),
+        1500.0,
+    ),  
     (
         "Do you feel thickened areas or lumps in your breast?",
         "smoothness_worst",
-        0.1447,
-    ),
+        0.16,
+    ),  
     (
         "Do you have unexplained pain or tenderness in your breast?",
         "compactness_worst",
-        0.3454,
-    ),
+        0.50,
+    ),  
     (
         "Do you feel lumps or masses in your breast tissue?",
         "concavity_worst",
-        0.4268,
-    ),
+        0.60,
+    ),  
     (
         "Do you experience nipple discharge that isn't breast milk?",
         "concave points_worst",
-        0.2012,
-    ),
+        0.18,
+    ),  
     (
         "Do you have unusual warmth or redness in your breast?",
         "symmetry_worst",
-        0.2901,
-    ),
+        0.35,
+    ),  
     (
         "Do you notice any visible veins or blood vessels on your breast?",
         "fractal_dimension_worst",
-        0.0834,
-    ),
+        0.09,
+    ),  
 ]
+
 CATEGORIES = [
     "Lump in Breast",
     "Pain in Armpit/Breast",
@@ -499,6 +540,9 @@ RATE_CHOICES = [
     (5, "Excellent"),
 ]
 
+import pandas as pd
+from BreastCancerAI import settings
+
 class HelpResponse:
 
     def fetchRespondedQuestions(self, response_instance):
@@ -509,6 +553,30 @@ class HelpResponse:
             section_header = section_headers[index]
             grouped_questions[section_header].append(question[0])
 
-        # Remove empty groups
         grouped_questions = {k: v for k, v in grouped_questions.items() if v}
         return grouped_questions
+
+    def make_prediction(self, probabilities=None, risk_score=None):
+        # Get the probability of the positive class (malignant)
+        risk_score = risk_score if risk_score else probabilities[0][1]
+        risk_level = self.get_risk_level_from_score(risk_score)
+        return risk_level, risk_score
+
+    def get_risk_level_from_score(self, score):
+        formatted_score = f"{score * 100:.2f}"
+        if score < 0.43:
+            risk_level = RISK_LEVEL[0]
+        elif score < 0.79:
+            risk_level = RISK_LEVEL[1]
+        else:
+            risk_level = RISK_LEVEL[2]
+        description = risk_level["description"][0].format(score=formatted_score)
+        return {
+            "level": risk_level["level"],
+            "info": risk_level["info"],
+            "score": description,
+            "next": risk_level["next_steps"][0]["messages"][0],
+            "next_steps": risk_level["next_steps"],
+            "resources": risk_level["resources"],
+            "recommendations": risk_level["recommendations"],
+        }
