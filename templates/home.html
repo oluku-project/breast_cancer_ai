@@ -4,7 +4,7 @@
 {% block content %}
     <section class="content">
       <div class="row">
-        <div class="col-xl-9 col-12">
+        <div class="col-12">
           <!-- hero section -->
           <div class="row mb-3">
             <div class="">
@@ -16,13 +16,14 @@
                     and make informed decisions.
                   </p>
 
-                  <button class="btn btn-xs btn-light">Get Started</button>
+                  <button onclick="navigateToUrl(this)"
+                    data-url="#start" class="btn btn-xs btn-light">Get Started</button>
                 </div>
               </div>
             </div>
           </div>
-          <!--  Introduction Section -->
-          <div class="box pull-up">
+          <!-- Introduction Section -->
+          <div class="box">
             <div class="box-body">
               <div class="d-md-flex justify-content-between align-items-center">
                 <div class="col-lg-8 offset-lg-2">
@@ -30,32 +31,17 @@
                     Welcome to Breast Cancer Prediction
                   </h2>
                   <p class="text-center">
-                    At Breast Cancer Prediction, we are dedicated to providing
-                    you with the tools and information needed to manage your
-                    breast health effectively. Our platform features a
-                    scientifically validated questionnaire developed by leading
-                    oncologists and medical professionals. This questionnaire
-                    assesses your individual risk factors for breast cancer,
-                    helping you understand your susceptibility based on factors
-                    such as family history, lifestyle choices, and genetic
-                    predisposition.
+                    At Breast Cancer Prediction, we are committed to empowering you with the knowledge and tools to effectively manage your breast health. Our platform utilizes a scientifically validated questionnaire crafted by leading oncologists and medical experts to evaluate your unique risk factors for breast cancer. By considering elements such as family history, lifestyle choices, and genetic predispositions, we provide a comprehensive assessment of your susceptibility.
                   </p>
                   <p class="text-center">
-                    Our mission is to empower individuals like you to make
-                    informed decisions about your health. Through our
-                    user-friendly interface and advanced algorithms, we offer
-                    personalized insights and recommendations tailored to your
-                    specific risk profile. Whether you're seeking early
-                    detection strategies or guidance on preventive measures,
-                    Breast Cancer Prediction is here to support you every step
-                    of the way. Join us in taking proactive steps towards breast
-                    health awareness and prevention. Start your journey today
-                    with our comprehensive questionnaire and take control of
-                    your well-being.
+                    Our mission is to enable you to make informed decisions about your health. Through our intuitive interface and sophisticated algorithms, we deliver personalized insights and recommendations tailored to your specific risk profile. Whether you are looking for early detection strategies or advice on preventive measures, Breast Cancer Prediction is dedicated to supporting you at every stage. Join us in advancing breast health awareness and prevention. Begin your journey today with our extensive questionnaire and take proactive steps towards your well-being.
                   </p>
                   <div class="text-center">
                     <a
-                      href="invest.html"
+                      target="_blank"
+                      onclick="navigateToUrl(this)"
+                      data-url="https://www.dana-farber.org/cancer-care/types/breast-cancer"
+                      href="javascript:void(0)"
                       class="waves-effect waves-light btn btn-outline btn-primary"
                       >Learn More</a
                     >
@@ -65,9 +51,9 @@
             </div>
           </div>
           <!-- How It Works Section -->
-          <div class="box pull-up">
+          <div class="box">
             <div class="box-body">
-              <div class="col-lg-8 offset-lg-2">
+              <div class="col-12">
                 <h2 class="text-center mb-4">How It Works</h2>
                 <div class="row">
                   <div class="col-md-4 mb-4">
@@ -114,7 +100,7 @@
             </div>
           </div>
           <!-- Features Section -->
-          <div class="box pull-up">
+          <div class="box">
             <div class="box-body">
               <div class="d-md-flex justify-content-between align-items-center">
                 <div class="col">
@@ -128,9 +114,8 @@
 
               <hr />
 
-              <div class="d-md-flex justify-content-between align-items-center">
-                <div class="d-flex justify-content-start align-items-center">
-                  <div class="min-w-100">
+              <div class="row">
+                  <div class="col-md-4 p-10">
                     <div class="mb-3">
                       <i class="fa fa-stethoscope fa-3x text-primary"></i>
                     </div>
@@ -140,7 +125,7 @@
                       precision.
                     </p>
                   </div>
-                  <div class="mx-lg-50 mx-20 min-w-70">
+                  <div class="col-md-4 p-10">
                     <div class="mb-3">
                       <i class="fa fa-line-chart fa-3x text-primary"></i>
                     </div>
@@ -151,7 +136,7 @@
                     </p>
                   </div>
 
-                  <div>
+                  <div class="col-md-4 p-10">
                     <div class="mb-3">
                       <i class="fa fa-shield fa-3x text-primary"></i>
                     </div>
@@ -161,14 +146,13 @@
                       privacy protection.
                     </p>
                   </div>
-                </div>
               </div>
             </div>
           </div>
           <!-- Resorces Section -->
-          <div class="box pull-up">
+          <div class="box">
             <div class="box-body">
-              <div class="d-md-flex justify-content-between align-items-center">
+              <div class="row">
                 <div class="col">
                   <h2 class="display-5">Resources</h2>
                   <p class="lead">
@@ -180,9 +164,8 @@
 
               <hr />
 
-              <div class="d-md-flex justify-content-between align-items-center">
-                <div class="d-flex justify-content-start align-items-center">
-                  <div class="min-w-100">
+              <div class="row">
+                  <div class="col-md-4 mb-4">
                     <div class="mb-3">
                       <i class="fa fa-book fa-3x text-primary"></i>
                     </div>
@@ -192,12 +175,13 @@
                       and treatment.
                     </p>
                     <a
-                      href="#"
+                      onclick="navigateToUrl(this,true)"
+                      data-url="{% static 'assets/files/educational-article.pdf' %}"
                       class="waves-effect waves-light btn btn-outline btn-primary"
                       >Read More</a
                     >
                   </div>
-                  <div class="mx-lg-50 mx-20 min-w-70">
+                  <div class="col-md-4 mb-4">
                     <div class="mb-3">
                       <i class="fa fa-video-camera fa-3x text-primary"></i>
                     </div>
@@ -207,13 +191,15 @@
                       understand breast cancer.
                     </p>
                     <a
-                      href="#"
+                      onclick="navigateToUrl(this)"
+                      data-url="https://www.youtube.com/watch?v=ooDu-UbqUGs"
+                      href="javascript:void(0)"
                       class="waves-effect waves-light btn btn-outline btn-primary"
                       >Watch Now</a
                     >
                   </div>
 
-                  <div>
+                  <div class="col-md-4 mb-4">
                     <div class="mb-3">
                       <i class="fa fa-heartbeat fa-3x text-primary"></i>
                     </div>
@@ -223,149 +209,43 @@
                       experiences.
                     </p>
                     <a
-                      href="#"
+                      onclick="navigateToUrl(this)"
+                      data-url="https://www.nationalbreastcancer.org/breast-cancer-support-groups/"
+                      href="javascript:void(0)"
                       class="waves-effect waves-light btn btn-outline btn-primary"
                       >Join Now</a
                     >
                   </div>
-                </div>
               </div>
             </div>
           </div>
 
         </div>
 
-        <!-- Testimonial Section -->
-        <div class="col-xl-3 col-12">
-          <div class="mb-20">
-            <a
-              href="invest.html"
-              class="waves-effect waves-light btn w-p100 btn-success mb-5"
-              >What Our Users Say <i class="ms-15 fa fa-angle-right"></i
-            ></a>
+        <!-- Start question -->
+        <div id="start" class="col-xl-6 col-12 my-50">
+          
+          <div class="mb-20 ">
+            <button
+              onclick="navigateToUrl(this)"
+              data-url="
+              {% if user.is_active %} {% url 'questionnaire' %} {% else %} {% url 'auth:login' %} {% endif %}
+                "
+              class="waves-effect waves-light btn p-20 btn-success pull-up"
+              >
+               <i class="fa fa-stethoscope fa-3x"></i> Start Questionnaire
+            </button>
           </div>
-          <div class="box bg-transparent no-shadow">
-            <div class="box-header ps-0 pb-0">
-              <h3 class="box-title no-border">
-                Hear from those who have benefited from our tool.
-              </h3>
-            </div>
-          </div>
-          <div class="box">
-            <div class="box-body">
-              <p class="mb-15">25 Dec 2021</p>
-              <div class="d-flex pb-15 mb-15 bb-1 bb-dashed">
-                <div class="" style="width: 50px; margin-right: 13px">
-                  <img src="{{profile_image}}" class="avatar b-1" alt="" />
-                </div>
-                <div class="text-overflow" style="margin-left: 5px">
-                  <a href="#">
-                    <p class="mb-0 fw-500 text-overflow">
-                      The questionnaire was easy to follow and gave me peace of
-                      mind.
-                    </p>
-                  </a>
-                </div>
-              </div>
-              <div class="d-flex pb-15 mb-15 bb-1 bb-dashed">
-                <div class="me-10" style="width: 50px">
-                  <img
-                    src="{% static 'images/logo/logo-2.jpg' %}"
-                    class="avatar b-1"
-                    alt=""
-                  />
-                </div>
-                <div class="text-overflow" style="margin-left: 5px">
-                  <a href="#">
-                    <p class="fw-500 text-overflow">
-                      "Quick and insightful analysis that helped me take the
-                      next steps."
-                    </p>
-                    <footer class="blockquote-footer mb-0 fw-500">
-                      John Smith
-                    </footer>
-                  </a>
-                </div>
-              </div>
-              <div class="d-flex pb-15 mb-15 bb-1 bb-dashed">
-                <div class="me-10 modal-1">
-                  <img
-                    src="{% static 'images/logo/logo-3.jpg' %}"
-                    class="avatar b-1"
-                    alt=""
-                  />
-                </div>
-                <div class="text-overflow overflow_box">
-                  <a href="#">
-                    <p class="mb-0 fw-500 text-overflow">
-                      ABCD Money Market Fund Direct Plan-Growth
-                    </p>
-                    <p class="mb-0 fw-500">$500</p>
-                  </a>
-                </div>
-              </div>
-              <p class="mb-15">01 Jan 2022</p>
-              <div class="d-flex pb-15 mb-15 bb-1 bb-dashed">
-                <div class="me-10 modal-1">
-                  <img
-                    src="{% static 'images/logo/logo-4.jpg' %}"
-                    class="avatar b-1"
-                    alt=""
-                  />
-                </div>
-                <div class="text-overflow overflow_box">
-                  <a href="#">
-                    <p class="mb-0 fw-500 text-overflow">
-                      A&D Money Market Fund Direct-Growth
-                    </p>
-                    <p class="mb-0 fw-500">$500</p>
-                  </a>
-                </div>
-              </div>
-              <div class="d-flex">
-                <div class="me-10" style="width: 50px">
-                  <img
-                    src="{% static 'images/logo/logo-5.jpg' %}"
-                    class="avatar b-1"
-                    alt=""
-                  />
-                </div>
-                <div class="text-overflow" style="margin-left: 5px">
-                  <a href="#">
-                    <p class="mb-0 fw-500 text-overflow">Index Sensex Direct</p>
-                    <p class="mb-0 fw-500">$500</p>
-                  </a>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Call-to-Action Section -->
-          <div class="box bg-transparent no-shadow">
-            <div class="box-header ps-0 pb-0">
-              <h3 class="box-title no-border">
+          <div class="box ">
+            <div class="box-header ">
+              <h3 class="box-title">
                 Take the First Step Towards Early Detection
               </h3>
+              <p class="mb-0 lead mb-10">
+                Early detection saves lives. Start our questionnaire to
+                assess your breast cancer risk now.
+              </p>
             </div>
-            <div
-                  class="d-flex align-items-center pb-15 mb-15 bb-1 bb-dashed"
-                >
-                  <div>
-                      <p class="mb-0 lead mb-4">
-                        Early detection saves lives. Start our questionnaire to
-                        assess your breast cancer risk now.
-                      </p>
-                      <a
-                        href="#"
-                        class="mb-2 waves-effect waves-light btn btn-outline btn-primary"
-                      >
-                        <i class="fa fa-stethoscope"></i> Start Questionnaire
-                      </a>
-                      <a href="#" class="waves-effect waves-light btn btn-outline btn-primary ml-3">
-                          <i class="fa fa-info-circle"></i> Learn More
-                      </a>
-                  </div>
-                </div>
           </div>
         </div>
       </div>
