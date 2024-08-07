@@ -1,6 +1,8 @@
 from django.urls import reverse
 from django.shortcuts import render, redirect
 from django.db import transaction
+from accounts.mixins import ActiveUserRequiredMixin
+from accounts.templatetags.custom_filters import calculate_age
 from patients.forms import ContactForm, FeedbackForm
 from patients.utils import (
     QUESTIONS,
@@ -8,7 +10,7 @@ from patients.utils import (
     section_headers,
     RISK_LEVEL,
     CATEGORIES,
-    FAQS
+    FAQS,
 )
 from django.http import HttpResponse, JsonResponse
 from django.views.generic import DetailView, View, TemplateView
@@ -20,9 +22,24 @@ import pandas as pd
 import pickle5 as pickle
 from django_filters.views import FilterView
 from .filters import PredictionResultFilter, QuestionnaireResponseFilter
+from reportlab.lib.pagesizes import letter
+from reportlab.lib import colors
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.platypus import (
+    SimpleDocTemplate,
+    Paragraph,
+    Spacer,
+    Table,
+    TableStyle,
+    Image,
+)
+from io import BytesIO
+import matplotlib.pyplot as plt
+import base64
+import numpy as np
 
 
-class QuestionnaireView(View):
+class QuestionnaireView(ActiveUserRequiredMixin,View):
     template_name = "patients/questionnaire.html"
     responseID = None
 
@@ -112,7 +129,7 @@ class QuestionnaireView(View):
 questionnaier = QuestionnaireView.as_view()
 
 
-class SummaryView(HelpResponse, DetailView):
+class SummaryView(ActiveUserRequiredMixin,HelpResponse, DetailView):
     model = QuestionnaireResponse
     template_name = "patients/summary.html"
     context_object_name = "response_instance"
@@ -137,7 +154,7 @@ class SummaryView(HelpResponse, DetailView):
 summary_view = SummaryView.as_view()
 
 
-class PredictionView(HelpResponse, DetailView):
+class PredictionView(ActiveUserRequiredMixin,HelpResponse, DetailView):
     template_name = "patients/results.html"
     context_object_name = "response_instance"
 
@@ -164,25 +181,6 @@ class PredictionView(HelpResponse, DetailView):
         data["diagnosis"] = data["diagnosis"].map({"M": 1, "B": 0})
         return data
 
-    def get_risk_level_from_score(self, score):
-        formatted_score = f"{score * 100:.2f}"
-        if score < 0.33:
-            risk_level = RISK_LEVEL[0]
-        elif score < 0.66:
-            risk_level = RISK_LEVEL[1]
-        else:
-            risk_level = RISK_LEVEL[2]
-        description = risk_level["description"][0].format(score=formatted_score)
-        return {
-            "level": risk_level["level"],
-            "info": risk_level["info"],
-            "score": description,
-            "next": risk_level["next_steps"][0]["messages"][0],
-            "next_steps": risk_level["next_steps"],
-            "resources": risk_level["resources"],
-            "recommendations": risk_level["recommendations"],
-        }
-
     def get_default_values(self):
         with open(
             f"{settings.STATICFILES_DIRS[0]}/model/default_values.pkl", "rb"
@@ -200,12 +198,6 @@ class PredictionView(HelpResponse, DetailView):
         prediction = model.predict(input_array_scaled)
         probabilities = model.predict_proba(input_array_scaled)
         return probabilities
-
-    def make_prediction(self, probabilities=None, risk_score=None):
-        # Get the probability of the positive class (malignant)
-        risk_score = risk_score if risk_score else probabilities[0][1]
-        risk_level = self.get_risk_level_from_score(risk_score)
-        return risk_level, risk_score
 
     def get_scaled_values(self, input_dict):
         data = self.get_clean_data()
@@ -351,6 +343,8 @@ class PredictionView(HelpResponse, DetailView):
             grouped_questions = None
             title = "Result"
 
+        # Store data in session
+        self.storeDataInSession(response_instance, url_name)
         context.update(
             {
                 "risk_level": risk_level,
@@ -359,11 +353,24 @@ class PredictionView(HelpResponse, DetailView):
                 "probability_malignant": probability_malignant,
                 "risk_explanation": explanations,
                 "chart_data": chart_data,
+                "response_instance": response_instance,
                 "grouped_questions": grouped_questions,
                 "title_root": title,
             }
         )
+
         return context
+
+    def storeDataInSession(self, response_instance, url_name):
+        prediction_data = self.request.session.get("input_data")
+        if prediction_data:
+            # Clear the session data after accessing it
+            del self.request.session["input_data"]
+        data = {
+            "url_name": url_name,
+            "pk": response_instance.pk,
+        }
+        self.request.session["input_data"] = data
 
 
 results = PredictionView.as_view()
@@ -634,7 +641,7 @@ class PendingResultView(ActiveUserRequiredMixin,FilterView):
 pending_result = PendingResultView.as_view()
 
 
-class PendingResultDeleteView(View):
+class PendingResultDeleteView(ActiveUserRequiredMixin,View):
     def post(self, request, *args, **kwargs):
         try:
             result_id = request.POST.get("result_id")
@@ -650,9 +657,11 @@ class PendingResultDeleteView(View):
                 {"success": False, "message": "Resulte unable to delete!"}
             )
 
+
 pending_result_delete = PendingResultDeleteView.as_view()
 
-class PredictionResultView(FilterView):
+
+class PredictionResultView(ActiveUserRequiredMixin,FilterView):
     filterset_class = PredictionResultFilter
     model = PredictionResult
     template_name = "patients/result-histores.html"
@@ -665,16 +674,17 @@ class PredictionResultView(FilterView):
         context["title_root"] = "Prediction Results"
         return context
 
+
 result_hostores = PredictionResultView.as_view()
 
 
-class PredictionResultDeleteView(View):
+class PredictionResultDeleteView(ActiveUserRequiredMixin,View):
     def post(self, request, *args, **kwargs):
         try:
             result_id = request.POST.get("result_id")
             result = get_object_or_404(PredictionResult, id=result_id)
             result.deleted = True
-            result.save()   
+            result.save()
             messages.success(request, "Resulte deleted successfully.")
             return JsonResponse(
                 {"success": True, "message": "Result deleted successfully."}
@@ -689,7 +699,7 @@ class PredictionResultDeleteView(View):
 resultdelete_view = PredictionResultDeleteView.as_view()
 
 
-class FeedbackView(View):
+class FeedbackView(ActiveUserRequiredMixin,View):
 
     def post(self, request, *args, **kwargs):
         form = FeedbackForm(request.POST)
@@ -706,7 +716,10 @@ class FeedbackView(View):
 
 feedback = FeedbackView.as_view()
 
+
 class ContactView(View):
+    def get(self, request, *args, **kwargs):
+        return render(request, "contact.html", {"title_root": "Contact"})
 
     def post(self, request, *args, **kwargs):
         form = ContactForm(request.POST)
@@ -774,463 +787,12 @@ class FAQView(TemplateView):
 
 faqs = FAQView.as_view()
 
-
-import csv
-import json
-from django.contrib.auth.decorators import login_required
-from django.views.generic.edit import FormView
-from django.urls import reverse_lazy
-
-
-def admin_system_settings(request):
-
-    return render(request, "admin_system_settings.html")
-
-
-def admin_reports(request):
-    # Logic to fetch and process report data
-    reports = [
-        {"id": 1, "name": "Monthly Assessment Report", "created_date": "2024-06-15"},
-        {"id": 2, "name": "User Demographics Report", "created_date": "2024-06-10"},
-    ]
-    return render(request, "admin_reports.html", {"reports": reports})
-
-
-def admin_record_management(request):
-    # Logic to fetch and process record data
-    records = [
-        {
-            "id": 1,
-            "user": "John Doe",
-            "questionnaire": "Breast Cancer Risk Assessment",
-            "date": "2024-06-01",
-            "score": 85,
-            "status": "Completed",
-        },
-        {
-            "id": 2,
-            "user": "Jane Smith",
-            "questionnaire": "Breast Cancer Risk Assessment",
-            "date": "2024-06-05",
-            "score": 78,
-            "status": "Completed",
-        },
-        {
-            "id": 3,
-            "user": "Mary Johnson",
-            "questionnaire": "Breast Cancer Risk Assessment",
-            "date": "2024-06-10",
-            "score": 92,
-            "status": "Pending",
-        },
-    ]
-    return render(request, "admin_record_management.html", {"records": records})
-
-
-def admin_data_visualization(request):
-    # You can add logic to fetch and process data here
-    return render(request, "admin_data_visualization.html")
-
-
-# @login_required
-def admin_questionnaire_management(request):
-    # Fetch questionnaire data from the database
-    questionnaires = [
-        {
-            "id": 1,
-            "title": "Health Risk Assessment",
-            "description": "Assessment to determine general health risks.",
-            "creation_date": "2024-06-01",
-            "status": "Active",
-        },
-        {
-            "id": 2,
-            "title": "Breast Cancer Awareness",
-            "description": "Questionnaire to raise awareness about breast cancer.",
-            "creation_date": "2024-05-15",
-            "status": "Inactive",
-        },
-        # Add more questionnaire data here
-    ]
-    return render(
-        request,
-        "admin_questionnaire_management.html",
-        {"questionnaires": questionnaires},
-    )
-
-
-# @login_required
-def admin_user_management(request):
-    # Fetch user data from the database
-    users = [
-        {
-            "id": 1,
-            "name": "John Doe",
-            "email": "john.doe@example.com",
-            "dob": "1990-01-01",
-            "gender": "Male",
-            "signup_date": "2024-06-01",
-            "status": "Active",
-        },
-        # Add more user data here
-    ]
-    return render(request, "admin_user_management.html", {"users": users})
-
-
-# @login_required
-def admin_dashboard(request):
-    return render(request, "admin_dashboard.html")
-
-
-def export_data(request):
-    if request.method == "POST":
-        export_format = request.POST.get("export_format")
-
-        # Dummy data for export
-        data = [
-            {"name": "John Doe", "age": 30, "email": "john@example.com"},
-            {"name": "Jane Smith", "age": 25, "email": "jane@example.com"},
-        ]
-
-        if export_format == "csv":
-            response = HttpResponse(content_type="text/csv")
-            response["Content-Disposition"] = 'attachment; filename="data.csv"'
-            writer = csv.writer(response)
-            writer.writerow(["Name", "Age", "Email"])
-            for row in data:
-                writer.writerow([row["name"], row["age"], row["email"]])
-            return response
-
-        elif export_format == "pdf":
-            # Implement PDF export logic
-            pass
-
-        elif export_format == "json":
-            response = HttpResponse(content_type="application/json")
-            response["Content-Disposition"] = 'attachment; filename="data.json"'
-            response.write(json.dumps(data))
-            return response
-
-    return redirect("data_export_import")
-
-
-def import_data(request):
-    if request.method == "POST":
-        import_file = request.FILES["import_file"]
-        # Implement file processing logic
-        pass
-
-    return redirect("data_export_import")
-
-
-def data_export_import(request):
-    return render(request, "data_export_import.html")
-
-
-# Create your views here.
-def index(request):
-    context = {"what_url": "MAIN DASHBOARD", "title_root": "Dashboard"}
-
-    return render(request, "home.html", context)
-# def result_hostores(request):
-#     context = {"what_url": "MAIN DASHBOARD", "title_root": "Dashboard"}
-
-#     return render(request, "result-histores.html", context)
-
-
-def charts_and_data_visualization(request):
-    context = {"what_url": "MAIN DASHBOARD", "title_root": "Dashboard"}
-    # {% static 'images/chart-visualizing-1.jpg' %}
-    return render(request, "charts_and_data_visualization.html", context)
-
-
-def record_details(request):
-    context = {
-        "what_url": "MAIN DASHBOARD",
-        "title_root": "Record Details - Breast Cancer Prediction",
-    }
-    # {% static 'images/chart-visualizing-1.jpg' %}
-    return render(request, "record-details.html", context)
-
-
-def about(request):
-    context = {
-        "what_url": "MAIN DASHBOARD",
-        "title_root": "About Us - Breast Cancer Prediction",
-    }
-
-    return render(request, "about.html", context)
-
-
-def faqs(request):
-    context = {
-        "what_url": "MAIN DASHBOARD",
-        "title_root": "FAQS - Breast Cancer Prediction",
-    }
-
-    return render(request, "faqs.html", context)
-
-
-def contacts(request):
-    context = {
-        "what_url": "MAIN DASHBOARD",
-        "title_root": "Contact - Breast Cancer Prediction",
-    }
-
-    return render(request, "contacts.html", context)
-
-    return render(request, "terms.html", context)
-
-
-def profile(request):
-    context = {
-        "what_url": "MAIN DASHBOARD",
-        "title_root": "Profile - Breast Cancer Prediction",
-    }
-
-    return render(request, "profile.html", context)
-
-    # return render(request, "pwd-recovery.html", context)
-
-
-def user_dashboard(request):
-    context = {
-        "what_url": "MAIN DASHBOARD",
-        "title_root": "User Dashboard - Breast Cancer Prediction",
-    }
-
-    return render(request, "user-dashboard.html", context)
-
-
-def user_profile(request):
-    context = {
-        "what_url": "MAIN DASHBOARD",
-        "title_root": "User Profile - Breast Cancer Prediction",
-    }
-    return render(request, "user-profile.html", context)
-
-
-def results1(request):
-    user = {
-        "name": "Jane Doe",
-        "age": 45,
-        "health_history": "Family history of breast cancer",
-        "symptoms": "Lump in the breast, skin changes",
-    }
-    risk_level = "high"  # Example risk level
-    risk_score = 75  # Example risk score
-    risk_factors = [
-        {"question": "Lump in the breast", "value": 17.99},
-        {"question": "Pain in the armpit or breast", "value": 21.25},
-        {"question": "Redness of the breast skin", "value": 132.90},
-        # Add more factors as needed
-    ]
-
-    context = {
-        "user": user,
-        "risk_level": risk_level,
-        "risk_score": risk_score,
-        "risk_factors": risk_factors,
-        "average_risk_score": 50,
-        "title_root": "Results - Breast Cancer Prediction",
-    }
-
-    return render(request, "results.html", context)
-
-
-from django.shortcuts import render, redirect
-from django.core.mail import send_mail
-from django.contrib import messages
-
-
-def contact(request):
-    if request.method == "POST":
-        name = request.POST["name"]
-        email = request.POST["email"]
-        message = request.POST["message"]
-
-        # Send email
-        send_mail(
-            f"Contact Form Submission from {name}",
-            message,
-            email,
-            ["support@example.com"],  # Your support email
-            fail_silently=False,
-        )
-
-        messages.success(request, "Your message has been sent successfully.")
-        return redirect("contact")  # Redirect to the same page or a thank you page
-
-    return render(request, "contacts.html")
-
-
-# class QuestionnaireView1(FormView):
-#     template_name = "patients/questionnaier.html"
-#     success_url = reverse_lazy("index")
-
-#     def form_valid(self, form):
-#         print("------------Process form data here----------------")
-#         responses = form.cleaned_data
-#         print(responses)
-#         print("##############################################\n")
-#         return super().form_valid(form)
-
-#     def get_context_data(self, **kwargs):
-#         context = super().get_context_data(**kwargs)
-#         section_headers = ["Physical", "Skin", "Sensation", "Nipple", "Lumps"]
-#         context["section_headers"] = section_headers
-#         context["title_root"] = "Questionnaier"
-#         return context
-
-
-# class QuestionnaireView1(View):
-#     template_name = "patients/questionnaier.html"
-
-#     def get(self, request, *args, **kwargs):
-#         return render(request, self.template_name, self.get_context())
-
-#     def post(self, request, *args, **kwargs):
-#         form = request.POST
-#         if form:
-#             print("------------Process form data here----------------")
-#             print(form)
-#             print("##############################################\n")
-#         return render(request, self.template_name, self.get_context())
-
-#     def get_context(self):
-
-#         context = {
-#             "questions": QUESTIONS,
-#             "section_headers": section_headers,
-#             "title_root": "Questionnaier",
-#         }
-#         return context
-
-
-# from django.shortcuts import render, redirect
-# from django.views import View
-# from django.contrib.auth.mixins import LoginRequiredMixin
-# from django.utils import timezone
-# from django.contrib import messages
-# from .models import QuestionnaireResponse, Response
-# from .utils import QUESTIONS
-
-
-# class QuestionnaireView(LoginRequiredMixin, View):
-#     template_name = "patients/questionnaier.html"
-
-#     def get(self, request, *args, **kwargs):
-#         return render(request, self.template_name, self.get_context())
-
-#     def post(self, request, *args, **kwargs):
-#         # Extract form data
-#         form_data = request.POST
-
-#         # Filter out questions with "Yes" responses (where answer is "on")
-#         responses = {key: "Yes" for key, value in form_data.items() if value == "on"}
-
-#         # Check if there are any "Yes" responses
-#         if responses:
-#             # Save responses to the database
-#             self.save_responses(request.user, responses)
-#             # Add a success message
-#             messages.success(
-#                 request, "Your responses have been successfully submitted."
-#             )
-#             # Redirect to a thank-you page or the same page
-#             return redirect("summary")
-
-#         # If no "Yes" responses, render the form again with an error message
-#         messages.error(request, "Please respond to the questionnaire.")
-#         return render(request, self.template_name, self.get_context())
-
-#     def get_context(self):
-#         # Group questions into sections
-#         questions = QUESTIONS
-#         context = {
-#             "questions": questions,
-#             "section_headers": section_headers,
-#             "title_root": "Questionnaire",
-#         }
-#         return context
-
-#     def save_responses(self, user, responses):
-#         # Create a new QuestionnaireResponse instance
-#         response_instance = QuestionnaireResponse(user=user)
-#         response_instance.save()
-
-#         # Save each response as a related object
-#         for question, key in responses.items():
-#             response_instance.responses.create(question_key=question)
-
-#         # Optionally, perform any additional processing (e.g., send an email notification)
-
-
-# questionnaier = QuestionnaireView.as_view()
-
-
-# def summary_view1(request):
-#     section_headers = [
-#         "Physical Symptoms",
-#         "Skin and Texture",
-#         "Sensation",
-#         "Nipple and Discharge",
-#         "Lumps",
-#     ]
-#     # Assume this are the keys stored in our db
-#     stored_db = [
-#         "texture_mean",
-#         "smoothness_mean",
-#         "symmetry_mean",
-#         "compactness_se",
-#         "symmetry_se",
-#         "fractal_dimension_se",
-#         "radius_worst",
-#         "smoothness_worst",
-#     ]
-#     questions = QUESTIONS
-#     context = {
-#         "section_headers": section_headers,
-#         "title_root": "Summary",
-#     }
-#     return render(request, "summary.html", context)
-
-
-# def summary_view2(request):
-
-#     # Assume these are the keys stored in our db for the user's responses
-#     stored_db = [
-#         "texture_mean",
-#         "smoothness_mean",
-#         "symmetry_mean",
-#         "compactness_se",
-#         "symmetry_se",
-#         "fractal_dimension_se",
-#         "radius_worst",
-#         "smoothness_worst",
-#     ]
-
-#     # Create a dictionary to hold questions grouped by section headers
-#     grouped_questions = {header: [] for header in section_headers}
-#     # Iterate over the stored_db keys and group questions accordingly
-#     for key in stored_db:
-#         for question, q_key, value in QUESTIONS:
-#             if q_key == key:
-#                 index = QUESTIONS.index((question, q_key, value))
-#                 group_index = index // 6  # Determine the group based on position
-#                 if group_index < len(section_headers):
-#                     grouped_questions[section_headers[group_index]].append(
-#                         (question, q_key, value)
-#                     )
-
-#     grouped_questions = {
-#         header: questions
-#         for header, questions in grouped_questions.items()
-#         if questions
-#     }
-
-#     context = {
-#         "grouped_questions": grouped_questions,
-#         "title_root": "Summary",
-#     }
-#     return render(request, "summary.html", context)
+class HomeView(TemplateView):
+    template_name = "home.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["title_root"] = "Home"
+        return context
+
+homeview = HomeView.as_view()
