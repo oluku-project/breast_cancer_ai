@@ -369,7 +369,251 @@ class PredictionView(HelpResponse, DetailView):
 results = PredictionView.as_view()
 
 
-class PendingResultView(FilterView):
+class PDFReportView(ActiveUserRequiredMixin,HelpResponse, View):
+    def get_data(self):
+        """Retrieve data from session and prepare it for the PDF report."""
+        data = self.request.session.get("input_data")
+        if not data:
+            return HttpResponse("No prediction data found in session.", status=400)
+
+        pk = data["pk"]
+        url = data["url_name"]
+
+        if url == "result":
+            response_instance = get_object_or_404(QuestionnaireResponse, pk=pk)
+            response_instance = get_object_or_404(
+                PredictionResult, questionnaire_response=response_instance
+            )
+        else:
+            response_instance = get_object_or_404(PredictionResult, pk=pk)
+
+        score = response_instance.risk_score
+        scores = score / 100
+        risk_level, risk_score = self.make_prediction(risk_score=scores)
+        probability_benign = response_instance.probability_benign
+        probability_malignant = response_instance.probability_malignant
+        chart_data = response_instance.chart_data
+
+        return {
+            "risk_level": risk_level,
+            "risk_score": risk_score,
+            "score": score,
+            "probability_benign": probability_benign,
+            "probability_malignant": probability_malignant,
+            "chart_data": chart_data,
+            "response_instance": response_instance,
+        }
+
+    def generate_chart(self, chart_data):
+        categories = chart_data["categories"]
+        mean = chart_data["mean"]
+        standard = chart_data["standard"]
+        worst = chart_data["worst"]
+
+        fig, ax = plt.subplots(figsize=(10, 6))
+
+        # Bar chart for Mean Values
+        ax.bar(
+            categories,
+            mean,
+            color="skyblue",
+            label="Mean Values",
+            alpha=0.85,
+            zorder=2,
+            width=0.5
+        )
+
+        # Area chart for Standard Error
+        x = np.arange(len(categories))
+        ax.fill_between(
+            x,
+            [m - s for m, s in zip(mean, standard)],
+            [m + s for m, s in zip(mean, standard)],
+            color="lightgreen",
+            alpha=0.25,
+            label="Standard Error",
+            zorder=1
+        )
+
+        # Line chart for Worst Values
+        ax.plot(
+            categories,
+            worst,
+            color="darkred",
+            linewidth=2,
+            marker='o',
+            label="Worst Values",
+            zorder=3,
+            linestyle='--'
+        )
+
+        # Customizing the chart
+        ax.set_xlabel("Features", fontsize=12)
+        ax.set_ylabel("Values", fontsize=12)
+        ax.set_title("Breast Cancer Prediction Data", fontsize=16, fontweight='bold')
+        ax.legend(fontsize=10)
+        ax.grid(True, which='both', linestyle='--', linewidth=0.5, alpha=0.7)
+        ax.set_xticklabels(categories, rotation=45, ha="right")
+
+        plt.tight_layout()
+
+        chart_image = BytesIO()
+        plt.savefig(chart_image, format="png")
+        chart_image.seek(0)
+        chart_base64 = base64.b64encode(chart_image.read()).decode("utf-8")
+        plt.close()
+
+        return chart_base64
+    def generate_pdf(self):
+        data = self.get_data()
+        buffer = BytesIO()
+        doc = SimpleDocTemplate(buffer, pagesize=letter)
+        doc.title = "Breast Cancer Prediction Report"
+        elements = []
+        styles = getSampleStyleSheet()
+
+        # Custom styles
+        custom_styles = {
+            "title": ParagraphStyle("Title", fontSize=24, spaceAfter=30, alignment=1, fontWeight='bold'),
+            "heading1": ParagraphStyle("Heading1", fontSize=18, spaceAfter=22, alignment=1),
+            "heading2": ParagraphStyle("Heading2", fontSize=16, spaceAfter=16, alignment=1),
+            "heading3": ParagraphStyle("Heading3", fontSize=14, spaceAfter=10, alignment=1),
+            "body": ParagraphStyle("Body", fontSize=12, spaceAfter=10),
+            "small": ParagraphStyle("Small", fontSize=10, spaceAfter=8),
+        }
+
+        # Title Page
+        elements.append(Paragraph("Breast Cancer Prediction Report", custom_styles["title"]))
+        elements.append(Paragraph("Generated for: {}".format(self.request.user.full_name()), custom_styles["heading2"]))
+        elements.append(
+            Paragraph(
+                "Date: {}".format(
+                    data["response_instance"].submission_date.strftime("%B %d, %Y")
+                ),
+                custom_styles["heading3"],
+            )
+        )
+        elements.append(Spacer(1, 30))
+
+        # User Information
+        elements.append(Paragraph("User Information", custom_styles["heading1"]))
+        user_info = [
+            ["Name", self.request.user.full_name()],
+            ["Gender", self.request.user.gender],
+            ["Age", calculate_age(data["response_instance"].dob)],
+            ["Health History", data["response_instance"].questionnaire_response.progress],
+        ]
+        user_info_table = Table(user_info, hAlign="CENTER")
+        user_info_table.setStyle(
+            TableStyle(
+                [
+                    ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#f2f2f2")),
+                    ("TEXTCOLOR", (0, 0), (-1, 0), colors.black),
+                    ("ALIGN", (0, 0), (-1, -1), "CENTER"),
+                    ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
+                    ("BACKGROUND", (0, 1), (-1, -1), colors.whitesmoke),
+                    ("GRID", (0, 0), (-1, -1), 0.5, colors.grey),
+                    ("TOPPADDING", (0, 0), (-1, 0), 12),
+                    ("BOTTOMPADDING", (0, 0), (-1, -1), 12),
+                ]
+            )
+        )
+        elements.append(user_info_table)
+        elements.append(Spacer(1, 20))
+
+        # Risk Assessment Summary
+        elements.append(Paragraph("Risk Assessment Summary", custom_styles["heading1"]))
+        risk_level = data["risk_level"]
+        elements.append(Paragraph(f"Risk Level: {risk_level['info']}", custom_styles["body"]))
+        elements.append(Paragraph(f"Risk Score: {data['risk_score']}", custom_styles["body"]))
+        elements.append(Spacer(1, 20))
+
+        # Probability Assessment
+        elements.append(Paragraph("Probability Assessment", custom_styles["heading1"]))
+        prob_info = [
+            ["Probability of Being Benign", "{:.2f}%".format(data["probability_benign"] * 100)],
+            ["Probability of Being Malignant", "{:.2f}%".format(data["probability_malignant"] * 100)],
+        ]
+        prob_info_table = Table(prob_info, hAlign="CENTER")
+        prob_info_table.setStyle(
+            TableStyle(
+                [
+                    ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#f2f2f2")),
+                    ("TEXTCOLOR", (0, 0), (-1, 0), colors.black),
+                    ("ALIGN", (0, 0), (-1, -1), "CENTER"),
+                    ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
+                    ("BACKGROUND", (0, 1), (-1, -1), colors.whitesmoke),
+                    ("GRID", (0, 0), (-1, -1), 0.5, colors.grey),
+                    ("TOPPADDING", (0, 0), (-1, 0), 12),
+                    ("BOTTOMPADDING", (0, 0), (-1, -1), 12),
+                ]
+            )
+        )
+        elements.append(prob_info_table)
+        elements.append(Spacer(1, 20))
+
+        # Visual Analysis
+        elements.append(Paragraph("Visual Analysis", custom_styles["heading1"]))
+        chart_base64 = self.generate_chart(data["chart_data"])
+        chart_img = Image(BytesIO(base64.b64decode(chart_base64)), width=500, height=300)
+        elements.append(chart_img)
+        elements.append(Paragraph("The chart above represents your breast cancer risk assessment based on the selected features.", custom_styles["body"]))
+        elements.append(Spacer(1, 20))
+
+        # Recommendations
+        elements.append(Paragraph("Recommendations", custom_styles["heading1"]))
+        elements.append(Paragraph("Based on your assessment, we suggest the following steps.", custom_styles["body"]))
+        for rec in risk_level["recommendations"]:
+            elements.append(Paragraph(rec["title"], custom_styles["heading2"]))
+            elements.append(Paragraph(rec["message"], custom_styles["body"]))
+        elements.append(Spacer(1, 20))
+
+        # Next Steps
+        elements.append(Paragraph("Next Steps", custom_styles["heading1"]))
+        elements.append(Paragraph(risk_level["next"], custom_styles["body"]))
+        for ns in risk_level["next_steps"]:
+            elements.append(Paragraph(ns["subtitle"], custom_styles["heading2"]))
+            for msg in ns["messages"]:
+                elements.append(Paragraph(msg, custom_styles["body"]))
+        elements.append(Spacer(1, 30))
+
+        # Footer
+        elements.append(Spacer(1, 40))
+        elements.append(Paragraph("This report is generated based on the input data provided. For a more detailed analysis, consult a healthcare professional.", custom_styles["small"]))
+        elements.append(Paragraph("Confidentiality Notice: This report contains sensitive information. Handle with care.", custom_styles["small"]))
+
+        doc.build(elements)
+        pdf = buffer.getvalue()
+        buffer.close()
+        return pdf
+
+
+class PDFReportDownloadView(PDFReportView):
+    def get(self, request, *args, **kwargs):
+        user = request.user
+        pdf = self.generate_pdf()
+        response = HttpResponse(content_type="application/pdf")
+        response["Content-Disposition"] = f'attachment; filename="{user.username}-report.pdf"'
+        response.write(pdf)
+        return response
+
+pdfreportdownload = PDFReportDownloadView.as_view()
+
+
+class PDFReportPrintView(PDFReportView):
+    def get(self, request, *args, **kwargs):
+        user = request.user
+        pdf = self.generate_pdf()
+        response = HttpResponse(content_type="application/pdf")
+        response["Content-Disposition"] = f'inline; filename="{user.username}-report.pdf"'
+        response.write(pdf)
+        return response
+
+
+pdfreportprint = PDFReportPrintView.as_view()
+
+
+class PendingResultView(ActiveUserRequiredMixin,FilterView):
     filterset_class = QuestionnaireResponseFilter
     model = QuestionnaireResponse
     template_name = "patients/pending-results.html"
