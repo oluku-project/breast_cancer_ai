@@ -101,14 +101,14 @@ class QuestionnaireView(ActiveUserRequiredMixin, View):
                 if response_instance.progress != progress:
                     response_instance.progress = progress
                     response_instance.save()
-                    log_user_activity(self.request, "Updated response")
+                    log_user_activity(user, "assessment updated")
                     msg = "Your responses have been updated and successfully submitted."
             else:
                 # Create a new QuestionnaireResponse instance
                 response_instance = QuestionnaireResponse.objects.create(
                     user=user, progress=progress
                 )
-                log_user_activity(self.request, "Answered questions")
+                log_user_activity(user, "assessment initiated")
                 msg = "Your responses have been created and successfully submitted."
             # Create new responses for the QuestionnaireResponse instance
             response_objects = [
@@ -151,7 +151,7 @@ class SummaryView(ActiveUserRequiredMixin, HelpResponse, DetailView):
         )
         response_instance.state = STATE.START
         response_instance.save()
-        log_user_activity(self.request, "Viewed summary of response")
+        log_user_activity(self.request.user, "viewed summary on assessment")
         return context
 
 
@@ -312,7 +312,7 @@ class PredictionView(ActiveUserRequiredMixin, HelpResponse, DetailView):
             probability_benign = response_instance.probability_benign
             probability_malignant = response_instance.probability_malignant
             chart_data = response_instance.chart_data
-            log_user_activity(self.request, "Viewed detailed result")
+            log_user_activity(self.request.user, "assesment detailed viewed")
             grouped_questions = self.fetchRespondedQuestions(
                 response_instance.questionnaire_response
             )
@@ -346,7 +346,7 @@ class PredictionView(ActiveUserRequiredMixin, HelpResponse, DetailView):
             probability_benign = f"{probabilities[0][0]:.2f}"
             probability_malignant = f"{probabilities[0][1]:.2f}"
             grouped_questions = None
-            log_user_activity(self.request, "Viewed result")
+            log_user_activity(self.request.user, "completed an assessment")
             title = "Result"
 
         # Store data in session
@@ -661,7 +661,7 @@ class PDFReportDownloadView(PDFReportView):
             f'attachment; filename="{user.username}-report.pdf"'
         )
         response.write(pdf)
-        log_user_activity(request, "Result downloaded")
+        log_user_activity(user, "assessment report downloaded")
         return response
 
 
@@ -677,7 +677,7 @@ class PDFReportPrintView(PDFReportView):
             f'inline; filename="{user.username}-report.pdf"'
         )
         response.write(pdf)
-        log_user_activity(request, "Printed result")
+        log_user_activity(user, "assessment report printed")
         return response
 
 
@@ -699,7 +699,7 @@ class PendingResultView(ActiveUserRequiredMixin, FilterView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["title_root"] = "Pending Results"
-        log_user_activity(self.request, "Viewed uncomplete questions")
+        log_user_activity(self.request.user, "viewed uncompleted assessment")
         return context
 
 
@@ -712,7 +712,7 @@ class PendingResultDeleteView(ActiveUserRequiredMixin, View):
             result_id = request.POST.get("result_id")
             result = get_object_or_404(QuestionnaireResponse, id=result_id)
             result.delete()
-            log_user_activity(request, "Deleted pending result")
+            log_user_activity(request.user, "deleted pending result")
             messages.success(request, "Resulte deleted successfully.")
             return JsonResponse(
                 {"success": True, "message": "Result deleted successfully."}
@@ -738,7 +738,7 @@ class PredictionResultView(ActiveUserRequiredMixin, FilterView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["title_root"] = "Prediction Results"
-        log_user_activity(self.request, "Viewed results")
+        log_user_activity(self.request.user, "viewed all reports")
         return context
 
 
@@ -752,7 +752,7 @@ class PredictionResultDeleteView(ActiveUserRequiredMixin, View):
             result = get_object_or_404(PredictionResult, id=result_id)
             result.deleted = True
             result.save()
-            log_user_activity(self.request, "Result deleted")
+            log_user_activity(self.request.user, "deleted assessment result")
             messages.success(request, "Resulte deleted successfully.")
             return JsonResponse(
                 {"success": True, "message": "Result deleted successfully."}
@@ -775,7 +775,7 @@ class FeedbackView(ActiveUserRequiredMixin, View):
             feedback = form.save(commit=False)
             feedback.user = request.user
             feedback.save()
-            log_user_activity(request, "Feedback provided")
+            log_user_activity(request.user, "provided feedback")
             return JsonResponse(
                 {"success": True, "message": "Thank you for your feedback!"}
             )
@@ -797,7 +797,7 @@ class ContactView(View):
             if request.user.is_authenticated:
                 contact_message.user = request.user
             contact_message.save()
-            log_user_activity(request, "Contacted us.")
+            log_user_activity(request.user, "contacted administration")
             return JsonResponse(
                 {"success": True, "message": "Thank you for your message!"}
             )
@@ -812,7 +812,7 @@ class AboutView(View):
     template_name = "about.html"
 
     def get(self, request, *args, **kwargs):
-        log_user_activity(request, "Viewed about page")
+        log_user_activity(request.user, "viewed about page")
         return render(request, self.template_name, self.get_context())
 
     def get_context(self):
@@ -832,7 +832,7 @@ class FAQView(TemplateView):
         context = super().get_context_data(**kwargs)
         context["faqs"] = FAQS
         context["title_root"] = "FAQs"
-        log_user_activity(self.request, "Viewed faqs page")
+        log_user_activity(self.request.user, "viewed faqs page")
         return context
 
     def get(self, request, *args, **kwargs):
@@ -866,7 +866,7 @@ class HomeView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["title_root"] = "Home"
-        log_user_activity(self.request, "Viewed Home page")
+        log_user_activity(self.request.user, "viewed home page")
         return context
 
 

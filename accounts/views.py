@@ -51,7 +51,7 @@ class UserRegistrationView(MailUtils, CreateView):
         )
 
         self.request.session["registration_success"] = True
-        log_user_activity(self.request, 'Signed up')
+        log_user_activity(user, "signed up")
         return redirect(self.success_url)
 
     def form_invalid(self, form):
@@ -81,17 +81,18 @@ class ActivateAccountView(View):
         if user is not None and default_token_generator.check_token(user, token):
             user.is_active = True
             user.save()
-            log_user_activity(request, "Activated account")
+            log_user_activity(user, "activated account")
             messages.success(request, _("Congratulations! Your account is activated."))
             return redirect("auth:login")
         else:
             messages.error(request, _("Invalid activation link"))
-            return redirect("auth:register")
+            return redirect("auth:signup")
 
 
 activateaccountview = ActivateAccountView.as_view()
 
 User = auth.get_user_model()
+
 
 class LoginView(FormView):
     template_name = "accounts/login.html"
@@ -104,7 +105,7 @@ class LoginView(FormView):
         user = auth.authenticate(email=username, password=password)
         if user is not None:
             auth.login(self.request, user)
-            log_user_activity(self.request, "Logged in")
+            log_user_activity(user, "logged in")
             messages.success(self.request, _("You are now logged in."))
             return super().form_valid(form)
         else:
@@ -140,8 +141,8 @@ loginview = LoginView.as_view()
 
 class LogoutView(ActiveUserRequiredMixin, View):
     def get(self, request):
+        log_user_activity(request.user, "logged out")
         auth.logout(request)
-        log_user_activity(request, "Logged out")
         messages.success(request, _("You are logged out."))
         return redirect("auth:login")
 
@@ -164,7 +165,7 @@ class ForgotPasswordView(MailUtils, View):
             self.compose_email(
                 self.request, user, mail_subject=mail_subject, mail_temp=mail_temp
             )
-            log_user_activity(request, "Requested password change")
+            log_user_activity(user, "requested password change")
             messages.success(
                 request, _("Password reset email has been sent to your email address.")
             )
@@ -184,7 +185,7 @@ class PasswordResetConfirmView(AuthPasswordResetConfirmView):
 
     def form_valid(self, form):
         user = form.save()
-        log_user_activity(self.request, "Password changed")
+        log_user_activity(user, "completed password reset")
         messages.success(
             self.request,
             _(
@@ -225,7 +226,7 @@ class PrivacyView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        log_user_activity(self.request, "Viewed privacy page")
+        log_user_activity(self.request.user, "viewed privacy page")
         context["title_root"] = _("Privacy")
         return context
 
@@ -238,7 +239,7 @@ class TermsView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        log_user_activity(self.request, "Viewed terms page")
+        log_user_activity(self.request.user, "viewed terms page")
         context["title_root"] = _("Terms")
         return context
 
@@ -246,7 +247,7 @@ class TermsView(TemplateView):
 termsview = TermsView.as_view()
 
 
-class UserDashboardView(ActiveUserRequiredMixin,TemplateView):
+class UserDashboardView(ActiveUserRequiredMixin, TemplateView):
     template_name = "accounts/user-dashboard.html"
 
     def get_context_data(self, **kwargs):
@@ -286,11 +287,11 @@ class UserDashboardView(ActiveUserRequiredMixin,TemplateView):
         ]
 
         area_chart_data = [0] * 12
-        avg_chart_data = [0] * 12 
+        avg_chart_data = [0] * 12
 
         for data in monthly_data:
             month_idx = data["month"].month - 1  # Convert month to zero-based index
-            area_chart_data[month_idx] = float(round(data["total_risk_score"],2))
+            area_chart_data[month_idx] = float(round(data["total_risk_score"], 2))
             avg_chart_data[month_idx] = float(round(data["avg_risk_score"], 2))
 
         # Donut chart data: Group by risk level and sum risk scores
@@ -303,7 +304,7 @@ class UserDashboardView(ActiveUserRequiredMixin,TemplateView):
 
         risk_scores = {level: 0.0 for level in risk_levels}
         for data in risk_data:
-            risk_scores[data["risk_level"]] = float(round(data["total_risk_score"],2))
+            risk_scores[data["risk_level"]] = float(round(data["total_risk_score"], 2))
 
         donut_chart_data = [risk_scores[level] for level in risk_levels]
 
@@ -324,7 +325,7 @@ class UserDashboardView(ActiveUserRequiredMixin,TemplateView):
             latest_prediction.submission_date if latest_prediction else "N/A"
         )
 
-        log_user_activity(self.request, "Viewed dashboard page")
+        log_user_activity(self.request.user, "viewed dashboard page")
         context["area_chart_data"] = area_chart_data
         context["avg_chart_data"] = avg_chart_data
         context["area_chart_labels"] = months
@@ -342,7 +343,7 @@ class UserDashboardView(ActiveUserRequiredMixin,TemplateView):
 userdashboardview = UserDashboardView.as_view()
 
 
-class UpdateAccountView(ActiveUserRequiredMixin,View):
+class UpdateAccountView(ActiveUserRequiredMixin, View):
     template_name = "accounts/profile.html"
 
     def get(self, request, *args, **kwargs):
@@ -363,11 +364,11 @@ class UpdateAccountView(ActiveUserRequiredMixin,View):
 
             if form.is_valid():
                 form.save()
-                log_user_activity(request, "Updated account")
+                log_user_activity(request.user, "updated account")
                 msg = "Account updated sucessfully"
                 if form_type == "password":
                     update_session_auth_hash(request, form.user)
-                    log_user_activity(request, "Updated password")
+                    log_user_activity(request.user, "updated password")
                     msg = "Password updated successfully."
                 messages.success(request, msg)
                 return redirect("auth:profile")
