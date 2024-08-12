@@ -14,10 +14,6 @@
         bg-img
       {% else %}
         light-skin sidebar-mini fixed 
-        {% if not user.is_active %}
-          sidebar-collapse
-        {% endif %}
-          
       {% endif %}
       " {% if url_name in urls %}
           style="margin: 0;
