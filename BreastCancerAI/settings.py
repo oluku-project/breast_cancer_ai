@@ -1,6 +1,7 @@
 from pathlib import Path
 import environ
 import os
+from celery.schedules import crontab
 
 env = environ.Env(
     # set casting, default value
@@ -131,16 +132,18 @@ USE_TZ = True
 AUTH_USER_MODEL = "accounts.Account"
 
 # Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.0/howto/static-files/
-
 STATIC_URL = "/static/"
-STATIC_ROOT = BASE_DIR / "static"
+STATIC_ROOT = BASE_DIR  / "static"
 STATICFILES_DIRS = ["BreastCancerAI/static"]
 
-# STATIC_URL = "/static/"
-# STATIC_ROOT = BASE_DIR / "staticfiles_build" / "static"
-# STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "media"
+STATIC_URL = "/static/"
+STATIC_ROOT = BASE_DIR  / "static"
+STATICFILES_DIRS = ["BreastCancerAI/static"]
 
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "media"
 # AUTHENTICATION_BACKENDS = ("django.contrib.auth.backends.ModelBackend",)
 ACCOUNT_AUTHENTICATION_METHOD = "email"
 ACCOUNT_EMAIL_REQUIRED = True
@@ -163,6 +166,14 @@ LOGOUT_REDIRECT_URL = "auth:login"
 
 LOGIN_URL = "auth:login"
 LOGOUT_URL = "auth:logout"
+
+CELERY_BEAT_SCHEDULE = {
+    "delete-old-logs-every-day": {
+        "task": "ml.tasks.delete_old_logs",
+        "schedule": crontab(hour=0, minute=0),
+    },
+}
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
