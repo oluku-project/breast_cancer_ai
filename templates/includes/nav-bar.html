@@ -4,10 +4,7 @@
 <header class="main-header">
   <div class="d-flex align-items-center logo-box justify-content-start">
     <!-- Logo -->
-    <a 
-     onclick="navigateToUrl(this)"
-    data-url="{% url 'home' %}"
-    href="javascript:void(0)" class="logo">
+    <a href="{% url 'home' %}" class="logo">
       <!-- logo-->  
       <div class="logo-mini w-40">
         <span class="light-logo"
@@ -34,7 +31,6 @@
     <div class="app-menu">
       <ul class="header-megamenu nav">
         <li class="btn-group nav-item">
-          {% if user.is_active %}
           <a
             href="#"
             class="waves-effect waves-light nav-link push-btn btn-primary-light"
@@ -44,7 +40,6 @@
           >
             <i data-feather="menu"></i>
           </a>
-          {% endif %}
         </li>
       </ul>
     </div>
