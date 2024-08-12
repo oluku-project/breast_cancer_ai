@@ -13,7 +13,20 @@
       var url = element.getAttribute('data-url') || element.textContent || element.href;
       window.open(url, blank ? '_blank' : '_parent');
   }
+  function clearFilters(formId) {
+        const form = document.getElementById(formId);
+        if (form) {
+            form.reset(); 
 
+            
+            const url = new URL(window.location);
+            url.search = ''; 
+            window.history.replaceState({}, '', url); 
+            setTimeout(() => {
+                window.location.reload();
+            }, 100);
+        }
+    }
 
     $(document).ready(function() {
       {% if messages %}
