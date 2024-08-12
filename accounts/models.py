@@ -96,6 +96,13 @@ class Account(AbstractBaseUser):
     is_superadmin = models.BooleanField(db_default=False)
     usid = models.CharField(max_length=10, unique=True, editable=False)
     date_of_birth = models.DateField(verbose_name="Birthday", null=True)
+    created_by = models.ForeignKey(
+        "self",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="created_users",
+    )
 
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = ["username", "first_name", "last_name", "agree"]
@@ -104,6 +111,13 @@ class Account(AbstractBaseUser):
 
     groups = models.ManyToManyField(Group, blank=True)
     user_permissions = models.ManyToManyField(Permission, blank=True)
+
+    def sendMail(self):
+        mail_temp = "accounts/account_verification_email.html"
+        mail_subject = "Activate Your Account"
+        self.compose_email(
+            self.request, self, mail_subject=mail_subject, mail_temp=mail_temp
+        )
 
     def save(self, *args, **kwargs):
         if not self.usid:
