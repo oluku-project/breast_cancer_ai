@@ -3,6 +3,7 @@ from django.shortcuts import render, redirect
 from django.db import transaction
 from accounts.mixins import ActiveUserRequiredMixin
 from accounts.templatetags.custom_filters import calculate_age
+from ml.utils import log_user_activity
 from patients.forms import ContactForm, FeedbackForm
 from patients.utils import (
     QUESTIONS,
@@ -33,13 +34,13 @@ from reportlab.platypus import (
     TableStyle,
     Image,
 )
+from django.contrib import messages
 from io import BytesIO
 import matplotlib.pyplot as plt
 import base64
-import numpy as np
 
 
-class QuestionnaireView(ActiveUserRequiredMixin,View):
+class QuestionnaireView(ActiveUserRequiredMixin, View):
     template_name = "patients/questionnaire.html"
     responseID = None
 
@@ -100,12 +101,14 @@ class QuestionnaireView(ActiveUserRequiredMixin,View):
                 if response_instance.progress != progress:
                     response_instance.progress = progress
                     response_instance.save()
+                    log_user_activity(self.request, user, "assessment updated")
                     msg = "Your responses have been updated and successfully submitted."
             else:
                 # Create a new QuestionnaireResponse instance
                 response_instance = QuestionnaireResponse.objects.create(
                     user=user, progress=progress
                 )
+                log_user_activity(self.request, user, "assessment initiated")
                 msg = "Your responses have been created and successfully submitted."
             # Create new responses for the QuestionnaireResponse instance
             response_objects = [
@@ -129,7 +132,7 @@ class QuestionnaireView(ActiveUserRequiredMixin,View):
 questionnaier = QuestionnaireView.as_view()
 
 
-class SummaryView(ActiveUserRequiredMixin,HelpResponse, DetailView):
+class SummaryView(ActiveUserRequiredMixin, HelpResponse, DetailView):
     model = QuestionnaireResponse
     template_name = "patients/summary.html"
     context_object_name = "response_instance"
@@ -146,15 +149,18 @@ class SummaryView(ActiveUserRequiredMixin,HelpResponse, DetailView):
                 "title_root": "Summary",
             }
         )
-        response_instance.state = STATE.START
+        response_instance.state = STATE.PENDING
         response_instance.save()
+        log_user_activity(
+            self.request, self.request.user, "viewed summary on assessment"
+        )
         return context
 
 
 summary_view = SummaryView.as_view()
 
 
-class PredictionView(ActiveUserRequiredMixin,HelpResponse, DetailView):
+class PredictionView(ActiveUserRequiredMixin, HelpResponse, DetailView):
     template_name = "patients/results.html"
     context_object_name = "response_instance"
 
@@ -293,7 +299,7 @@ class PredictionView(ActiveUserRequiredMixin,HelpResponse, DetailView):
                 probability_malignant=probabilities[0][1],
                 chart_data=chart_data,
             )
-            response_instance.state = STATE.COMPLETE
+            response_instance.state = STATE.COMPLETED
             response_instance.save()
 
     def get_context_data(self, **kwargs):
@@ -308,6 +314,9 @@ class PredictionView(ActiveUserRequiredMixin,HelpResponse, DetailView):
             probability_benign = response_instance.probability_benign
             probability_malignant = response_instance.probability_malignant
             chart_data = response_instance.chart_data
+            log_user_activity(
+                self.request, self.request.user, "assesment detailed viewed"
+            )
             grouped_questions = self.fetchRespondedQuestions(
                 response_instance.questionnaire_response
             )
@@ -341,6 +350,9 @@ class PredictionView(ActiveUserRequiredMixin,HelpResponse, DetailView):
             probability_benign = f"{probabilities[0][0]:.2f}"
             probability_malignant = f"{probabilities[0][1]:.2f}"
             grouped_questions = None
+            log_user_activity(
+                self.request, self.request.user, "completed an assessment"
+            )
             title = "Result"
 
         # Store data in session
@@ -376,7 +388,7 @@ class PredictionView(ActiveUserRequiredMixin,HelpResponse, DetailView):
 results = PredictionView.as_view()
 
 
-class PDFReportView(ActiveUserRequiredMixin,HelpResponse, View):
+class PDFReportView(ActiveUserRequiredMixin, HelpResponse, View):
     def get_data(self):
         """Retrieve data from session and prepare it for the PDF report."""
         data = self.request.session.get("input_data")
@@ -427,11 +439,11 @@ class PDFReportView(ActiveUserRequiredMixin,HelpResponse, View):
             label="Mean Values",
             alpha=0.85,
             zorder=2,
-            width=0.5
+            width=0.5,
         )
 
         # Area chart for Standard Error
-        x = np.arange(len(categories))
+        x = list(range(len(categories)))
         ax.fill_between(
             x,
             [m - s for m, s in zip(mean, standard)],
@@ -439,7 +451,7 @@ class PDFReportView(ActiveUserRequiredMixin,HelpResponse, View):
             color="lightgreen",
             alpha=0.25,
             label="Standard Error",
-            zorder=1
+            zorder=1,
         )
 
         # Line chart for Worst Values
@@ -448,18 +460,18 @@ class PDFReportView(ActiveUserRequiredMixin,HelpResponse, View):
             worst,
             color="darkred",
             linewidth=2,
-            marker='o',
+            marker="o",
             label="Worst Values",
             zorder=3,
-            linestyle='--'
+            linestyle="--",
         )
 
         # Customizing the chart
         ax.set_xlabel("Features", fontsize=12)
         ax.set_ylabel("Values", fontsize=12)
-        ax.set_title("Breast Cancer Prediction Data", fontsize=16, fontweight='bold')
+        ax.set_title("Breast Cancer Prediction Data", fontsize=16, fontweight="bold")
         ax.legend(fontsize=10)
-        ax.grid(True, which='both', linestyle='--', linewidth=0.5, alpha=0.7)
+        ax.grid(True, which="both", linestyle="--", linewidth=0.5, alpha=0.7)
         ax.set_xticklabels(categories, rotation=45, ha="right")
 
         plt.tight_layout()
@@ -471,6 +483,7 @@ class PDFReportView(ActiveUserRequiredMixin,HelpResponse, View):
         plt.close()
 
         return chart_base64
+
     def generate_pdf(self):
         data = self.get_data()
         buffer = BytesIO()
@@ -481,17 +494,32 @@ class PDFReportView(ActiveUserRequiredMixin,HelpResponse, View):
 
         # Custom styles
         custom_styles = {
-            "title": ParagraphStyle("Title", fontSize=24, spaceAfter=30, alignment=1, fontWeight='bold'),
-            "heading1": ParagraphStyle("Heading1", fontSize=18, spaceAfter=22, alignment=1),
-            "heading2": ParagraphStyle("Heading2", fontSize=16, spaceAfter=16, alignment=1),
-            "heading3": ParagraphStyle("Heading3", fontSize=14, spaceAfter=10, alignment=1),
+            "title": ParagraphStyle(
+                "Title", fontSize=24, spaceAfter=30, alignment=1, fontWeight="bold"
+            ),
+            "heading1": ParagraphStyle(
+                "Heading1", fontSize=18, spaceAfter=22, alignment=1
+            ),
+            "heading2": ParagraphStyle(
+                "Heading2", fontSize=16, spaceAfter=16, alignment=1
+            ),
+            "heading3": ParagraphStyle(
+                "Heading3", fontSize=14, spaceAfter=10, alignment=1
+            ),
             "body": ParagraphStyle("Body", fontSize=12, spaceAfter=10),
             "small": ParagraphStyle("Small", fontSize=10, spaceAfter=8),
         }
 
         # Title Page
-        elements.append(Paragraph("Breast Cancer Prediction Report", custom_styles["title"]))
-        elements.append(Paragraph("Generated for: {}".format(self.request.user.full_name()), custom_styles["heading2"]))
+        elements.append(
+            Paragraph("Breast Cancer Prediction Report", custom_styles["title"])
+        )
+        elements.append(
+            Paragraph(
+                "Generated for: {}".format(self.request.user.full_name()),
+                custom_styles["heading2"],
+            )
+        )
         elements.append(
             Paragraph(
                 "Date: {}".format(
@@ -508,7 +536,10 @@ class PDFReportView(ActiveUserRequiredMixin,HelpResponse, View):
             ["Name", self.request.user.full_name()],
             ["Gender", self.request.user.gender],
             ["Age", calculate_age(data["response_instance"].dob)],
-            ["Health History", data["response_instance"].questionnaire_response.progress],
+            [
+                "Health History",
+                data["response_instance"].questionnaire_response.progress,
+            ],
         ]
         user_info_table = Table(user_info, hAlign="CENTER")
         user_info_table.setStyle(
@@ -531,15 +562,25 @@ class PDFReportView(ActiveUserRequiredMixin,HelpResponse, View):
         # Risk Assessment Summary
         elements.append(Paragraph("Risk Assessment Summary", custom_styles["heading1"]))
         risk_level = data["risk_level"]
-        elements.append(Paragraph(f"Risk Level: {risk_level['info']}", custom_styles["body"]))
-        elements.append(Paragraph(f"Risk Score: {data['risk_score']}", custom_styles["body"]))
+        elements.append(
+            Paragraph(f"Risk Level: {risk_level['info']}", custom_styles["body"])
+        )
+        elements.append(
+            Paragraph(f"Risk Score: {data['risk_score']}", custom_styles["body"])
+        )
         elements.append(Spacer(1, 20))
 
         # Probability Assessment
         elements.append(Paragraph("Probability Assessment", custom_styles["heading1"]))
         prob_info = [
-            ["Probability of Being Benign", "{:.2f}%".format(data["probability_benign"] * 100)],
-            ["Probability of Being Malignant", "{:.2f}%".format(data["probability_malignant"] * 100)],
+            [
+                "Probability of Being Benign",
+                "{:.2f}%".format(data["probability_benign"] * 100),
+            ],
+            [
+                "Probability of Being Malignant",
+                "{:.2f}%".format(data["probability_malignant"] * 100),
+            ],
         ]
         prob_info_table = Table(prob_info, hAlign="CENTER")
         prob_info_table.setStyle(
@@ -562,14 +603,26 @@ class PDFReportView(ActiveUserRequiredMixin,HelpResponse, View):
         # Visual Analysis
         elements.append(Paragraph("Visual Analysis", custom_styles["heading1"]))
         chart_base64 = self.generate_chart(data["chart_data"])
-        chart_img = Image(BytesIO(base64.b64decode(chart_base64)), width=500, height=300)
+        chart_img = Image(
+            BytesIO(base64.b64decode(chart_base64)), width=500, height=300
+        )
         elements.append(chart_img)
-        elements.append(Paragraph("The chart above represents your breast cancer risk assessment based on the selected features.", custom_styles["body"]))
+        elements.append(
+            Paragraph(
+                "The chart above represents your breast cancer risk assessment based on the selected features.",
+                custom_styles["body"],
+            )
+        )
         elements.append(Spacer(1, 20))
 
         # Recommendations
         elements.append(Paragraph("Recommendations", custom_styles["heading1"]))
-        elements.append(Paragraph("Based on your assessment, we suggest the following steps.", custom_styles["body"]))
+        elements.append(
+            Paragraph(
+                "Based on your assessment, we suggest the following steps.",
+                custom_styles["body"],
+            )
+        )
         for rec in risk_level["recommendations"]:
             elements.append(Paragraph(rec["title"], custom_styles["heading2"]))
             elements.append(Paragraph(rec["message"], custom_styles["body"]))
@@ -586,8 +639,18 @@ class PDFReportView(ActiveUserRequiredMixin,HelpResponse, View):
 
         # Footer
         elements.append(Spacer(1, 40))
-        elements.append(Paragraph("This report is generated based on the input data provided. For a more detailed analysis, consult a healthcare professional.", custom_styles["small"]))
-        elements.append(Paragraph("Confidentiality Notice: This report contains sensitive information. Handle with care.", custom_styles["small"]))
+        elements.append(
+            Paragraph(
+                "This report is generated based on the input data provided. For a more detailed analysis, consult a healthcare professional.",
+                custom_styles["small"],
+            )
+        )
+        elements.append(
+            Paragraph(
+                "Confidentiality Notice: This report contains sensitive information. Handle with care.",
+                custom_styles["small"],
+            )
+        )
 
         doc.build(elements)
         pdf = buffer.getvalue()
@@ -600,9 +663,13 @@ class PDFReportDownloadView(PDFReportView):
         user = request.user
         pdf = self.generate_pdf()
         response = HttpResponse(content_type="application/pdf")
-        response["Content-Disposition"] = f'attachment; filename="{user.username}-report.pdf"'
+        response["Content-Disposition"] = (
+            f'attachment; filename="{user.username}-report.pdf"'
+        )
         response.write(pdf)
+        log_user_activity(request,user, "assessment report downloaded")
         return response
+
 
 pdfreportdownload = PDFReportDownloadView.as_view()
 
@@ -612,15 +679,18 @@ class PDFReportPrintView(PDFReportView):
         user = request.user
         pdf = self.generate_pdf()
         response = HttpResponse(content_type="application/pdf")
-        response["Content-Disposition"] = f'inline; filename="{user.username}-report.pdf"'
+        response["Content-Disposition"] = (
+            f'inline; filename="{user.username}-report.pdf"'
+        )
         response.write(pdf)
+        log_user_activity(request,user, "assessment report printed")
         return response
 
 
 pdfreportprint = PDFReportPrintView.as_view()
 
 
-class PendingResultView(ActiveUserRequiredMixin,FilterView):
+class PendingResultView(ActiveUserRequiredMixin, FilterView):
     filterset_class = QuestionnaireResponseFilter
     model = QuestionnaireResponse
     template_name = "patients/pending-results.html"
@@ -630,23 +700,27 @@ class PendingResultView(ActiveUserRequiredMixin,FilterView):
 
     def get_queryset(self):
         queryset = super().get_queryset()
-        return queryset.filter(state=STATE.START)
+        return queryset.filter(state=STATE.IN_PROGRESS)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["title_root"] = "Pending Results"
+        context["title_root"] = "Results In Progress"
+        log_user_activity(
+            self.request, self.request.user, "viewed uncompleted assessment"
+        )
         return context
 
 
 pending_result = PendingResultView.as_view()
 
 
-class PendingResultDeleteView(ActiveUserRequiredMixin,View):
+class PendingResultDeleteView(ActiveUserRequiredMixin, View):
     def post(self, request, *args, **kwargs):
         try:
             result_id = request.POST.get("result_id")
             result = get_object_or_404(QuestionnaireResponse, id=result_id)
-            # result.delete()
+            result.delete()
+            log_user_activity(self.request, request.user, "deleted pending result")
             messages.success(request, "Resulte deleted successfully.")
             return JsonResponse(
                 {"success": True, "message": "Result deleted successfully."}
@@ -661,7 +735,7 @@ class PendingResultDeleteView(ActiveUserRequiredMixin,View):
 pending_result_delete = PendingResultDeleteView.as_view()
 
 
-class PredictionResultView(ActiveUserRequiredMixin,FilterView):
+class PredictionResultView(ActiveUserRequiredMixin, FilterView):
     filterset_class = PredictionResultFilter
     model = PredictionResult
     template_name = "patients/result-histores.html"
@@ -669,22 +743,30 @@ class PredictionResultView(ActiveUserRequiredMixin,FilterView):
     ordering = ["-submission_date", "-timestamp"]
     paginate_by = 9
 
+    def get_queryset(self):
+        query = super().get_queryset()
+        return query.filter(user=self.request.user)
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["title_root"] = "Prediction Results"
+        log_user_activity(self.request, self.request.user, "viewed all reports")
         return context
 
 
 result_hostores = PredictionResultView.as_view()
 
 
-class PredictionResultDeleteView(ActiveUserRequiredMixin,View):
+class PredictionResultDeleteView(ActiveUserRequiredMixin, View):
     def post(self, request, *args, **kwargs):
         try:
             result_id = request.POST.get("result_id")
             result = get_object_or_404(PredictionResult, id=result_id)
             result.deleted = True
             result.save()
+            log_user_activity(
+                self.request, self.request.user, "deleted assessment result"
+            )
             messages.success(request, "Resulte deleted successfully.")
             return JsonResponse(
                 {"success": True, "message": "Result deleted successfully."}
@@ -699,7 +781,7 @@ class PredictionResultDeleteView(ActiveUserRequiredMixin,View):
 resultdelete_view = PredictionResultDeleteView.as_view()
 
 
-class FeedbackView(ActiveUserRequiredMixin,View):
+class FeedbackView(ActiveUserRequiredMixin, View):
 
     def post(self, request, *args, **kwargs):
         form = FeedbackForm(request.POST)
@@ -707,6 +789,7 @@ class FeedbackView(ActiveUserRequiredMixin,View):
             feedback = form.save(commit=False)
             feedback.user = request.user
             feedback.save()
+            log_user_activity(request,request.user, "provided feedback")
             return JsonResponse(
                 {"success": True, "message": "Thank you for your feedback!"}
             )
@@ -728,6 +811,7 @@ class ContactView(View):
             if request.user.is_authenticated:
                 contact_message.user = request.user
             contact_message.save()
+            log_user_activity(request,request.user, "contacted administration")
             return JsonResponse(
                 {"success": True, "message": "Thank you for your message!"}
             )
@@ -742,6 +826,7 @@ class AboutView(View):
     template_name = "about.html"
 
     def get(self, request, *args, **kwargs):
+        log_user_activity(request, request.user, "viewed about page")
         return render(request, self.template_name, self.get_context())
 
     def get_context(self):
@@ -761,6 +846,7 @@ class FAQView(TemplateView):
         context = super().get_context_data(**kwargs)
         context["faqs"] = FAQS
         context["title_root"] = "FAQs"
+        log_user_activity(self.request, self.request.user, "viewed faqs page")
         return context
 
     def get(self, request, *args, **kwargs):
@@ -787,12 +873,15 @@ class FAQView(TemplateView):
 
 faqs = FAQView.as_view()
 
+
 class HomeView(TemplateView):
     template_name = "home.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["title_root"] = "Home"
+        log_user_activity(self.request, self.request.user, "viewed home page")
         return context
+
 
 homeview = HomeView.as_view()

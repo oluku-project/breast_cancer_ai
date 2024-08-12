@@ -1,10 +1,10 @@
 Django==5.0.6
 django_environ==0.11.2
 matplotlib==3.9.1.post1
-numpy==2.0.1
 pandas==2.2.2
 pickle5==0.0.11
 pycountry==24.6.1
 reportlab==4.0.8
 scikit_learn==1.5.1
 django-filter==24.2
+mysqlclient==2.2.4

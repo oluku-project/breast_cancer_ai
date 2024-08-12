@@ -1,7 +1,7 @@
 import datetime
 import django_filters
 from django import forms
-from .models import PredictionResult
+from .models import STATE, Contact, PredictionResult
 from django.db.models import F, ExpressionWrapper, DurationField, IntegerField
 from django.db.models.functions import Now
 
@@ -236,7 +236,12 @@ class QuestionnaireResponseFilter(django_filters.FilterSet):
             attrs={"class": "form-control", "placeholder": "Updated Date End"}
         ),
     )
-
+    state = django_filters.ChoiceFilter(
+        field_name="state",
+        label="State",
+        choices=STATE.choices,
+        widget=forms.Select(attrs={"class": "form-select"}),
+    )
 
     class Meta:
         model = PredictionResult
@@ -247,4 +252,59 @@ class QuestionnaireResponseFilter(django_filters.FilterSet):
             "submission_date_end",
             "updated_date_start",
             "updated_date_end",
+            "state",
+        ]
+
+
+class ContactFilter(django_filters.FilterSet):
+    user = django_filters.CharFilter(
+        field_name="user__username",
+        lookup_expr="icontains",
+        label="User",
+        widget=forms.TextInput(attrs={"placeholder": "Search by Username"}),
+    )
+    name = django_filters.CharFilter(
+        lookup_expr="icontains",
+        label="Name",
+        widget=forms.TextInput(attrs={"placeholder": "Search by Name"}),
+    )
+    subject = django_filters.CharFilter(
+        lookup_expr="icontains",
+        label="Subject",
+        widget=forms.TextInput(attrs={"placeholder": "Search by Subject"}),
+    )
+    email = django_filters.CharFilter(
+        lookup_expr="icontains",
+        label="Email",
+        widget=forms.EmailInput(attrs={"placeholder": "Search by Email"}),
+    )
+    # Submission Date Start field
+    submission_date_start = django_filters.DateFilter(
+        field_name="submission_date",
+        lookup_expr="gte",
+        label="Submission Date Start",
+        widget=DateInput(
+            attrs={"class": "form-control", "placeholder": "Submission Date Start"}
+        ),
+    )
+
+    # Submission Date End field
+    submission_date_end = django_filters.DateFilter(
+        field_name="submission_date",
+        lookup_expr="lte",
+        label="Submission Date End",
+        widget=DateInput(
+            attrs={"class": "form-control", "placeholder": "Submission Date End"}
+        ),
+    )
+
+    class Meta:
+        model = Contact
+        fields = [
+            "user",
+            "name",
+            "subject",
+            "email",
+            "submission_date_start",
+            "submission_date_end",
         ]

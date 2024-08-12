@@ -5,20 +5,48 @@ from patients.utils import RATE_CHOICES, RISK_LEVEL
 
 
 class STATE(models.TextChoices):
-    INITIATE = "Initiate", "Initiate"
-    START = "Start", "Start"
-    COMPLETE = "Complete", "Complete"
+    PENDING = "Pending", "Pending"
+    IN_PROGRESS = "In Progress", "In Progress"
+    COMPLETED = "Completed", "Completed"
+    CANCELLED = "Cancelled", "Cancelled"
 
 
 class QuestionnaireResponse(models.Model):
     user = models.ForeignKey("accounts.account", on_delete=models.CASCADE)
+    created_by = models.ForeignKey(
+        "accounts.account",
+        on_delete=models.SET_NULL,
+        related_name="creator",
+        null=True,
+        blank=True,
+    )
     progress = models.FloatField(db_default=0)
     submission_date = models.DateTimeField(db_default=Now())
     updated_date = models.DateTimeField(db_default=Now(), auto_now=True)
-    state = models.CharField(max_length=10, choices=STATE, default=STATE.INITIATE)
+    state = models.CharField(max_length=20, choices=STATE, default=STATE.PENDING)
 
     def __str__(self):
         return f"{self.user.username} - {self.submission_date.strftime('%Y-%m-%d %H:%M:%S')}"
+
+    @property
+    def score(self):
+        # Check if there is any PredictionResult associated with this QuestionnaireResponse
+        prediction_result = PredictionResult.objects.filter(
+            questionnaire_response=self
+        ).first()
+        if prediction_result:
+            return prediction_result.risk_score
+        return 0.00
+    
+    @property
+    def result(self):
+        # Check if there is any PredictionResult associated with this QuestionnaireResponse
+        prediction_result = PredictionResult.objects.filter(
+            questionnaire_response=self
+        ).first()
+        if prediction_result:
+            return prediction_result
+        return None
 
 
 class Response(models.Model):
@@ -84,6 +112,7 @@ class PredictionResult(models.Model):
 
     def __str__(self):
         return f"Prediction for {self.user.username} at {self.timestamp}"
+
 
 class Feedback(models.Model):
     user = models.ForeignKey("accounts.account", on_delete=models.CASCADE)

@@ -10,7 +10,20 @@ from django.core.mail import EmailMultiAlternatives
 class UserTypes:
     USER_GROUP = "Users"
     DOCTOR_GROUP = "Professional Doctors"
-
+MONTHS = [
+    (1, "January"),
+    (2, "February"),
+    (3, "March"),
+    (4, "April"),
+    (5, "May"),
+    (6, "June"),
+    (7, "July"),
+    (8, "August"),
+    (9, "September"),
+    (10, "October"),
+    (11, "November"),
+    (12, "December"),
+]
 
 PASSWORD_VALIDITY = [
     {
@@ -43,9 +56,20 @@ PASSWORD_VALIDITY = [
 class MailUtils:
 
     def compose_email(self, request, user, **kwargs):
+        """Instance method to send an email."""
+        self._compose_email(request, user, **kwargs)
+
+    @staticmethod
+    def send_activation_email(request, user, **kwargs):
+        """Static method to send an email."""
+        MailUtils._compose_email(request, user, **kwargs)
+
+    @staticmethod
+    def _compose_email(request, user, **kwargs):
+        """Private method to handle email composition and sending."""
         current_site = get_current_site(request)
-        mail_subject = kwargs.get("mail_subject", "Default Subject")
-        mail_temp = kwargs.get("mail_temp", "")
+        mail_subject = kwargs.get("mail_subject", "Activate Your Account")
+        mail_temp = kwargs.get("mail_temp", "accounts/account_verification_email.html")
 
         message_html = render_to_string(
             mail_temp,

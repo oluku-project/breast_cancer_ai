@@ -1,7 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block headers %}
-    <!-- Custom CSS -->
 <style>
     .hero-section {
             background: url('{% static "images/result-repor-bg.jpg" %}') no-repeat center center/cover;
@@ -67,7 +66,9 @@
                                     
                                     {% for field in filter.form %}
                                         <div class="col-md-4">
-                                            {{field.as_field_group}}
+                                            {% if field.name != 'state' %}
+                                                {{field.as_field_group}}
+                                            {% endif %}
                                         </div>
                                     {% endfor %}
                                         
@@ -95,7 +96,6 @@
                     </tr>
                 </thead>
                 <tbody>
-                    
                     {% for item in items  %}
                         <tr>
                                 <td>
@@ -126,8 +126,6 @@
                             <td colspan="7" class="text-center">No pending results available.</td>
                         </tr>
                     {% endfor %}
-
-
                 </tbody>
             </table>
             {% if items %}
@@ -143,7 +141,7 @@
         
         
     </section>
-    {% endblock content %}
+{% endblock content %}
     
     {% block scripts %}
         {% include 'patients/includes/pending-results-script.html' %}
