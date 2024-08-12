@@ -1,5 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
+
+from BreastCancerAI.utils import MONTHS
 from .models import Account, CountryChoices
 from django.contrib.auth.forms import AuthenticationForm
 from django.core.exceptions import ValidationError
@@ -217,3 +219,103 @@ class UpdateAccountForm(forms.ModelForm):
                 attrs={"class": "form-select ps-15 bg-transparent"},
             ),
         }
+
+
+from django import forms
+from django.contrib.auth.hashers import make_password
+from .models import Account, CountryChoices
+from datetime import date
+
+
+class UserCreateForm(forms.ModelForm):
+    year = forms.ChoiceField(
+        label="Birth Year",
+        choices=[(year, year) for year in range(1900, 2050)],
+        widget=forms.Select(attrs={"class": "form-select ps-15 bg-transparent"}),
+        required=True,
+    )
+    month = forms.ChoiceField(
+        label="Birth Month",
+        choices=MONTHS,
+        widget=forms.Select(attrs={"class": "form-select ps-15 bg-transparent"}),
+        required=True,
+    )
+    day = forms.ChoiceField(
+        label="Birth Day",
+        choices=[(day, day) for day in range(1, 32)],
+        widget=forms.Select(attrs={"class": "form-select ps-15 bg-transparent"}),
+        required=True,
+    )
+
+    class Meta:
+        model = Account
+        fields = [
+            "first_name",
+            "last_name",
+            "email",
+            "gender",
+            "country",
+            "year",
+            "month",
+            "day",
+        ]
+        widgets = {
+            "first_name": forms.TextInput(
+                attrs={
+                    "placeholder": "Enter First Name",
+                    "class": "form-control ps-15 bg-transparent",
+                }
+            ),
+            "last_name": forms.TextInput(
+                attrs={
+                    "placeholder": "Enter Last Name",
+                    "class": "form-control ps-15 bg-transparent",
+                }
+            ),
+            "email": forms.EmailInput(
+                attrs={
+                    "placeholder": "Enter Email",
+                    "class": "form-control ps-15 bg-transparent",
+                }
+            ),
+            "gender": forms.Select(attrs={"class": "form-select ps-15 bg-transparent"}),
+            "country": forms.Select(
+                choices=CountryChoices.as_choices(),
+                attrs={"class": "form-select ps-15 bg-transparent"},
+            ),
+        }
+
+    def clean(self):
+        cleaned_data = super().clean()
+        year = int(cleaned_data.get("year"))
+        month = int(cleaned_data.get("month"))
+        day = int(cleaned_data.get("day"))
+
+        try:
+            date_of_birth = date(year, month, day)
+        except ValueError:
+            raise forms.ValidationError(
+                "Invalid date of birth. Please check the day, month, and year."
+            )
+
+        cleaned_data["date_of_birth"] = date_of_birth
+        return cleaned_data
+
+    def save(self, commit=True, user=None):
+        instance = super().save(commit=False)
+
+        # Extract the domain name from the email and set it as the username
+        email = self.cleaned_data.get("email")
+        domain = str(email.split("@")[0])
+        instance.username = domain
+
+        instance.password = make_password("defaultpassword123")
+
+        instance.date_of_birth = self.cleaned_data["date_of_birth"]
+        instance.agree = True
+        if user:
+            instance.created_by = user
+
+        if commit:
+            instance.save()
+        return instance
