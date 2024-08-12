@@ -149,7 +149,7 @@ class SummaryView(ActiveUserRequiredMixin, HelpResponse, DetailView):
                 "title_root": "Summary",
             }
         )
-        response_instance.state = STATE.START
+        response_instance.state = STATE.PENDING
         response_instance.save()
         log_user_activity(
             self.request, self.request.user, "viewed summary on assessment"
@@ -299,7 +299,7 @@ class PredictionView(ActiveUserRequiredMixin, HelpResponse, DetailView):
                 probability_malignant=probabilities[0][1],
                 chart_data=chart_data,
             )
-            response_instance.state = STATE.COMPLETE
+            response_instance.state = STATE.COMPLETED
             response_instance.save()
 
     def get_context_data(self, **kwargs):
@@ -700,11 +700,11 @@ class PendingResultView(ActiveUserRequiredMixin, FilterView):
 
     def get_queryset(self):
         queryset = super().get_queryset()
-        return queryset.filter(state=STATE.START)
+        return queryset.filter(state=STATE.IN_PROGRESS)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["title_root"] = "Pending Results"
+        context["title_root"] = "Results In Progress"
         log_user_activity(
             self.request, self.request.user, "viewed uncompleted assessment"
         )
@@ -742,6 +742,10 @@ class PredictionResultView(ActiveUserRequiredMixin, FilterView):
     context_object_name = "results"
     ordering = ["-submission_date", "-timestamp"]
     paginate_by = 9
+
+    def get_queryset(self):
+        query = super().get_queryset()
+        return query.filter(user=self.request.user)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
