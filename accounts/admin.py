@@ -15,6 +15,7 @@ class AccountAdmin(UserAdmin):
     model = Account
     list_display = (
         "email",
+        "created_by",
         "first_name",
         "last_name",
         "username",
@@ -27,6 +28,7 @@ class AccountAdmin(UserAdmin):
     )
     list_filter = (
         "email",
+        "created_by",
         "first_name",
         "last_name",
         "date_of_birth",
@@ -42,12 +44,14 @@ class AccountAdmin(UserAdmin):
                 "fields": (
                     "first_name",
                     "last_name",
+                    "username",
                     "gender",
                     "email",
                     "password",
                     "date_of_birth",
                     "country",
                     "agree",
+                    "created_by",
                 )
             },
         ),
