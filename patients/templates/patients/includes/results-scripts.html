@@ -1,5 +1,4 @@
 {% load static %}
-<script src="{% static 'assets/vendor_components/apexcharts-bundle/dist/apexcharts.js' %}"></script>
 <script>
     var categories = {{ chart_data.categories|safe }};
     var mean = {{ chart_data.mean|safe }};
